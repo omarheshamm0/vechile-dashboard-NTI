@@ -14,8 +14,8 @@
 | **Team names** | Omar Hesham Elsayed, Ahmed Khaled Mohamed, Omar Abdelaziz Elsaid Elaraby, Abdelrahman Hesham Abdullah |
 | **GitHub repository** | https://github.com/omarheshamm0/vechile-dashboard-NTI.git |
 | **Team size** | 4 students |
-| **Build window** | Days 11 – 15 (Jul 26 – Jul 30, 2026) |
-| **Demo & submission** | July 30, 2026 |
+| **Build window** | Days 11 – 15 (Sep 13 – Sep 17, 2026) |
+| **Demo & submission** | Sep 17, 2026 |
 | **Dominant skill** | Timer1 input capture, bidirectional shared SPI bus, atomic 32-bit counters |
 | **MCU** | ATmega32A @ 8 MHz |
 | **Simulator** | SimulIDE 1.x |
