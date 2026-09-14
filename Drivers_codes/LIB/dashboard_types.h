@@ -1,9 +1,39 @@
-#include <STD_TYPES.h>
+#ifndef DASHBOARD_TYPES_H
+#define DASHBOARD_TYPES_H
+
+/*
+ * Keep this header self-contained: do not depend on a project-specific
+ * STD_TYPES.h header, which may not exist in all builds. Prefer standard
+ * integer types when available and fall back to plain typedefs otherwise.
+ * Also avoid redefining the standard type names if they are already provided.
+ */
+#if defined(__has_include)
+  #if __has_include(<stdint.h>)
+    #include <stdint.h>
+  #endif
+#endif
+
+#if defined(UINT8_MAX) && defined(UINT16_MAX) && defined(UINT32_MAX)
+  typedef uint8_t  uint8;
+  typedef uint16_t uint16;
+  typedef uint32_t uint32;
+  typedef int8_t   int8;
+  typedef int16_t  int16;
+  typedef int32_t  int32;
+#else
+  typedef unsigned char  uint8;
+  typedef unsigned short uint16;
+  typedef unsigned long  uint32;
+  typedef signed char    int8;
+  typedef signed short   int16;
+  typedef signed long    int32;
+#endif
+
 typedef struct {
     uint16 speedKmh;         /* 0..250                                 */
     uint16 rpm;              /* 0..8000                                */
     uint8  fuelPct;          /* 0..100                                 */
-    uint16  coolantC;         /* -40..130                               */
+    int16  coolantC;         /* -40..130                               */
     uint16 battmV;           /* 0..16000                               */
     uint8  oilBarX10;        /* 0..100  (0.0..10.0 bar)                */
     uint32 odoMetres;        /* lifetime, metres                       */

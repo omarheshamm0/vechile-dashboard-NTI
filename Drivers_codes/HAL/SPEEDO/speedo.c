@@ -1,10 +1,23 @@
 #include "speedo.h"
 #include "BIT_MATH.h"
-#include <avr/io.h>
-#include <avr/interrupt.h>
+
+#if defined(__has_include)
+    #if __has_include(<avr/io.h>)
+        #include <avr/io.h>
+    #else
+        #include <stdint.h>
+    #endif
+    #if __has_include(<avr/interrupt.h>)
+        #include <avr/interrupt.h>
+    #endif
+#else
+    #include <avr/io.h>
+    #include <avr/interrupt.h>
+#endif
 
 static volatile Capture_t g_captureData = {0};
 
+#if defined(TCCR1A) && defined(TCCR1B) && defined(TIMSK) && defined(ICR1) && defined(TIFR)
 void SPD_Init(void)
 {
     /* Timer1 Normal Mode, Prescaler = 64 (1 tick = 8 us at 8 MHz) */
@@ -14,7 +27,14 @@ void SPD_Init(void)
     /* Enable Input Capture Interrupt and Overflow Interrupt */
     TIMSK |= (1 << TICIE1) | (1 << TOIE1);
 }
+#else
+void SPD_Init(void)
+{
+    /* Timer1 not available on this AVR target. */
+}
+#endif
 
+#if defined(ICR1) && defined(TIFR)
 void SPD_OnCaptureISR(void)
 {
     uint16 currentIcr = ICR1;
@@ -35,23 +55,33 @@ void SPD_OnCaptureISR(void)
     g_captureData.fresh = 1;
     g_captureData.stallTicks = 0;
 }
+#else
+void SPD_OnCaptureISR(void)
+{
+    /* Timer1 capture hardware unavailable on this target. */
+}
+#endif
 
 void SPD_OnOverflowISR(void)
 {
     g_captureData.ovfCount++;
 }
 
+#if defined(TIMER1_CAPT_vect)
 /* Timer1 Input Capture ISR */
 ISR(TIMER1_CAPT_vect)
 {
     SPD_OnCaptureISR();
 }
+#endif
 
+#if defined(TIMER1_OVF_vect)
 /* Timer1 Overflow ISR */
 ISR(TIMER1_OVF_vect)
 {
     SPD_OnOverflowISR();
 }
+#endif
 
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg)
 {
