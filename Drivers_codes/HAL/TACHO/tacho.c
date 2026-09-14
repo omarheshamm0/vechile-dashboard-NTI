@@ -1,5 +1,5 @@
 #include "tacho.h"
-#include "INTERRUPT_interface.h"
+#include "../../MCAL/INTERRUPT/INTERRUPT_interface.h"
 #include <avr/interrupt.h>
 
 static volatile uint16 g_pulseCount = 0;
@@ -20,23 +20,20 @@ void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg)
 {
     uint16 count = 0;
 
-    /* Atomic read and reset of pulse counter */
     INTERRUPT_DisableGlobal();
     count = g_pulseCount;
     g_pulseCount = 0;
     INTERRUPT_EnableGlobal();
 
-    /* RPM = count * (1000ms / 250ms) * 60s / pulsesPerRev */
     if (pCfg->tachPulsesPerRev > 0)
     {
         pCarData->rpm = (uint16)(((uint32)count * 240UL) / pCfg->tachPulsesPerRev);
     }
     else
     {
-        pCarData->rpm = count * 120U; /* Default for 2 pulses/rev */
+        pCarData->rpm = count * 120U;
     }
 
-    /* Update engine running state */
     if (pCarData->rpm > 500)
     {
         pCarData->engineRun = 1;

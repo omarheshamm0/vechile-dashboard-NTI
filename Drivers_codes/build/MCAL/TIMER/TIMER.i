@@ -21,6 +21,11 @@ typedef enum
 } STD_ReturnType;
 # 20 "MCAL/TIMER/TIMER.c" 2
 # 1 "LIB/MATH.h" 1
+
+
+
+# 1 "LIB/STD_TYPES.h" 1
+# 5 "LIB/MATH.h" 2
 # 21 "MCAL/TIMER/TIMER.c" 2
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
 # 43 "MCAL/GPIO/GPIO_interface.h"
@@ -116,8 +121,8 @@ static uint16 TIMER_DutyToCompare(uint16 Copy_u16Top, uint8 Copy_u8DutyPercent);
 
 STD_ReturnType TIMER0_Init(void)
 {
-    ((*(volatile uint8 *)0x53) &= ~(1u << 6u));
-    ((*(volatile uint8 *)0x53) |= (1u << 3u));
+    (((*(volatile uint8 *)0x53)) &= ~((uint32)(1u << (6u))));
+    (((*(volatile uint8 *)0x53)) |= (uint32)(1u << (3u)));
     (*(volatile uint8 *)0x5C) = 124u;
     (*(volatile uint8 *)0x52) = 0u;
     (*(volatile uint8 *)0x53) &= (uint8) ~((1u << 2u) | (1u << 1u) | (1u << 0u));
@@ -153,10 +158,10 @@ STD_ReturnType TIMER0_PWM(uint8 Copy_u8DutyPercent)
         return E_NOK;
 
     GPIO_SetPinDirection(1u, 3u, 1u);
-    ((*(volatile uint8 *)0x53) |= (1u << 6u));
-    ((*(volatile uint8 *)0x53) |= (1u << 3u));
-    ((*(volatile uint8 *)0x53) |= (1u << 5u));
-    ((*(volatile uint8 *)0x53) &= ~(1u << 4u));
+    (((*(volatile uint8 *)0x53)) |= (uint32)(1u << (6u)));
+    (((*(volatile uint8 *)0x53)) |= (uint32)(1u << (3u)));
+    (((*(volatile uint8 *)0x53)) |= (uint32)(1u << (5u)));
+    (((*(volatile uint8 *)0x53)) &= ~((uint32)(1u << (4u))));
     (*(volatile uint8 *)0x5C) = (uint8)TIMER_DutyToCompare(255u, Copy_u8DutyPercent);
     (*(volatile uint8 *)0x53) = (uint8)(((*(volatile uint8 *)0x53) & (uint8)~0x07u) | (1u << 2u) | (1u << 1u));
     return E_OK;
@@ -178,8 +183,8 @@ STD_ReturnType TIMER0_Stop(void)
 STD_ReturnType TIMER1_Init(void)
 {
     (*(volatile uint8 *)0x4F) &= (uint8) ~((1u << 1u) | (1u << 0u));
-    ((*(volatile uint8 *)0x4E) &= ~(1u << 4u));
-    ((*(volatile uint8 *)0x4E) |= (1u << 3u));
+    (((*(volatile uint8 *)0x4E)) &= ~((uint32)(1u << (4u))));
+    (((*(volatile uint8 *)0x4E)) |= (uint32)(1u << (3u)));
     (*(volatile uint16 *)0x4A) = 999u;
     (*(volatile uint16 *)0x4C) = 0u;
     (*(volatile uint8 *)0x4E) &= (uint8) ~((1u << 2u) | (1u << 1u) | (1u << 0u));
@@ -207,12 +212,12 @@ STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent)
         return E_NOK;
 
     GPIO_SetPinDirection(3u, 5u, 1u);
-    ((*(volatile uint8 *)0x4F) |= (1u << 1u));
-    ((*(volatile uint8 *)0x4F) &= ~(1u << 0u));
-    ((*(volatile uint8 *)0x4E) |= (1u << 4u));
-    ((*(volatile uint8 *)0x4E) |= (1u << 3u));
-    ((*(volatile uint8 *)0x4F) |= (1u << 7u));
-    ((*(volatile uint8 *)0x4F) &= ~(1u << 6u));
+    (((*(volatile uint8 *)0x4F)) |= (uint32)(1u << (1u)));
+    (((*(volatile uint8 *)0x4F)) &= ~((uint32)(1u << (0u))));
+    (((*(volatile uint8 *)0x4E)) |= (uint32)(1u << (4u)));
+    (((*(volatile uint8 *)0x4E)) |= (uint32)(1u << (3u)));
+    (((*(volatile uint8 *)0x4F)) |= (uint32)(1u << (7u)));
+    (((*(volatile uint8 *)0x4F)) &= ~((uint32)(1u << (6u))));
     (*(volatile uint16 *)0x46) = (uint16)((1000000UL / Copy_u16FrequencyHz) - 1UL);
     (*(volatile uint16 *)0x4A) = TIMER_DutyToCompare((*(volatile uint16 *)0x46), Copy_u8DutyPercent);
     (*(volatile uint8 *)0x4E) = (uint8)(((*(volatile uint8 *)0x4E) & (uint8)~0x07u) | (1u << 1u));

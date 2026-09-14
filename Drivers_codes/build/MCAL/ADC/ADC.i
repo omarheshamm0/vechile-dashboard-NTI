@@ -21,6 +21,11 @@ typedef enum
 } STD_ReturnType;
 # 10 "MCAL/ADC/ADC.c" 2
 # 1 "LIB/MATH.h" 1
+
+
+
+# 1 "LIB/STD_TYPES.h" 1
+# 5 "LIB/MATH.h" 2
 # 11 "MCAL/ADC/ADC.c" 2
 # 1 "MCAL/ADC/ADC_interface.h" 1
 # 46 "MCAL/ADC/ADC_interface.h"
@@ -59,12 +64,12 @@ STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler)
         return E_NOK;
     }
 
-    ((*(volatile uint8 *)0x27) &= ~(1u << 5u));
+    (((*(volatile uint8 *)0x27)) &= ~((uint32)(1u << (5u))));
     (*(volatile uint8 *)0x27) = (uint8)(((*(volatile uint8 *)0x27) & (uint8)~0xC0u) | ((Copy_u8Ref << 6u) & 0xC0u));
 
     (*(volatile uint8 *)0x26) = (uint8)((*(volatile uint8 *)0x26) & (uint8)~0x07u);
     (*(volatile uint8 *)0x26) = (uint8)((*(volatile uint8 *)0x26) | (Copy_u8Prescaler & 0x07u));
-    ((*(volatile uint8 *)0x26) |= (1u << 7u));
+    (((*(volatile uint8 *)0x26)) |= (uint32)(1u << (7u)));
 
     return E_OK;
 }
@@ -77,14 +82,14 @@ STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading)
     }
 
     (*(volatile uint8 *)0x27) = (uint8)(((*(volatile uint8 *)0x27) & (uint8)~0x1Fu) | (Copy_u8Channel & 0x1Fu));
-    ((*(volatile uint8 *)0x26) |= (1u << 6u));
+    (((*(volatile uint8 *)0x26)) |= (uint32)(1u << (6u)));
 
     while ((*(volatile uint8 *)0x26) & (1u << 6u))
     {
 
     }
 
-    ((*(volatile uint8 *)0x26) |= (1u << 4u));
+    (((*(volatile uint8 *)0x26)) |= (uint32)(1u << (4u)));
     *Copy_pu16Reading = (uint16)(*(volatile uint8 *)0x24) | ((uint16)(*(volatile uint8 *)0x25) << 8u);
 
     return E_OK;
@@ -103,7 +108,7 @@ STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel)
     }
 
     (*(volatile uint8 *)0x27) = (uint8)(((*(volatile uint8 *)0x27) & (uint8)~0x1Fu) | (Copy_u8Channel & 0x1Fu));
-    ((*(volatile uint8 *)0x26) |= (1u << 6u));
+    (((*(volatile uint8 *)0x26)) |= (uint32)(1u << (6u)));
 
     return E_OK;
 }
@@ -125,7 +130,7 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading)
         return E_NOK;
     }
 
-    ((*(volatile uint8 *)0x26) |= (1u << 4u));
+    (((*(volatile uint8 *)0x26)) |= (uint32)(1u << (4u)));
     *Copy_pu16Reading = (uint16)(*(volatile uint8 *)0x24) | ((uint16)(*(volatile uint8 *)0x25) << 8u);
 
     return E_OK;

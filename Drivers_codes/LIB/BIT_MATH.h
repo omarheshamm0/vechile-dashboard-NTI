@@ -1,5 +1,5 @@
-#ifndef MATH_H
-#define MATH_H
+#ifndef BIT_MATH_H
+#define BIT_MATH_H
 
 #include "STD_TYPES.h"
 
@@ -8,4 +8,4 @@
 #define TOGGLE_BIT(REG, BIT) ((REG) ^= (uint32)(1u << (BIT)))
 #define GET_BIT(REG, BIT)   (((REG) >> (BIT)) & 0x01u)
 
-#endif /* MATH_H */
+#endif /* BIT_MATH_H */

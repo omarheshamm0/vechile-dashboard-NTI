@@ -11,7 +11,7 @@
  * Pins: INT0 = PD2, INT1 = PD3, INT2 = PB2 (input, usually pull-up).
  */
 
-#include "STD_TYPES.h"
+#include "../../LIB/STD_TYPES.h"
 
 typedef void (*EXTI_CallbackType)(void);
 
