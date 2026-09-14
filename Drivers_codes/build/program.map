@@ -1,15 +1,15 @@
 Archive member included to satisfy reference by file (symbol)
 
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
-                              build/HAL/TACHO/tacho.o (__umulhisi3)
+                              build/HAL/GAUGES/gauges.o (__umulhisi3)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
-                              build/HAL/SPEEDO/speedo.o (__udivmodsi4)
+                              build/HAL/GAUGES/gauges.o (__udivmodsi4)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
                               C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o (exit)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
                               build/HAL/SevenSegment/SevenSegment.o (__do_copy_data)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
-                              build/HAL/lamps595/lamps595.o (__do_clear_bss)
+                              build/HAL/GAUGES/gauges.o (__do_clear_bss)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                               build/MCAL/TIMER/TIMER.o (__muluhisi3)
 
@@ -20,6 +20,14 @@ Discarded input sections
  .text          0x00000000        0x0 build/main.o
  .data          0x00000000        0x0 build/main.o
  .bss           0x00000000        0x0 build/main.o
+ .text          0x00000000        0x0 build/HAL/bodysw/bodysw.o
+ .data          0x00000000        0x0 build/HAL/bodysw/bodysw.o
+ .bss           0x00000000        0x0 build/HAL/bodysw/bodysw.o
+ .text.BSW_Init
+                0x00000000       0x28 build/HAL/bodysw/bodysw.o
+ .text.BSW_Read
+                0x00000000       0x70 build/HAL/bodysw/bodysw.o
+ .comment       0x00000000       0x13 build/HAL/bodysw/bodysw.o
  .text          0x00000000        0x0 build/HAL/CHIME/chime.o
  .data          0x00000000        0x0 build/HAL/CHIME/chime.o
  .bss           0x00000000        0x0 build/HAL/CHIME/chime.o
@@ -27,8 +35,26 @@ Discarded input sections
  .text          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .data          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .bss           0x00000000        0x0 build/HAL/GAUGES/gauges.o
+ .text.Check_Plausibility
+                0x00000000       0x26 build/HAL/GAUGES/gauges.o
  .text.GAU_Init
                 0x00000000        0x8 build/HAL/GAUGES/gauges.o
+ .text.GAU_Update
+                0x00000000      0x202 build/HAL/GAUGES/gauges.o
+ .bss.ErrCount_Oil
+                0x00000000        0x1 build/HAL/GAUGES/gauges.o
+ .bss.ErrCount_Batt
+                0x00000000        0x1 build/HAL/GAUGES/gauges.o
+ .bss.ErrCount_Coolant
+                0x00000000        0x1 build/HAL/GAUGES/gauges.o
+ .bss.ErrCount_Fuel
+                0x00000000        0x1 build/HAL/GAUGES/gauges.o
+ .bss.Filter_Idx
+                0x00000000        0x1 build/HAL/GAUGES/gauges.o
+ .bss.Coolant_Buffer
+                0x00000000       0x10 build/HAL/GAUGES/gauges.o
+ .bss.Fuel_Buffer
+                0x00000000       0x10 build/HAL/GAUGES/gauges.o
  .comment       0x00000000       0x13 build/HAL/GAUGES/gauges.o
  .text          0x00000000        0x0 build/HAL/KeyPad/KeyPad.o
  .data          0x00000000        0x0 build/HAL/KeyPad/KeyPad.o
@@ -335,6 +361,7 @@ Linker script and memory map
 
 LOAD C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/../../../../avr/lib/avr5/crtatmega32.o
 LOAD build/main.o
+LOAD build/HAL/bodysw/bodysw.o
 LOAD build/HAL/CHIME/chime.o
 LOAD build/HAL/GAUGES/gauges.o
 LOAD build/HAL/KeyPad/KeyPad.o
