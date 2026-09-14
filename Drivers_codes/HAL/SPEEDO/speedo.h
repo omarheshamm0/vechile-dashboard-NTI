@@ -1,17 +1,21 @@
 #ifndef SPEEDO_H
 #define SPEEDO_H
 
-#include "STD_TYPES.h"
-#include "dashboard_types.h"
+/* Include basic data types (uint8, uint16, etc.) */
+#include "../../LIB/STD_TYPES.h"
+/* Include dashboard data structures (CarData_t, DashCfg_t) */
+#include "../../LIB/dashboard_types.h"
 
 /* Initialize Timer1 Input Capture and Overflow interrupts */
 void SPD_Init(void);
 
-/* Called every 100 ms from the scheduler to update speed and odometer */
+/* Periodic task called every 100 ms to calculate speed and distance */
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);
 
-/* Interrupt Handlers for Input Capture and Timer1 Overflow */
+/* Function executed when a new pulse arrives from the wheel sensor */
 void SPD_OnCaptureISR(void);
+
+/* Function executed when Timer1 overflows (reaches max count) */
 void SPD_OnOverflowISR(void);
 
 #endif /* SPEEDO_H */

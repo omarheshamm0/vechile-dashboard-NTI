@@ -6,8 +6,9 @@
 
 
 
-# 1 "LIB/STD_TYPES.h" 1
-# 11 "LIB/STD_TYPES.h"
+
+# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
+# 11 "HAL/TACHO/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;
@@ -22,14 +23,20 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 5 "HAL/TACHO/tacho.h" 2
-# 1 "LIB/dashboard_types.h" 1
+# 6 "HAL/TACHO/tacho.h" 2
+
+# 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
+
+
+
+# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
+# 5 "HAL/TACHO/../../LIB/dashboard_types.h" 2
 
 typedef struct {
     uint16 speedKmh;
     uint16 rpm;
     uint8 fuelPct;
-    uint16 coolantC;
+    sint16 coolantC;
     uint16 battmV;
     uint8 oilBarX10;
     uint32 odoMetres;
@@ -54,8 +61,6 @@ typedef struct {
 
 
 
-
-
 typedef struct {
     uint16 magic;
     uint8 version;
@@ -76,8 +81,6 @@ typedef struct {
     uint8 checksum;
 } DashCfg_t;
 
-
-
 typedef enum { CS_OFF = 0, CS_ACC, CS_IGNITION, CS_BULBCHECK,
                CS_CRANKING, CS_RUNNING, CS_LIMP_HOME,
                CS_STALLED } ClusterState_t;
@@ -91,8 +94,6 @@ typedef enum { PG_MAIN = 0, PG_TRIP, PG_ENGINE, PG_ELECTRICAL,
 
 typedef enum { SPI_SLAVE_SWITCHES = 0, SPI_SLAVE_LAMPS } SpiSlave_t;
 
-
-
 typedef struct {
     volatile uint16 lastIcr;
     volatile uint16 ovfCount;
@@ -100,7 +101,7 @@ typedef struct {
     volatile uint8 fresh;
     uint16 stallTicks;
 } Capture_t;
-# 6 "HAL/TACHO/tacho.h" 2
+# 8 "HAL/TACHO/tacho.h" 2
 
 
 void TAC_Init(void);
@@ -111,10 +112,13 @@ void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg);
 
 void TAC_OnPulse(void);
 # 2 "HAL/TACHO/tacho.c" 2
-# 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
-# 16 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 1 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h" 1
+# 14 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 1 "HAL/TACHO/../../MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
+# 15 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h" 2
+
 typedef void (*EXTI_CallbackType)(void);
-# 32 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 32 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType INTERRUPT_EnableGlobal(void);
 
 
@@ -143,7 +147,7 @@ STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
 
 
 STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
-# 69 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 69 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
 # 3 "HAL/TACHO/tacho.c" 2
 # 1 "C:/avr-gcc/avr/include/avr/interrupt.h" 1 3
@@ -341,13 +345,16 @@ typedef struct
 # 4 "HAL/TACHO/tacho.c" 2
 
 
-# 5 "HAL/TACHO/tacho.c"
+
+# 6 "HAL/TACHO/tacho.c"
 static volatile uint16 g_pulseCount = 0;
+
 
 void TAC_OnPulse(void)
 {
     g_pulseCount++;
 }
+
 
 void TAC_Init(void)
 {
@@ -355,6 +362,7 @@ void TAC_Init(void)
     EXTI_SetCallback(0u, TAC_OnPulse);
     EXTI_Enable(0u);
 }
+
 
 void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg)
 {

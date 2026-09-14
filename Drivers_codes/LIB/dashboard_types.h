@@ -1,39 +1,13 @@
 #ifndef DASHBOARD_TYPES_H
 #define DASHBOARD_TYPES_H
 
-/*
- * Keep this header self-contained: do not depend on a project-specific
- * STD_TYPES.h header, which may not exist in all builds. Prefer standard
- * integer types when available and fall back to plain typedefs otherwise.
- * Also avoid redefining the standard type names if they are already provided.
- */
-#if defined(__has_include)
-  #if __has_include(<stdint.h>)
-    #include <stdint.h>
-  #endif
-#endif
-
-#if defined(UINT8_MAX) && defined(UINT16_MAX) && defined(UINT32_MAX)
-  typedef uint8_t  uint8;
-  typedef uint16_t uint16;
-  typedef uint32_t uint32;
-  typedef int8_t   int8;
-  typedef int16_t  int16;
-  typedef int32_t  int32;
-#else
-  typedef unsigned char  uint8;
-  typedef unsigned short uint16;
-  typedef unsigned long  uint32;
-  typedef signed char    int8;
-  typedef signed short   int16;
-  typedef signed long    int32;
-#endif
+#include "STD_TYPES.h"
 
 typedef struct {
     uint16 speedKmh;         /* 0..250                                 */
     uint16 rpm;              /* 0..8000                                */
     uint8  fuelPct;          /* 0..100                                 */
-    int16  coolantC;         /* -40..130                               */
+    sint16 coolantC;         /* -40..130                               */
     uint16 battmV;           /* 0..16000                               */
     uint8  oilBarX10;        /* 0..100  (0.0..10.0 bar)                */
     uint32 odoMetres;        /* lifetime, metres                       */
@@ -51,11 +25,9 @@ typedef struct {
     uint8  engineRun  : 1;
     uint8  limpHome   : 1;
     uint8  state;            /* ClusterState_t                         */
-    uint8 page;             /* DisplayPage_t                          */
+    uint8  page;             /* DisplayPage_t                          */
     uint32 ignitionSec;      /* seconds since key on                   */
 } CarData_t;
-
-
 
 #define DSH_MAGIC   0x4443u      /* 'D','C'                              */
 #define DSH_VERSION 0x01u
@@ -72,15 +44,13 @@ typedef struct {
     uint8  oilWarnBarX10;      /* (default 10 = 1.0 bar)               */
     uint16 battLowmV;          /* (default 12000)                      */
     uint16 battHighmV;         /* (default 15000)                      */
-    uint8 pulsesPerRev;       /* wheel sensor      (default 4)        */
+    uint8  pulsesPerRev;       /* wheel sensor      (default 4)        */
     uint16 wheelCircMm;        /* (default 2000)                       */
     uint8  tachPulsesPerRev;   /* (default 2)                          */
     uint16 ignitionCycles;
     uint8  writeSlot;          /* wear-levelling slot 0..7             */
     uint8  checksum;
 } DashCfg_t;                     /* 33 bytes                             */
-
-
 
 typedef enum { CS_OFF = 0, CS_ACC, CS_IGNITION, CS_BULBCHECK,
                CS_CRANKING, CS_RUNNING, CS_LIMP_HOME,
@@ -95,8 +65,6 @@ typedef enum { PG_MAIN = 0, PG_TRIP, PG_ENGINE, PG_ELECTRICAL,
 
 typedef enum { SPI_SLAVE_SWITCHES = 0, SPI_SLAVE_LAMPS }   SpiSlave_t;
 
-
-
 typedef struct {
     volatile uint16 lastIcr;      /* previous ICR1                     */
     volatile uint16 ovfCount;     /* Timer1 overflows since last edge  */
@@ -104,3 +72,5 @@ typedef struct {
     volatile uint8  fresh;        /* set by ISR, cleared by the task   */
     uint16          stallTicks;   /* 10 ms units since last edge       */
 } Capture_t;
+
+#endif /* DASHBOARD_TYPES_H */

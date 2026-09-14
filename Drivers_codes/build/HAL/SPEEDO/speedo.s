@@ -203,7 +203,7 @@ SPD_Task100ms:
 	std Y+1,r22
 	std Y+2,r23
 /* #APP */
- ;  64 "HAL/SPEEDO/speedo.c" 1
+ ;  73 "HAL/SPEEDO/speedo.c" 1
 	cli
  ;  0 "" 2
 /* #NOAPP */
@@ -214,7 +214,7 @@ SPD_Task100ms:
 	lds r24,g_captureData+8
 	sts g_captureData+8,__zero_reg__
 /* #APP */
- ;  68 "HAL/SPEEDO/speedo.c" 1
+ ;  77 "HAL/SPEEDO/speedo.c" 1
 	sei
  ;  0 "" 2
 /* #NOAPP */

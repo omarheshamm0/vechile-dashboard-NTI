@@ -1,9 +1,11 @@
 #ifndef MATH_H
 #define MATH_H
-#include <STD_TYPES.h>
-#define SET_BIT(REG, BIT) (REG |= (1u << BIT))
-#define CLR_BIT(REG, BIT) (REG &= ~(1u << BIT))
-#define TOGGLE_BIT(REG, BIT) (REG ^= (1u << BIT))
 
+#include "STD_TYPES.h"
+
+#define SET_BIT(REG, BIT)   ((REG) |= (uint32)(1u << (BIT)))
+#define CLR_BIT(REG, BIT)   ((REG) &= ~((uint32)(1u << (BIT))))
+#define TOGGLE_BIT(REG, BIT) ((REG) ^= (uint32)(1u << (BIT)))
+#define GET_BIT(REG, BIT)   (((REG) >> (BIT)) & 0x01u)
 
 #endif /* MATH_H */

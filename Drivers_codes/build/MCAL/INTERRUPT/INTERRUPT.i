@@ -1,10 +1,10 @@
-# 0 "main.c"
+# 0 "MCAL/INTERRUPT/INTERRUPT.c"
 # 0 "<built-in>"
 # 0 "<command-line>"
-# 1 "main.c"
-# 12 "main.c"
-# 1 "LIB/STD_TYPES.h" 1
-# 11 "LIB/STD_TYPES.h"
+# 1 "MCAL/INTERRUPT/INTERRUPT.c"
+# 9 "MCAL/INTERRUPT/INTERRUPT.c"
+# 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
+# 11 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;
@@ -19,46 +19,9 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 13 "main.c" 2
-# 1 "MCAL/GPIO/GPIO_interface.h" 1
-# 43 "MCAL/GPIO/GPIO_interface.h"
-STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
-
-
-
-
-STD_ReturnType GPIO_SetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Value);
-
-
-
-
-STD_ReturnType GPIO_GetPinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 *Copy_pu8Value);
-
-
-
-
-STD_ReturnType GPIO_TogglePinValue(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-
-
-
-
-STD_ReturnType GPIO_SetPortDirection(uint8 Copy_u8Port, uint8 Copy_u8Direction);
-
-
-
-
-STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
-
-
-
-
-STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 14 "main.c" 2
+# 10 "MCAL/INTERRUPT/INTERRUPT.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
-# 14 "MCAL/INTERRUPT/INTERRUPT_interface.h"
-# 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
-# 15 "MCAL/INTERRUPT/INTERRUPT_interface.h" 2
-
+# 16 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 typedef void (*EXTI_CallbackType)(void);
 # 32 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType INTERRUPT_EnableGlobal(void);
@@ -91,7 +54,9 @@ STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
 STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
 # 69 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 15 "main.c" 2
+# 11 "MCAL/INTERRUPT/INTERRUPT.c" 2
+# 1 "MCAL/INTERRUPT/INTERRUPT_private.h" 1
+# 12 "MCAL/INTERRUPT/INTERRUPT.c" 2
 # 1 "C:/avr-gcc/avr/include/avr/interrupt.h" 1 3
 # 38 "C:/avr-gcc/avr/include/avr/interrupt.h" 3
 # 1 "C:/avr-gcc/avr/include/avr/io.h" 1 3
@@ -284,59 +249,126 @@ typedef struct
 # 1 "C:/avr-gcc/avr/include/avr/lock.h" 1 3
 # 800 "C:/avr-gcc/avr/include/avr/io.h" 2 3
 # 39 "C:/avr-gcc/avr/include/avr/interrupt.h" 2 3
-# 16 "main.c" 2
-# 1 "MCAL/TIMER/TIMER_interface.h" 1
-# 29 "MCAL/TIMER/TIMER_interface.h"
-
-# 29 "MCAL/TIMER/TIMER_interface.h"
-STD_ReturnType TIMER0_Init(void);
+# 13 "MCAL/INTERRUPT/INTERRUPT.c" 2
 
 
-
-
-STD_ReturnType TIMER0_DelayMS(uint16 Copy_u16Milliseconds);
-
-
-
-
-STD_ReturnType TIMER0_DelayS(uint16 Copy_u16Seconds);
-
-
-
-
-
-
-
-STD_ReturnType TIMER0_PWM(uint8 Copy_u8DutyPercent);
-
-
-
-
-STD_ReturnType TIMER0_Stop(void);
-
-
-
-
-
-
-STD_ReturnType TIMER1_Init(void);
-
-
-
-
-STD_ReturnType TIMER1_DelayMS(uint16 Copy_u16Milliseconds);
-# 73 "MCAL/TIMER/TIMER_interface.h"
-STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent);
-
-
-
-
-STD_ReturnType TIMER1_Stop(void);
-# 17 "main.c" 2
-
-
-int main(void)
+# 14 "MCAL/INTERRUPT/INTERRUPT.c"
+static EXTI_CallbackType EXTI_Callbacks[3] = {((void *)0), ((void *)0), ((void *)0)};
+# 23 "MCAL/INTERRUPT/INTERRUPT.c"
+STD_ReturnType INTERRUPT_EnableGlobal(void)
 {
+    
+# 25 "MCAL/INTERRUPT/INTERRUPT.c" 3
+   __asm__ __volatile__ ("sei" ::: "memory")
+# 25 "MCAL/INTERRUPT/INTERRUPT.c"
+        ;
+    return E_OK;
+}
 
-  return 0;
+STD_ReturnType INTERRUPT_DisableGlobal(void)
+{
+    
+# 31 "MCAL/INTERRUPT/INTERRUPT.c" 3
+   __asm__ __volatile__ ("cli" ::: "memory")
+# 31 "MCAL/INTERRUPT/INTERRUPT.c"
+        ;
+    return E_OK;
+}
+# 43 "MCAL/INTERRUPT/INTERRUPT.c"
+STD_ReturnType EXTI_SetSense(uint8 Copy_u8Int, uint8 Copy_u8Sense)
+{
+    if ((Copy_u8Int > 2u) || (Copy_u8Sense > 3u))
+        return E_NOK;
+
+    if (Copy_u8Int == 0u)
+    {
+        (*(volatile uint8 *)0x55) = (uint8)(((*(volatile uint8 *)0x55) & (uint8)~0x03u) |
+                                  Copy_u8Sense);
+    }
+    else if (Copy_u8Int == 1u)
+    {
+        (*(volatile uint8 *)0x55) = (uint8)(((*(volatile uint8 *)0x55) & (uint8)~0x0Cu) |
+                                  (uint8)(Copy_u8Sense << 2u));
+    }
+    else
+    {
+        if ((Copy_u8Sense != 2u) &&
+            (Copy_u8Sense != 3u))
+            return E_NOK;
+
+        if (Copy_u8Sense == 3u)
+            (*(volatile uint8 *)0x54) |= (uint8)(1u << 6u);
+        else
+            (*(volatile uint8 *)0x54) &= (uint8) ~(1u << 6u);
+    }
+
+    return E_OK;
+}
+
+
+
+
+
+STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int)
+{
+    uint8 Local_u8Mask;
+
+    if (Copy_u8Int > 2u)
+        return E_NOK;
+
+    if (Copy_u8Int == 0u)
+        Local_u8Mask = (uint8)(1u << 6u);
+    else if (Copy_u8Int == 1u)
+        Local_u8Mask = (uint8)(1u << 7u);
+    else
+        Local_u8Mask = (uint8)(1u << 5u);
+
+    (*(volatile uint8 *)0x5A) = Local_u8Mask;
+    return E_OK;
+}
+# 104 "MCAL/INTERRUPT/INTERRUPT.c"
+STD_ReturnType EXTI_Enable(uint8 Copy_u8Int)
+{
+    uint8 Local_u8Mask;
+
+    if (Copy_u8Int > 2u)
+        return E_NOK;
+
+    if (Copy_u8Int == 0u)
+        Local_u8Mask = (uint8)(1u << 6u);
+    else if (Copy_u8Int == 1u)
+        Local_u8Mask = (uint8)(1u << 7u);
+    else
+        Local_u8Mask = (uint8)(1u << 5u);
+
+    (*(volatile uint8 *)0x5A) = Local_u8Mask;
+    (*(volatile uint8 *)0x5B) |= Local_u8Mask;
+    return E_OK;
+}
+
+STD_ReturnType EXTI_Disable(uint8 Copy_u8Int)
+{
+    uint8 Local_u8Mask;
+
+    if (Copy_u8Int > 2u)
+        return E_NOK;
+
+    if (Copy_u8Int == 0u)
+        Local_u8Mask = (uint8)(1u << 6u);
+    else if (Copy_u8Int == 1u)
+        Local_u8Mask = (uint8)(1u << 7u);
+    else
+        Local_u8Mask = (uint8)(1u << 5u);
+
+    (*(volatile uint8 *)0x5B) &= (uint8)~Local_u8Mask;
+    return E_OK;
+}
+
+STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback)
+{
+    if ((Copy_u8Int > 2u) || (Copy_pfCallback == ((void *)0)))
+        return E_NOK;
+
+    EXTI_Callbacks[Copy_u8Int] = Copy_pfCallback;
+    return E_OK;
 }

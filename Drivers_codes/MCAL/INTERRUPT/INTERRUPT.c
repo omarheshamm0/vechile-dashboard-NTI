@@ -6,7 +6,7 @@
  * Implement every prototype from INTERRUPT_interface.h.
  */
 
-#include "STD_TYPES.h"
+#include "../../LIB/STD_TYPES.h"
 #include "INTERRUPT_interface.h"
 #include "INTERRUPT_private.h"
 #include <avr/interrupt.h>

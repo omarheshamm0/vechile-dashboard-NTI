@@ -6,20 +6,23 @@
             "name": "AVR - ATmega32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/WinAVR-20100110/avr/include",
-                "C:/avr-gcc/avr/include"
+                "${workspaceFolder}/Drivers_codes/**",
+                "C:/avr-gcc/avr/include",
+                "C:/avr-gcc/lib/gcc/avr/15.2.0/include"
             ],
             "defines": [
                 "F_CPU=8000000UL",
-                "__AVR_ATmega32__"
+                "__AVR_ATmega32__",
+                "__AVR__"
             ],
-            "compilerPath": "avr-gcc",
+            "compilerPath": "C:/avr-gcc/bin/avr-gcc.exe",
             "cStandard": "c11",
-            "intelliSenseMode": "gcc-x86",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "gcc-x64",
             "browse": {
                 "path": [
                     "${workspaceFolder}",
-                    "C:/WinAVR-20100110/avr/include",
+                    "${workspaceFolder}/Drivers_codes",
                     "C:/avr-gcc/avr/include"
                 ],
                 "limitSymbolsToIncludedHeaders": true
