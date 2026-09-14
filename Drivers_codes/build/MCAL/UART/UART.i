@@ -54,3 +54,125 @@ STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
 # 11 "MCAL/UART/UART.c" 2
 # 1 "MCAL/UART/UART_private.h" 1
 # 12 "MCAL/UART/UART.c" 2
+# 25 "MCAL/UART/UART.c"
+STD_ReturnType UART_Init(uint32 Copy_u32BaudRate)
+{
+ uint32 Local_u32Ubrr;
+
+ if (Copy_u32BaudRate == 0UL)
+ {
+  return E_NOK;
+ }
+
+ Local_u32Ubrr = (8000000UL / (16UL * Copy_u32BaudRate)) - 1UL;
+ if (Local_u32Ubrr > 0x0FFFUL)
+ {
+  return E_NOK;
+ }
+
+ (*(volatile uint8 *)0x40) = (uint8)(Local_u32Ubrr >> 8);
+ (*(volatile uint8 *)0x29) = (uint8)Local_u32Ubrr;
+ (*(volatile uint8 *)0x40) = (uint8)((1u << 7u) | (1u << 2u) | (1u << 1u));
+ (*(volatile uint8 *)0x2A) = (uint8)((1u << 4u) | (1u << 3u));
+
+ return E_OK;
+}
+
+
+
+
+
+STD_ReturnType UART_SendByte(uint8 Copy_u8Data)
+{
+ while (((*(volatile uint8 *)0x2B) & (uint8)(1u << 5u)) == 0u)
+ {
+ }
+
+ (*(volatile uint8 *)0x2C) = Copy_u8Data;
+ return E_OK;
+}
+
+
+
+
+
+
+STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data)
+{
+ if (Copy_pu8Data == (uint8 *)0)
+ {
+  return E_NOK;
+ }
+
+ while (((*(volatile uint8 *)0x2B) & (uint8)(1u << 7u)) == 0u)
+ {
+ }
+
+ *Copy_pu8Data = (*(volatile uint8 *)0x2C);
+ return E_OK;
+}
+
+
+
+
+
+
+STD_ReturnType UART_SendString(const uint8 *Copy_pu8String)
+{
+ if (Copy_pu8String == (const uint8 *)0)
+ {
+  return E_NOK;
+ }
+
+ while (*Copy_pu8String != '\0')
+ {
+  UART_SendByte(*Copy_pu8String);
+  Copy_pu8String++;
+ }
+
+ return E_OK;
+}
+
+
+
+
+
+STD_ReturnType UART_IsDataReady(void)
+{
+ return (((*(volatile uint8 *)0x2B) & (uint8)(1u << 7u)) != 0u) ? E_OK : E_NOK;
+}
+
+
+
+
+
+
+STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State)
+{
+ if (Copy_u8State > 1u)
+ {
+  return E_NOK;
+ }
+
+ if (Copy_u8State == 1u)
+  (*(volatile uint8 *)0x2A) |= (uint8)(1u << 7u);
+ else
+  (*(volatile uint8 *)0x2A) &= (uint8)~(1u << 7u);
+
+ return E_OK;
+}
+
+STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State)
+{
+ if (Copy_u8State > 1u)
+ {
+  return E_NOK;
+ }
+
+ if (Copy_u8State == 1u)
+  (*(volatile uint8 *)0x2A) |= (uint8)(1u << 5u);
+ else
+  (*(volatile uint8 *)0x2A) &= (uint8)~(1u << 5u);
+
+ return E_OK;
+}

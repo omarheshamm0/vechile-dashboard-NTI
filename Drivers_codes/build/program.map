@@ -101,6 +101,16 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .data          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .bss           0x00000000        0x0 build/MCAL/SPI/SPI.o
+ .text.SPI_InitMaster
+                0x00000000       0x62 build/MCAL/SPI/SPI.o
+ .text.SPI_InitSlave
+                0x00000000       0x4a build/MCAL/SPI/SPI.o
+ .text.SPI_Transceive
+                0x00000000       0x1e build/MCAL/SPI/SPI.o
+ .text.SPI_SelectSlave
+                0x00000000       0x36 build/MCAL/SPI/SPI.o
+ .text.SPI_ReleaseSlave
+                0x00000000        0x6 build/MCAL/SPI/SPI.o
  .comment       0x00000000       0x13 build/MCAL/SPI/SPI.o
  .text          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
  .data          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
@@ -127,6 +137,20 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/UART/UART.o
  .data          0x00000000        0x0 build/MCAL/UART/UART.o
  .bss           0x00000000        0x0 build/MCAL/UART/UART.o
+ .text.UART_Init
+                0x00000000       0x50 build/MCAL/UART/UART.o
+ .text.UART_SendByte
+                0x00000000        0xc build/MCAL/UART/UART.o
+ .text.UART_ReceiveByte
+                0x00000000       0x1a build/MCAL/UART/UART.o
+ .text.UART_SendString
+                0x00000000       0x26 build/MCAL/UART/UART.o
+ .text.UART_IsDataReady
+                0x00000000       0x12 build/MCAL/UART/UART.o
+ .text.UART_SetRxInterrupt
+                0x00000000       0x18 build/MCAL/UART/UART.o
+ .text.UART_SetTxInterrupt
+                0x00000000       0x18 build/MCAL/UART/UART.o
  .comment       0x00000000       0x13 build/MCAL/UART/UART.o
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_udivmodsi4.o)
