@@ -6,6 +6,7 @@
 
 
 
+
 # 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
 # 11 "HAL/TACHO/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -22,7 +23,8 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 5 "HAL/TACHO/tacho.h" 2
+# 6 "HAL/TACHO/tacho.h" 2
+
 # 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
 
 
@@ -99,10 +101,15 @@ typedef struct {
     volatile uint8 fresh;
     uint16 stallTicks;
 } Capture_t;
-# 6 "HAL/TACHO/tacho.h" 2
+# 8 "HAL/TACHO/tacho.h" 2
+
 
 void TAC_Init(void);
+
+
 void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg);
+
+
 void TAC_OnPulse(void);
 # 2 "HAL/TACHO/tacho.c" 2
 # 1 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h" 1
@@ -338,13 +345,16 @@ typedef struct
 # 4 "HAL/TACHO/tacho.c" 2
 
 
-# 5 "HAL/TACHO/tacho.c"
+
+# 6 "HAL/TACHO/tacho.c"
 static volatile uint16 g_pulseCount = 0;
+
 
 void TAC_OnPulse(void)
 {
     g_pulseCount++;
 }
+
 
 void TAC_Init(void)
 {
@@ -353,14 +363,17 @@ void TAC_Init(void)
     EXTI_Enable(0u);
 }
 
+
 void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg)
 {
     uint16 count = 0;
+
 
     INTERRUPT_DisableGlobal();
     count = g_pulseCount;
     g_pulseCount = 0;
     INTERRUPT_EnableGlobal();
+
 
     if (pCfg->tachPulsesPerRev > 0)
     {
@@ -370,6 +383,7 @@ void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg)
     {
         pCarData->rpm = count * 120U;
     }
+
 
     if (pCarData->rpm > 500)
     {

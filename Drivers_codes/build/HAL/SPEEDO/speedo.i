@@ -6,6 +6,7 @@
 
 
 
+
 # 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
 # 11 "HAL/SPEEDO/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
@@ -22,7 +23,8 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 5 "HAL/SPEEDO/speedo.h" 2
+# 6 "HAL/SPEEDO/speedo.h" 2
+
 # 1 "HAL/SPEEDO/../../LIB/dashboard_types.h" 1
 
 
@@ -99,11 +101,18 @@ typedef struct {
     volatile uint8 fresh;
     uint16 stallTicks;
 } Capture_t;
-# 6 "HAL/SPEEDO/speedo.h" 2
+# 8 "HAL/SPEEDO/speedo.h" 2
+
 
 void SPD_Init(void);
+
+
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);
+
+
 void SPD_OnCaptureISR(void);
+
+
 void SPD_OnOverflowISR(void);
 # 2 "HAL/SPEEDO/speedo.c" 2
 # 1 "HAL/SPEEDO/../../LIB/BIT_MATH.h" 1
@@ -302,84 +311,95 @@ typedef struct
 # 5 "HAL/SPEEDO/speedo.c" 2
 
 
-# 6 "HAL/SPEEDO/speedo.c"
+
+# 7 "HAL/SPEEDO/speedo.c"
 static volatile Capture_t g_captureData = {0};
+
 
 void SPD_Init(void)
 {
+
     
-# 10 "HAL/SPEEDO/speedo.c" 3
+# 13 "HAL/SPEEDO/speedo.c" 3
    (*(volatile uint8_t *)((0x2F) + 0x20)) 
-# 10 "HAL/SPEEDO/speedo.c"
+# 13 "HAL/SPEEDO/speedo.c"
           = 0x00;
+
+
     
-# 11 "HAL/SPEEDO/speedo.c" 3
+# 16 "HAL/SPEEDO/speedo.c" 3
    (*(volatile uint8_t *)((0x2E) + 0x20)) 
-# 11 "HAL/SPEEDO/speedo.c"
+# 16 "HAL/SPEEDO/speedo.c"
           = (1 << 
-# 11 "HAL/SPEEDO/speedo.c" 3
+# 16 "HAL/SPEEDO/speedo.c" 3
                   7
-# 11 "HAL/SPEEDO/speedo.c"
+# 16 "HAL/SPEEDO/speedo.c"
                        ) | (1 << 
-# 11 "HAL/SPEEDO/speedo.c" 3
+# 16 "HAL/SPEEDO/speedo.c" 3
                                  6
-# 11 "HAL/SPEEDO/speedo.c"
+# 16 "HAL/SPEEDO/speedo.c"
                                       ) | (1 << 
-# 11 "HAL/SPEEDO/speedo.c" 3
+# 16 "HAL/SPEEDO/speedo.c" 3
                                                 1
-# 11 "HAL/SPEEDO/speedo.c"
+# 16 "HAL/SPEEDO/speedo.c"
                                                     ) | (1 << 
-# 11 "HAL/SPEEDO/speedo.c" 3
+# 16 "HAL/SPEEDO/speedo.c" 3
                                                               0
-# 11 "HAL/SPEEDO/speedo.c"
+# 16 "HAL/SPEEDO/speedo.c"
                                                                   );
+
+
     
-# 12 "HAL/SPEEDO/speedo.c" 3
+# 19 "HAL/SPEEDO/speedo.c" 3
    (*(volatile uint8_t *)((0x39) + 0x20)) 
-# 12 "HAL/SPEEDO/speedo.c"
+# 19 "HAL/SPEEDO/speedo.c"
          |= (1 << 
-# 12 "HAL/SPEEDO/speedo.c" 3
+# 19 "HAL/SPEEDO/speedo.c" 3
                   5
-# 12 "HAL/SPEEDO/speedo.c"
+# 19 "HAL/SPEEDO/speedo.c"
                         ) | (1 << 
-# 12 "HAL/SPEEDO/speedo.c" 3
+# 19 "HAL/SPEEDO/speedo.c" 3
                                   2
-# 12 "HAL/SPEEDO/speedo.c"
+# 19 "HAL/SPEEDO/speedo.c"
                                        );
 }
+
 
 void SPD_OnCaptureISR(void)
 {
     uint16 currentIcr = 
-# 17 "HAL/SPEEDO/speedo.c" 3
+# 25 "HAL/SPEEDO/speedo.c" 3
                        (*(volatile uint16_t *)((0x26) + 0x20))
-# 17 "HAL/SPEEDO/speedo.c"
+# 25 "HAL/SPEEDO/speedo.c"
                            ;
     uint32 delta = 0;
 
+
     if ((
-# 20 "HAL/SPEEDO/speedo.c" 3
+# 29 "HAL/SPEEDO/speedo.c" 3
         (*(volatile uint8_t *)((0x38) + 0x20)) 
-# 20 "HAL/SPEEDO/speedo.c"
+# 29 "HAL/SPEEDO/speedo.c"
              & (1 << 
-# 20 "HAL/SPEEDO/speedo.c" 3
+# 29 "HAL/SPEEDO/speedo.c" 3
                      2
-# 20 "HAL/SPEEDO/speedo.c"
+# 29 "HAL/SPEEDO/speedo.c"
                          )) && (currentIcr < 0x8000))
     {
         g_captureData.ovfCount++;
         
-# 23 "HAL/SPEEDO/speedo.c" 3
+# 32 "HAL/SPEEDO/speedo.c" 3
        (*(volatile uint8_t *)((0x38) + 0x20)) 
-# 23 "HAL/SPEEDO/speedo.c"
+# 32 "HAL/SPEEDO/speedo.c"
             |= (1 << 
-# 23 "HAL/SPEEDO/speedo.c" 3
+# 32 "HAL/SPEEDO/speedo.c" 3
                      2
-# 23 "HAL/SPEEDO/speedo.c"
+# 32 "HAL/SPEEDO/speedo.c"
                          );
     }
 
+
     delta = ((uint32)g_captureData.ovfCount * 65536UL) + currentIcr - g_captureData.lastIcr;
+
 
     g_captureData.lastIcr = currentIcr;
     g_captureData.ovfCount = 0;
@@ -388,28 +408,32 @@ void SPD_OnCaptureISR(void)
     g_captureData.stallTicks = 0;
 }
 
+
 void SPD_OnOverflowISR(void)
 {
     g_captureData.ovfCount++;
 }
 
 
-# 40 "HAL/SPEEDO/speedo.c" 3
+
+# 53 "HAL/SPEEDO/speedo.c" 3
 void __vector_6 (void) __attribute__ ((__signal__,__used__, __externally_visible__)) ; void __vector_6 (void)
 
-# 41 "HAL/SPEEDO/speedo.c"
+# 54 "HAL/SPEEDO/speedo.c"
 {
     SPD_OnCaptureISR();
 }
 
 
-# 45 "HAL/SPEEDO/speedo.c" 3
+
+# 59 "HAL/SPEEDO/speedo.c" 3
 void __vector_9 (void) __attribute__ ((__signal__,__used__, __externally_visible__)) ; void __vector_9 (void)
 
-# 46 "HAL/SPEEDO/speedo.c"
+# 60 "HAL/SPEEDO/speedo.c"
 {
     SPD_OnOverflowISR();
 }
+
 
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg)
 {
@@ -418,36 +442,45 @@ void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg)
     uint32 deltaTicks = 0;
     uint8 isFresh = 0;
 
+
     
-# 57 "HAL/SPEEDO/speedo.c" 3
+# 73 "HAL/SPEEDO/speedo.c" 3
    __asm__ __volatile__ ("cli" ::: "memory")
-# 57 "HAL/SPEEDO/speedo.c"
+# 73 "HAL/SPEEDO/speedo.c"
         ;
     deltaTicks = g_captureData.deltaTicks;
     isFresh = g_captureData.fresh;
     g_captureData.fresh = 0;
     
-# 61 "HAL/SPEEDO/speedo.c" 3
+# 77 "HAL/SPEEDO/speedo.c" 3
    __asm__ __volatile__ ("sei" ::: "memory")
-# 61 "HAL/SPEEDO/speedo.c"
+# 77 "HAL/SPEEDO/speedo.c"
         ;
+
 
     if (isFresh && deltaTicks > 0)
     {
+
         periodUs = deltaTicks * 8UL;
+
+
         calculatedSpeed = 1800000UL / periodUs;
+
 
         if (calculatedSpeed > 250)
         {
             calculatedSpeed = 0;
         }
 
+
         pCarData->speedKmh = (uint16)calculatedSpeed;
+
 
         if (pCarData->speedKmh > pCarData->maxSpeedKmh)
         {
             pCarData->maxSpeedKmh = pCarData->speedKmh;
         }
+
 
         if (pCfg->pulsesPerRev > 0)
         {
@@ -456,6 +489,7 @@ void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg)
             pCarData->tripMetres += (mmPerPulse / 1000UL);
         }
     }
+
 
     g_captureData.stallTicks++;
     if (g_captureData.stallTicks >= 10)
