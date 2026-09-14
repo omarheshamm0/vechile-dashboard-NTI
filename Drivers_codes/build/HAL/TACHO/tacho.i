@@ -6,8 +6,8 @@
 
 
 
-# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
-# 11 "HAL/TACHO/../../LIB/STD_TYPES.h"
+# 1 "LIB/STD_TYPES.h" 1
+# 11 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;
@@ -23,9 +23,9 @@ typedef enum
     E_NOK = 1
 } STD_ReturnType;
 # 5 "HAL/TACHO/tacho.h" 2
-# 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
-# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
-# 2 "HAL/TACHO/../../LIB/dashboard_types.h" 2
+# 1 "LIB/dashboard_types.h" 1
+# 1 "LIB/STD_TYPES.h" 1
+# 2 "LIB/dashboard_types.h" 2
 typedef struct {
     uint16 speedKmh;
     uint16 rpm;
@@ -109,7 +109,7 @@ void TAC_OnPulse(void);
 # 2 "HAL/TACHO/tacho.c" 2
 # 1 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h" 1
 # 14 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h"
-# 1 "LIB/STD_TYPES.h" 1
+# 1 "HAL/TACHO/../../MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
 # 15 "HAL/TACHO/../../MCAL/INTERRUPT/INTERRUPT_interface.h" 2
 
 typedef void (*EXTI_CallbackType)(void);

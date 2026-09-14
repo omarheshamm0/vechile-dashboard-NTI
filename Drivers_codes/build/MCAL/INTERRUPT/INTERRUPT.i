@@ -3,8 +3,8 @@
 # 0 "<command-line>"
 # 1 "MCAL/INTERRUPT/INTERRUPT.c"
 # 9 "MCAL/INTERRUPT/INTERRUPT.c"
-# 1 "LIB/STD_TYPES.h" 1
-# 11 "LIB/STD_TYPES.h"
+# 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
+# 11 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;

@@ -9,7 +9,7 @@ C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_exit.o)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_copy_data.o)
                               build/HAL/SevenSegment/SevenSegment.o (__do_copy_data)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_clear_bss.o)
-                              build/HAL/SPEEDO/speedo.o (__do_clear_bss)
+                              build/HAL/lamps595/lamps595.o (__do_clear_bss)
 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_muluhisi3.o)
                               build/MCAL/TIMER/TIMER.o (__muluhisi3)
 
@@ -36,6 +36,25 @@ Discarded input sections
  .text.KeyPad_GetPressedKey
                 0x00000000       0x8a build/HAL/KeyPad/KeyPad.o
  .comment       0x00000000       0x13 build/HAL/KeyPad/KeyPad.o
+ .text          0x00000000        0x0 build/HAL/lamps595/lamps595.o
+ .data          0x00000000        0x0 build/HAL/lamps595/lamps595.o
+ .bss           0x00000000        0x0 build/HAL/lamps595/lamps595.o
+ .text.LMP_Set  0x00000000       0x3c build/HAL/lamps595/lamps595.o
+ .text.LMP_Refresh
+                0x00000000       0x5e build/HAL/lamps595/lamps595.o
+ .text.LMP_Init
+                0x00000000       0x32 build/HAL/lamps595/lamps595.o
+ .text.LMP_BulbCheckStart
+                0x00000000       0x18 build/HAL/lamps595/lamps595.o
+ .text.LMP_BulbCheckUpdate
+                0x00000000       0x24 build/HAL/lamps595/lamps595.o
+ .bss.Local_u8BulbCheckActive
+                0x00000000        0x1 build/HAL/lamps595/lamps595.o
+ .bss.Local_u8SavedLampByte
+                0x00000000        0x1 build/HAL/lamps595/lamps595.o
+ .bss.Local_u8LampByte
+                0x00000000        0x1 build/HAL/lamps595/lamps595.o
+ .comment       0x00000000       0x13 build/HAL/lamps595/lamps595.o
  .text          0x00000000        0x0 build/HAL/SevenSegment/SevenSegment.o
  .data          0x00000000        0x0 build/HAL/SevenSegment/SevenSegment.o
  .bss           0x00000000        0x0 build/HAL/SevenSegment/SevenSegment.o
@@ -122,6 +141,20 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .data          0x00000000        0x0 build/MCAL/SPI/SPI.o
  .bss           0x00000000        0x0 build/MCAL/SPI/SPI.o
+ .text.SPI_InitMaster
+                0x00000000       0x62 build/MCAL/SPI/SPI.o
+ .text.SPI_InitSlave
+                0x00000000       0x4a build/MCAL/SPI/SPI.o
+ .text.SPI_Transceive
+                0x00000000       0x1e build/MCAL/SPI/SPI.o
+ .text.SPI_TransmitByte
+                0x00000000       0x22 build/MCAL/SPI/SPI.o
+ .text.SPI_Acquire
+                0x00000000       0x1c build/MCAL/SPI/SPI.o
+ .text.SPI_Release
+                0x00000000        0x8 build/MCAL/SPI/SPI.o
+ .data.Local_u8BusOwner
+                0x00000000        0x1 build/MCAL/SPI/SPI.o
  .comment       0x00000000       0x13 build/MCAL/SPI/SPI.o
  .text          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
  .data          0x00000000        0x0 build/MCAL/TIMER/TIMER.o
@@ -148,6 +181,20 @@ Discarded input sections
  .text          0x00000000        0x0 build/MCAL/UART/UART.o
  .data          0x00000000        0x0 build/MCAL/UART/UART.o
  .bss           0x00000000        0x0 build/MCAL/UART/UART.o
+ .text.UART_Init
+                0x00000000       0x50 build/MCAL/UART/UART.o
+ .text.UART_SendByte
+                0x00000000        0xc build/MCAL/UART/UART.o
+ .text.UART_ReceiveByte
+                0x00000000       0x1a build/MCAL/UART/UART.o
+ .text.UART_SendString
+                0x00000000       0x26 build/MCAL/UART/UART.o
+ .text.UART_IsDataReady
+                0x00000000       0x12 build/MCAL/UART/UART.o
+ .text.UART_SetRxInterrupt
+                0x00000000       0x18 build/MCAL/UART/UART.o
+ .text.UART_SetTxInterrupt
+                0x00000000       0x18 build/MCAL/UART/UART.o
  .comment       0x00000000       0x13 build/MCAL/UART/UART.o
  .text          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
  .data          0x00000000        0x0 C:/avr-gcc/bin/../lib/gcc/avr/15.2.0/avr5\libgcc.a(_umulhisi3.o)
@@ -289,6 +336,7 @@ LOAD build/main.o
 LOAD build/HAL/CHIME/chime.o
 LOAD build/HAL/GAUGES/gauges.o
 LOAD build/HAL/KeyPad/KeyPad.o
+LOAD build/HAL/lamps595/lamps595.o
 LOAD build/HAL/SevenSegment/SevenSegment.o
 LOAD build/HAL/SPEEDO/speedo.o
 LOAD build/HAL/TACHO/tacho.o

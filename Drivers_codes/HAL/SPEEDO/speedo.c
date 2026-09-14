@@ -1,5 +1,5 @@
 #include "speedo.h"
-#include "../../LIB/BIT_MATH.h"
+#include "../../LIB/MATH.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 

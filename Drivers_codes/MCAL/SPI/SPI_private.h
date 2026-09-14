@@ -15,11 +15,11 @@
  *      SPDR  0x2F    data — writing it starts the 8 clocks in master mode
  *
  * 2. Bit names:
- *      SPE=6, MSTR=5, SPR1=1, SPR0=0 in SPCR
+ *      SPE=6, DORD=5, MSTR=4, SPR1=1, SPR0=0 in SPCR
  *      SPIF=7 in SPSR  (cleared by reading SPSR then accessing SPDR)
  *
  * 3. Pin roles on Port B (you may call GPIO from SPI.c, or set DDRB here):
- *      PB4 SS    master: output HIGH when idle
+ *      PB4 74HC165 SH/LD control: output HIGH when idle
  *      PB5 MOSI  master: output
  *      PB6 MISO  master: input
  *      PB7 SCK   master: output
@@ -30,6 +30,19 @@
  * 5. Mode 0: CPOL=0, CPHA=0. Leave SPI2X = 0 unless you add a 2x API.
  */
 
-/* TODO: map SPCR, SPSR, SPDR and the bit names. */
+#define SPI_SPCR (*(volatile uint8 *)0x2D)
+#define SPI_SPSR (*(volatile uint8 *)0x2E)
+#define SPI_SPDR (*(volatile uint8 *)0x2F)
+
+#define SPI_SPIE  7u
+#define SPI_SPE   6u
+#define SPI_DORD  5u
+#define SPI_MSTR  4u
+#define SPI_CPOL  3u
+#define SPI_CPHA  2u
+#define SPI_SPR1  1u
+#define SPI_SPR0  0u
+#define SPI_SPIF  7u
+#define SPI_SPI2X 0u
 
 #endif /* SPI_PRIVATE_H */

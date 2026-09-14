@@ -55,7 +55,10 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
 # 14 "main.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
-# 16 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 14 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
+# 15 "MCAL/INTERRUPT/INTERRUPT_interface.h" 2
+
 typedef void (*EXTI_CallbackType)(void);
 # 32 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType INTERRUPT_EnableGlobal(void);

@@ -1,8 +1,8 @@
 #ifndef SPEEDO_H
 #define SPEEDO_H
 
-#include "STD_TYPES.h"
-#include "dashboard_types.h"
+#include "../../LIB/STD_TYPES.h"
+#include "../../LIB/dashboard_types.h"
 
 void SPD_Init(void);
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);

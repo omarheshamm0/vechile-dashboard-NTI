@@ -6,8 +6,8 @@
 
 
 
-# 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
-# 11 "HAL/SPEEDO/../../LIB/STD_TYPES.h"
+# 1 "LIB/STD_TYPES.h" 1
+# 11 "LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;
@@ -23,9 +23,9 @@ typedef enum
     E_NOK = 1
 } STD_ReturnType;
 # 5 "HAL/SPEEDO/speedo.h" 2
-# 1 "HAL/SPEEDO/../../LIB/dashboard_types.h" 1
-# 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
-# 2 "HAL/SPEEDO/../../LIB/dashboard_types.h" 2
+# 1 "LIB/dashboard_types.h" 1
+# 1 "LIB/STD_TYPES.h" 1
+# 2 "LIB/dashboard_types.h" 2
 typedef struct {
     uint16 speedKmh;
     uint16 rpm;
@@ -109,6 +109,11 @@ void SPD_OnCaptureISR(void);
 void SPD_OnOverflowISR(void);
 # 2 "HAL/SPEEDO/speedo.c" 2
 # 1 "HAL/SPEEDO/../../LIB/BIT_MATH.h" 1
+
+
+
+# 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
+# 5 "HAL/SPEEDO/../../LIB/BIT_MATH.h" 2
 # 3 "HAL/SPEEDO/speedo.c" 2
 # 1 "C:/avr-gcc/avr/include/avr/io.h" 1 3
 # 99 "C:/avr-gcc/avr/include/avr/io.h" 3
