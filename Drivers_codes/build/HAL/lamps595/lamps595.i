@@ -86,13 +86,17 @@ STD_ReturnType SPI_Acquire(uint8 Copy_u8Owner);
 void SPI_Release(void);
 # 4 "HAL/lamps595/lamps595.c" 2
 # 1 "LIB/dashboard_types.h" 1
+
+
+
 # 1 "LIB/STD_TYPES.h" 1
-# 2 "LIB/dashboard_types.h" 2
+# 5 "LIB/dashboard_types.h" 2
+
 typedef struct {
     uint16 speedKmh;
     uint16 rpm;
     uint8 fuelPct;
-    uint16 coolantC;
+    sint16 coolantC;
     uint16 battmV;
     uint8 oilBarX10;
     uint32 odoMetres;
@@ -117,8 +121,6 @@ typedef struct {
 
 
 
-
-
 typedef struct {
     uint16 magic;
     uint8 version;
@@ -139,8 +141,6 @@ typedef struct {
     uint8 checksum;
 } DashCfg_t;
 
-
-
 typedef enum { CS_OFF = 0, CS_ACC, CS_IGNITION, CS_BULBCHECK,
                CS_CRANKING, CS_RUNNING, CS_LIMP_HOME,
                CS_STALLED } ClusterState_t;
@@ -153,8 +153,6 @@ typedef enum { PG_MAIN = 0, PG_TRIP, PG_ENGINE, PG_ELECTRICAL,
                PG_DIAG } DisplayPage_t;
 
 typedef enum { SPI_SLAVE_SWITCHES = 0, SPI_SLAVE_LAMPS } SpiSlave_t;
-
-
 
 typedef struct {
     volatile uint16 lastIcr;

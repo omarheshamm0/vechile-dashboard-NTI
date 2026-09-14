@@ -6,8 +6,8 @@
 
 
 
-# 1 "LIB/STD_TYPES.h" 1
-# 11 "LIB/STD_TYPES.h"
+# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
+# 11 "HAL/TACHO/../../LIB/STD_TYPES.h"
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned long uint32;
@@ -23,14 +23,18 @@ typedef enum
     E_NOK = 1
 } STD_ReturnType;
 # 5 "HAL/TACHO/tacho.h" 2
-# 1 "LIB/dashboard_types.h" 1
-# 1 "LIB/STD_TYPES.h" 1
-# 2 "LIB/dashboard_types.h" 2
+# 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
+
+
+
+# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
+# 5 "HAL/TACHO/../../LIB/dashboard_types.h" 2
+
 typedef struct {
     uint16 speedKmh;
     uint16 rpm;
     uint8 fuelPct;
-    uint16 coolantC;
+    sint16 coolantC;
     uint16 battmV;
     uint8 oilBarX10;
     uint32 odoMetres;
@@ -55,8 +59,6 @@ typedef struct {
 
 
 
-
-
 typedef struct {
     uint16 magic;
     uint8 version;
@@ -77,8 +79,6 @@ typedef struct {
     uint8 checksum;
 } DashCfg_t;
 
-
-
 typedef enum { CS_OFF = 0, CS_ACC, CS_IGNITION, CS_BULBCHECK,
                CS_CRANKING, CS_RUNNING, CS_LIMP_HOME,
                CS_STALLED } ClusterState_t;
@@ -91,8 +91,6 @@ typedef enum { PG_MAIN = 0, PG_TRIP, PG_ENGINE, PG_ELECTRICAL,
                PG_DIAG } DisplayPage_t;
 
 typedef enum { SPI_SLAVE_SWITCHES = 0, SPI_SLAVE_LAMPS } SpiSlave_t;
-
-
 
 typedef struct {
     volatile uint16 lastIcr;

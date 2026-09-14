@@ -27,6 +27,8 @@ Discarded input sections
  .text          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .data          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .bss           0x00000000        0x0 build/HAL/GAUGES/gauges.o
+ .text.GAU_Init
+                0x00000000        0x8 build/HAL/GAUGES/gauges.o
  .comment       0x00000000       0x13 build/HAL/GAUGES/gauges.o
  .text          0x00000000        0x0 build/HAL/KeyPad/KeyPad.o
  .data          0x00000000        0x0 build/HAL/KeyPad/KeyPad.o
