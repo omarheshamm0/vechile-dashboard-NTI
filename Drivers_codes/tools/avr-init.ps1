@@ -103,7 +103,7 @@ function Install-AvrToolchain {
     Write-Step "Installed AVR-GCC to $InstallDir"
 }
 
-function Ensure-LayeredProject([string]$Root) {
+function Initialize-LayeredProject([string]$Root) {
     foreach ($dir in @("LIB", "MCAL", "HAL", "Logic", "tools", ".vscode")) {
         New-Item -ItemType Directory -Force -Path (Join-Path $Root $dir) | Out-Null
     }
@@ -121,7 +121,7 @@ Write-Step ("User : " + $env:USERNAME)
 
 $root = Get-ProjectRoot
 Write-Step "Project: $root"
-Ensure-LayeredProject $root
+Initialize-LayeredProject $root
 
 $avrBin = Find-AvrBin
 if (-not $avrBin -or $ForceInstall) {

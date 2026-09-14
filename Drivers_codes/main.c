@@ -12,7 +12,6 @@
 #include "STD_TYPES.h"
 #include "GPIO_interface.h"
 #include "INTERRUPT_interface.h"
-#include <avr/interrupt.h>
 #include "TIMER_interface.h"
 
 
