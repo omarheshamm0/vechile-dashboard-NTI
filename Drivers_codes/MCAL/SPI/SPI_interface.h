@@ -8,7 +8,7 @@
  * MCAL SPI — public API for the ATmega32 SPI (mode 0, MSB first).
  * Include this header from HAL, Logic, and main. Do not include SPI_private.h there.
  *
- * Master pins: SS=PB4, MOSI=PB5, MISO=PB6, SCK=PB7.
+ * Master pins: PB4=74HC165 SH/LD, MOSI=PB5, MISO=PB6, SCK=PB7.
  */
 
 #include "STD_TYPES.h"
@@ -41,10 +41,22 @@ STD_ReturnType SPI_InitSlave(void);
 STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received);
 
 /*
- * Description : Drive a slave's SS pin LOW (select) or HIGH (release).
- *               Use GPIO_PORT / GPIO_PIN values from GPIO_interface.h.
+ * Description : Write one byte and wait for completion without exposing a
+ *               received byte. Use this for output-only devices such as 74HC595.
  */
-STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
-STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin);
+STD_ReturnType SPI_TransmitByte(uint8 Copy_u8Sent);
+
+/*
+ * Description : Acquire the shared SPI bus for one logical user.
+ *               Return E_NOK when another transaction owns the bus.
+ */
+STD_ReturnType SPI_Acquire(uint8 Copy_u8Owner);
+
+/*
+ * Description : Release the shared SPI bus and leave it idle.
+ */
+void SPI_Release(void);
+
+#define SPI_BUS_FREE 0xFFu
 
 #endif /* SPI_INTERFACE_H */

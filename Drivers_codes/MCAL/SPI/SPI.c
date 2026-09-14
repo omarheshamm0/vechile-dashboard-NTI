@@ -11,10 +11,12 @@
 #include "SPI_private.h"
 #include "GPIO_interface.h"
 
+static uint8 Local_u8BusOwner = SPI_BUS_FREE;
+
 /*
  * SPI_InitMaster
  * 1. Reject prescaler > SPI_PRESC_128.
- * 2. SS / MOSI / SCK = output, MISO = input. Drive SS HIGH (idle).
+ * 2. SH/LD / MOSI / SCK = output, MISO = input. Drive SH/LD HIGH (idle).
  * 3. SPCR = SPE | MSTR | Copy_u8Prescaler.  (mode 0, MSB first)
  * 4. 8 MHz / 16 = 500 kHz SPI clock with SPI_PRESC_16.
  */
@@ -87,24 +89,45 @@ STD_ReturnType SPI_Transceive(uint8 Copy_u8Sent, uint8 *Copy_pu8Received)
 }
 
 /*
- * SPI_SelectSlave
- * 1. GPIO_SetPinDirection(port, pin, GPIO_OUTPUT);
- * 2. GPIO_SetPinValue(port, pin, GPIO_LOW);
- *
- * SPI_ReleaseSlave
- * 1. GPIO_SetPinValue(port, pin, GPIO_HIGH);
+ * SPI_TransmitByte
+ * 1. Write SPDR to start the transfer.
+ * 2. Wait for SPIF, then read SPDR only to clear the completion condition.
  */
-STD_ReturnType SPI_SelectSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin)
+STD_ReturnType SPI_TransmitByte(uint8 Copy_u8Sent)
 {
-	if (GPIO_SetPinDirection(Copy_u8Port, Copy_u8Pin, GPIO_OUTPUT) == E_NOK)
+	volatile uint8 Local_u8Discarded;
+
+	SPI_SPDR = Copy_u8Sent;
+	while ((SPI_SPSR & (uint8)(1u << SPI_SPIF)) == 0u)
+	{
+	}
+
+	Local_u8Discarded = SPI_SPDR;
+	(void)Local_u8Discarded;
+	return E_OK;
+}
+
+/*
+ * SPI_Acquire
+ * 1. Reject an already-owned bus.
+ * 2. Record the logical owner for the complete multi-step transaction.
+ */
+STD_ReturnType SPI_Acquire(uint8 Copy_u8Owner)
+{
+	if ((Copy_u8Owner == SPI_BUS_FREE) || (Local_u8BusOwner != SPI_BUS_FREE))
 	{
 		return E_NOK;
 	}
 
-	return GPIO_SetPinValue(Copy_u8Port, Copy_u8Pin, GPIO_LOW);
+	Local_u8BusOwner = Copy_u8Owner;
+	return E_OK;
 }
 
-STD_ReturnType SPI_ReleaseSlave(uint8 Copy_u8Port, uint8 Copy_u8Pin)
+/*
+ * SPI_Release
+ * 1. Mark the bus idle after the complete transaction is finished.
+ */
+void SPI_Release(void)
 {
-	return GPIO_SetPinValue(Copy_u8Port, Copy_u8Pin, GPIO_HIGH);
+	Local_u8BusOwner = SPI_BUS_FREE;
 }

@@ -15,11 +15,11 @@
  *      SPDR  0x2F    data — writing it starts the 8 clocks in master mode
  *
  * 2. Bit names:
- *      SPE=6, MSTR=5, SPR1=1, SPR0=0 in SPCR
+ *      SPE=6, DORD=5, MSTR=4, SPR1=1, SPR0=0 in SPCR
  *      SPIF=7 in SPSR  (cleared by reading SPSR then accessing SPDR)
  *
  * 3. Pin roles on Port B (you may call GPIO from SPI.c, or set DDRB here):
- *      PB4 SS    master: output HIGH when idle
+ *      PB4 74HC165 SH/LD control: output HIGH when idle
  *      PB5 MOSI  master: output
  *      PB6 MISO  master: input
  *      PB7 SCK   master: output
