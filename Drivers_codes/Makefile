@@ -45,25 +45,25 @@ ASMS    := $(patsubst %.c,$(BUILD_DIR)/%.s,$(SRCS))
 INC_DIRS := $(sort . LIB MCAL HAL Logic $(dir $(SRCS)) $(dir $(HDRS)))
 INCLUDES := $(addprefix -I,$(INC_DIRS))
 
-# GNU Make on Windows runs recipes through cmd.exe.
+# WinAVR make 3.81 runs recipes in sh, so use POSIX mkdir/rm.
 .PHONY: all clean size verify
 
 all: $(PREPROCS) $(ASMS) $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin size
 
 $(BUILD_DIR)/%.i: %.c
-	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCLUDES) -E $< -o $@
 
 $(BUILD_DIR)/%.s: %.c
-	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCLUDES) -S $< -o $@
 
 $(BUILD_DIR)/%.o: %.c
-	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJS)
-	if not exist "$(BUILD_DIR)" mkdir "$(BUILD_DIR)"
+	mkdir -p $(BUILD_DIR)
 	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
 $(BUILD_DIR)/$(TARGET).hex: $(BUILD_DIR)/$(TARGET).elf
@@ -81,5 +81,5 @@ verify: all
 	@echo BUILD_OK MCU=$(MCU) F_CPU=$(F_CPU) SRCS=$(SRCS)
 
 clean:
-	if exist "$(BUILD_DIR)" rmdir /S /Q "$(BUILD_DIR)"
+	rm -rf $(BUILD_DIR)
 	@echo Cleaned $(BUILD_DIR)
