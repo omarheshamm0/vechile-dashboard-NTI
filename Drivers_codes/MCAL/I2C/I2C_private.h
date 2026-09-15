@@ -38,6 +38,26 @@
  *      8 MHz, 100 kHz -> TWBR = 32
  */
 
-/* TODO: map TWBR, TWSR, TWDR, TWCR and the bit names. */
+#define TWBR  (*(volatile uint8 *)0x20u)
+#define TWSR  (*(volatile uint8 *)0x21u)
+#define TWAR  (*(volatile uint8 *)0x22u)
+#define TWDR  (*(volatile uint8 *)0x23u)
+#define TWCR  (*(volatile uint8 *)0x56u)
+
+#define TWINT  7u
+#define TWEA   6u
+#define TWSTA  5u
+#define TWSTO  4u
+#define TWWC   3u
+#define TWEN   2u
+#define TWIE   0u
+
+#define TWPS0  0u
+#define TWPS1  1u
+#define TWS3   3u
+#define TWS4   4u
+#define TWS5   5u
+#define TWS6   6u
+#define TWS7   7u
 
 #endif /* I2C_PRIVATE_H */
