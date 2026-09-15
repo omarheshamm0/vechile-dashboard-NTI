@@ -13,7 +13,10 @@
 #include "STD_TYPES.h"
 #include "dashboard_types.h"
 
+#ifndef LCD_I2C_ADDRESS
 #define LCD_I2C_ADDRESS      0x27u
+#endif
+
 #define LCD_COLS             16u
 #define LCD_ROWS             2u
 

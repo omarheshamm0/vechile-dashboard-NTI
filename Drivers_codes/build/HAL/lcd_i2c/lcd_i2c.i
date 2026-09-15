@@ -347,7 +347,7 @@ typedef struct {
     uint16 stallTicks;
 } Capture_t;
 # 15 "HAL/lcd_i2c/lcd_i2c.h" 2
-# 29 "HAL/lcd_i2c/lcd_i2c.h"
+# 32 "HAL/lcd_i2c/lcd_i2c.h"
 STD_ReturnType LCD_Init(void);
 STD_ReturnType LCD_Clear(void);
 STD_ReturnType LCD_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Col);
@@ -364,7 +364,7 @@ STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const u
 static uint8 Local_u8CurrentPage;
 static uint8 Local_u8Backlight;
 
-static void Local_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8IsCommand)
+static STD_ReturnType Local_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8IsCommand)
 {
     uint8 Local_u8Data;
     uint8 Local_u8EnableByte;
@@ -384,34 +384,50 @@ static void Local_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8IsCommand)
 
 
     Local_u8EnableByte = (uint8)(Local_u8Data | (1u << 2u));
-    I2C_SendStart();
-    I2C_SendSlaveAddressWithWrite(0x27u);
-    I2C_SendByte(Local_u8EnableByte);
+    if ((I2C_SendStart() != E_OK) ||
+        (I2C_SendSlaveAddressWithWrite(0x27u) != E_OK) ||
+        (I2C_SendByte(Local_u8EnableByte) != E_OK))
+    {
+        I2C_SendStop();
+        return E_NOK;
+    }
     I2C_SendStop();
     _delay_us(1u);
 
 
-    I2C_SendStart();
-    I2C_SendSlaveAddressWithWrite(0x27u);
-    I2C_SendByte(Local_u8Data);
+    if ((I2C_SendStart() != E_OK) ||
+        (I2C_SendSlaveAddressWithWrite(0x27u) != E_OK) ||
+        (I2C_SendByte(Local_u8Data) != E_OK))
+    {
+        I2C_SendStop();
+        return E_NOK;
+    }
     I2C_SendStop();
     _delay_us(40u);
+    return E_OK;
 }
 
-static void Local_WriteByte(uint8 Copy_u8Byte, uint8 Copy_u8IsCommand)
+static STD_ReturnType Local_WriteByte(uint8 Copy_u8Byte, uint8 Copy_u8IsCommand)
 {
-    Local_WriteNibble((uint8)(Copy_u8Byte >> 4u), Copy_u8IsCommand);
-    Local_WriteNibble((uint8)(Copy_u8Byte & 0x0Fu), Copy_u8IsCommand);
+    if (Local_WriteNibble((uint8)(Copy_u8Byte >> 4u), Copy_u8IsCommand) != E_OK)
+    {
+        return E_NOK;
+    }
+    if (Local_WriteNibble((uint8)(Copy_u8Byte & 0x0Fu), Copy_u8IsCommand) != E_OK)
+    {
+        return E_NOK;
+    }
+    return E_OK;
 }
 
-static void Local_SendCommand(uint8 Copy_u8Command)
+static STD_ReturnType Local_SendCommand(uint8 Copy_u8Command)
 {
-    Local_WriteByte(Copy_u8Command, 1u);
+    return Local_WriteByte(Copy_u8Command, 1u);
 }
 
-static void Local_SendData(uint8 Copy_u8Data)
+static STD_ReturnType Local_SendData(uint8 Copy_u8Data)
 {
-    Local_WriteByte(Copy_u8Data, 0u);
+    return Local_WriteByte(Copy_u8Data, 0u);
 }
 
 STD_ReturnType LCD_Init(void)
@@ -427,26 +443,47 @@ STD_ReturnType LCD_Init(void)
     _delay_ms(50u);
 
 
-    Local_WriteNibble(0x03u, 1u);
+    if (Local_WriteNibble(0x03u, 1u) != E_OK)
+    {
+        return E_NOK;
+    }
     _delay_ms(5u);
-    Local_WriteNibble(0x03u, 1u);
+    if (Local_WriteNibble(0x03u, 1u) != E_OK)
+    {
+        return E_NOK;
+    }
     _delay_us(150u);
-    Local_WriteNibble(0x03u, 1u);
-    Local_WriteNibble(0x02u, 1u);
+    if (Local_WriteNibble(0x03u, 1u) != E_OK)
+    {
+        return E_NOK;
+    }
+    if (Local_WriteNibble(0x02u, 1u) != E_OK)
+    {
+        return E_NOK;
+    }
 
-    Local_SendCommand(0x28u);
-    Local_SendCommand(0x0Cu);
-    Local_SendCommand(0x06u);
-    Local_SendCommand(0x01u);
+    if ((Local_SendCommand(0x28u) != E_OK) ||
+        (Local_SendCommand(0x0Cu) != E_OK) ||
+        (Local_SendCommand(0x06u) != E_OK) ||
+        (Local_SendCommand(0x01u) != E_OK))
+    {
+        return E_NOK;
+    }
     _delay_ms(2u);
-    Local_SendCommand(0x02u);
+    if (Local_SendCommand(0x02u) != E_OK)
+    {
+        return E_NOK;
+    }
     _delay_ms(2u);
     return E_OK;
 }
 
 STD_ReturnType LCD_Clear(void)
 {
-    Local_SendCommand(0x01u);
+    if (Local_SendCommand(0x01u) != E_OK)
+    {
+        return E_NOK;
+    }
     _delay_ms(2u);
     return E_OK;
 }
@@ -466,14 +503,12 @@ STD_ReturnType LCD_SetCursor(uint8 Copy_u8Row, uint8 Copy_u8Col)
         Local_u8Address += 0x40u;
     }
 
-    Local_SendCommand((uint8)(0x80u | Local_u8Address));
-    return E_OK;
+    return Local_SendCommand((uint8)(0x80u | Local_u8Address));
 }
 
 STD_ReturnType LCD_WriteChar(uint8 Copy_u8Char)
 {
-    Local_SendData(Copy_u8Char);
-    return E_OK;
+    return Local_SendData(Copy_u8Char);
 }
 
 STD_ReturnType LCD_WriteString(const uint8 *Copy_pu8String)
@@ -488,7 +523,10 @@ STD_ReturnType LCD_WriteString(const uint8 *Copy_pu8String)
     Local_u8Index = 0u;
     while (Copy_pu8String[Local_u8Index] != '\0')
     {
-        Local_SendData(Copy_pu8String[Local_u8Index]);
+        if (Local_SendData(Copy_pu8String[Local_u8Index]) != E_OK)
+        {
+            return E_NOK;
+        }
         Local_u8Index++;
     }
 
@@ -514,8 +552,7 @@ STD_ReturnType LCD_WriteNumber(uint32 Copy_u32Value)
 
     if (Copy_u32Value == 0u)
     {
-        Local_SendData('0');
-        return E_OK;
+        return Local_SendData('0');
     }
 
     Local_u32Temp = Copy_u32Value;
@@ -529,7 +566,10 @@ STD_ReturnType LCD_WriteNumber(uint32 Copy_u32Value)
     while (Local_u8Index > 0u)
     {
         Local_u8Index--;
-        Local_SendData(Local_u8Buffer[Local_u8Index]);
+        if (Local_SendData(Local_u8Buffer[Local_u8Index]) != E_OK)
+        {
+            return E_NOK;
+        }
     }
 
     return E_OK;
@@ -548,11 +588,15 @@ STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const u
         return E_NOK;
     }
 
-    LCD_Clear();
-    LCD_SetCursor(0u, 0u);
-    LCD_WriteString(Copy_pu8Line1);
-    LCD_SetCursor(1u, 0u);
-    LCD_WriteString(Copy_pu8Line2);
+    if ((LCD_Clear() != E_OK) ||
+        (LCD_SetCursor(0u, 0u) != E_OK) ||
+        (LCD_WriteString(Copy_pu8Line1) != E_OK) ||
+        (LCD_SetCursor(1u, 0u) != E_OK) ||
+        (LCD_WriteString(Copy_pu8Line2) != E_OK))
+    {
+        return E_NOK;
+    }
+
     Local_u8CurrentPage = Copy_u8Page;
     return E_OK;
 }
