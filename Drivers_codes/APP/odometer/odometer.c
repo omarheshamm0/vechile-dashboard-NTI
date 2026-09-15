@@ -1,5 +1,6 @@
 #include "odometer.h"
-/* Atomic operations implemented via inline assembly (SREG save/restore) */
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 /* Shared variables (must be volatile as they might be accessed concurrently)[cite: 1] */
 static volatile uint32 Odo_LifetimeMetres = 0;
@@ -12,8 +13,8 @@ void ODO_AddDistance(uint16 mm_to_add) {
      * over millimeters to meters.
      */
     {
-        uint8 sreg = __builtin_avr_read_sreg();
-        __asm__ __volatile__ ("cli" ::: "memory");
+        uint8 sreg = SREG;
+        cli();
         
         Accumulator_mm += mm_to_add;
         
@@ -31,7 +32,7 @@ void ODO_AddDistance(uint16 mm_to_add) {
             }
         }
         
-        __builtin_avr_write_sreg(sreg);
+        SREG = sreg;
     }
 }
 
@@ -43,12 +44,12 @@ void ODO_GetTotal(uint32 *total) {
      * (NFR-10, NFR-14)[cite: 1].
      */
     {
-        uint8 sreg = __builtin_avr_read_sreg();
-        __asm__ __volatile__ ("cli" ::: "memory");
+        uint8 sreg = SREG;
+        cli();
         
         *total = Odo_LifetimeMetres;
         
-        __builtin_avr_write_sreg(sreg);
+        SREG = sreg;
     }
 }
 
@@ -56,12 +57,12 @@ void ODO_GetTrip(uint32 *trip) {
     if (trip == NULL) return;
     
     {
-        uint8 sreg = __builtin_avr_read_sreg();
-        __asm__ __volatile__ ("cli" ::: "memory");
+        uint8 sreg = SREG;
+        cli();
         
         *trip = Odo_TripMetres;
         
-        __builtin_avr_write_sreg(sreg);
+        SREG = sreg;
     }
 }
 
@@ -71,11 +72,11 @@ void ODO_ResetTrip(void) {
      * Lifetime odometer is untouched (FR-07)[cite: 1].
      */
     {
-        uint8 sreg = __builtin_avr_read_sreg();
-        __asm__ __volatile__ ("cli" ::: "memory");
+        uint8 sreg = SREG;
+        cli();
         
         Odo_TripMetres = 0;
         
-        __builtin_avr_write_sreg(sreg);
+        SREG = sreg;
     }
 }

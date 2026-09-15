@@ -10,6 +10,15 @@
 /* Static state timers */
 static uint16 State_Timer = 0;
 static uint16 RPM_Timer = 0;
+static CarData_t Cluster_Data;
+
+CarData_t *Cluster_GetCarData(void) {
+    return &Cluster_Data;
+}
+
+void Cluster_SetPage(DisplayPage_t page) {
+    Cluster_Data.page = (uint8)page;
+}
 
 void FSM_Init(CarData_t *CarData) {
     CarData->state = CS_OFF;
