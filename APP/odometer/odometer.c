@@ -1,65 +1,81 @@
-/*
- * File: odometer.c
- * Author: Ahmed Ellamie / ahmed.ellamieee@gmail.com
- * Description: Odometer, trip distance, and speed statistics engine.
- */
-
 #include "odometer.h"
-#include <stddef.h>
+/* Atomic operations implemented via inline assembly (SREG save/restore) */
 
-static uint32 s_accumulatedDistanceMm = 0;
-static uint32 s_tripTimeSec = 0;
+/* Shared variables (must be volatile as they might be accessed concurrently)[cite: 1] */
+static volatile uint32 Odo_LifetimeMetres = 0;
+static volatile uint32 Odo_TripMetres = 0;
+static volatile uint16 Accumulator_mm = 0;
 
-void Odometer_Init(void) {
-    s_accumulatedDistanceMm = 0;
-    s_tripTimeSec = 0;
-}
-
-void Odometer_Update(CarData_t *pCarData, uint16 deltaMs) {
-    if (pCarData == NULL) {
-        return;
-    }
-
-    /* Convert speed from km/h to mm/s: (Speed * 1000000 mm) / 3600 s */
-    uint32 speedMmPerSec = ((uint32)pCarData->speedKmh * 2500U) / 9U;
-    uint32 addedMm = (speedMmPerSec * deltaMs) / 1000U;
-
-    s_accumulatedDistanceMm += addedMm;
-
-    /* Increment total and trip meters when accumulated millimeters reach 1 meter */
-    if (s_accumulatedDistanceMm >= 1000U) {
-        uint32 metresToAdd = s_accumulatedDistanceMm / 1000U;
-        pCarData->odoMetres  += metresToAdd;
-        pCarData->tripMetres += metresToAdd;
-        s_accumulatedDistanceMm %= 1000U;
-    }
-
-    /* Track all-time session maximum speed */
-    if (pCarData->speedKmh > pCarData->maxSpeedKmh) {
-        pCarData->maxSpeedKmh = pCarData->speedKmh;
-    }
-
-    /* Update trip average speed calculation timer */
-    static uint16 s_timeAccumulatorMs = 0;
-    s_timeAccumulatorMs += deltaMs;
-
-    if (s_timeAccumulatorMs >= 1000U) {
-        s_tripTimeSec += (s_timeAccumulatorMs / 1000U);
-        s_timeAccumulatorMs %= 1000U;
-
-        /* Calculate average speed: (Trip Distance in Metres * 3600) / (1000 * Total Seconds) */
-        if (s_tripTimeSec > 0U) {
-            pCarData->avgSpeedKmh = (uint16)(((pCarData->tripMetres * 3600U) / 1000U) / s_tripTimeSec);
+void ODO_AddDistance(uint16 mm_to_add) {
+    /* 
+     * This operation must be atomic to prevent a context switch while carrying
+     * over millimeters to meters.
+     */
+    {
+        uint8 sreg = __builtin_avr_read_sreg();
+        __asm__ __volatile__ ("cli" ::: "memory");
+        
+        Accumulator_mm += mm_to_add;
+        
+        /* Convert millimeters to meters exactly, no float drift[cite: 1] */
+        while (Accumulator_mm >= 1000) {
+            Accumulator_mm -= 1000;
+            
+            /* Prevent wrapping of the lifetime odometer[cite: 1] */
+            if (Odo_LifetimeMetres < 0xFFFFFFFF) {
+                Odo_LifetimeMetres++;
+            }
+            
+            if (Odo_TripMetres < 0xFFFFFFFF) {
+                Odo_TripMetres++;
+            }
         }
+        
+        __builtin_avr_write_sreg(sreg);
     }
 }
 
-void Odometer_ResetTrip(CarData_t *pCarData) {
-    if (pCarData == NULL) {
-        return;
+void ODO_GetTotal(uint32 *total) {
+    if (total == NULL) return;
+    
+    /* 
+     * Read a 32-bit counter shared with an ISR atomically to prevent Data Tearing bug
+     * (NFR-10, NFR-14)[cite: 1].
+     */
+    {
+        uint8 sreg = __builtin_avr_read_sreg();
+        __asm__ __volatile__ ("cli" ::: "memory");
+        
+        *total = Odo_LifetimeMetres;
+        
+        __builtin_avr_write_sreg(sreg);
     }
+}
 
-    pCarData->tripMetres  = 0;
-    pCarData->avgSpeedKmh = 0;
-    s_tripTimeSec         = 0;
+void ODO_GetTrip(uint32 *trip) {
+    if (trip == NULL) return;
+    
+    {
+        uint8 sreg = __builtin_avr_read_sreg();
+        __asm__ __volatile__ ("cli" ::: "memory");
+        
+        *trip = Odo_TripMetres;
+        
+        __builtin_avr_write_sreg(sreg);
+    }
+}
+
+void ODO_ResetTrip(void) {
+    /* 
+     * Holding the trip-reset button for 2s zeroes trip distance. 
+     * Lifetime odometer is untouched (FR-07)[cite: 1].
+     */
+    {
+        uint8 sreg = __builtin_avr_read_sreg();
+        __asm__ __volatile__ ("cli" ::: "memory");
+        
+        Odo_TripMetres = 0;
+        
+        __builtin_avr_write_sreg(sreg);
+    }
 }

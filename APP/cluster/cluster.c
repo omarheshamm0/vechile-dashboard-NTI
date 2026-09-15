@@ -1,85 +1,120 @@
-/*
- * File: cluster.c
- * Author: Ahmed Ellamie / ahmed.ellamieee@gmail.com
- * Description: Implementation of Cluster State Machine & Data Management
- */
-
 #include "cluster.h"
-#include "dashboard_types.h"
+#include "warnings.h" /* For WRN_Highest */
 
-/* Static Global Data Instance */
-static CarData_t g_carData;
+/* Timing constants based on a 10ms task period */
+#define BULBCHECK_TICKS  300  /* 3 seconds[cite: 1] */
+#define CRANK_MAX_TICKS  500  /* 5 seconds[cite: 1] */
+#define RUN_THRESH_TICKS 50   /* 500 ms (> 500 RPM to run)[cite: 1] */
+#define STALL_THRESH_TICKS 100 /* 1 second (< 300 RPM to stall)[cite: 1] */
 
-void Cluster_Init(void) {
-    /* Set default values for all car parameters */
-    g_carData.speedKmh     = 0;
-    g_carData.rpm          = 0;
-    g_carData.fuelPct      = 100;    /* Default initial fuel 100% */
-    g_carData.coolantC     = 25;     /* Room temperature */
-    g_carData.battmV       = 12500;  /* Nominal battery voltage (12.5V) */
-    g_carData.oilBarX10    = 25;     /* 2.5 bar */
-    g_carData.odoMetres    = 0;
-    g_carData.tripMetres   = 0;
-    g_carData.maxSpeedKmh  = 0;
-    g_carData.avgSpeedKmh  = 0;
-    g_carData.warnMask     = WARN_NONE;
-    g_carData.lampByte     = 0;
-    
-    /* Flags Initialization */
-    g_carData.turnLeft     = 0;
-    g_carData.turnRight    = 0;
-    g_carData.highBeam     = 0;
-    g_carData.handbrake    = 0;
-    g_carData.seatbelt     = 0;
-    g_carData.doorOpen     = 0;
-    g_carData.engineRun    = 0;
-    g_carData.limpHome     = 0;
+/* Static state timers */
+static uint16 State_Timer = 0;
+static uint16 RPM_Timer = 0;
 
-    g_carData.state        = CS_IGNITION;
-    g_carData.page         = PG_MAIN;
-    g_carData.ignitionSec  = 0;
+void FSM_Init(CarData_t *CarData) {
+    CarData->state = CS_OFF;
+    CarData->engineRun = 0;
+    CarData->limpHome = 0;
+    State_Timer = 0;
+    RPM_Timer = 0;
 }
 
-void Cluster_Update(void) {
-    /* State Machine logic according to engine RPM and status */
-    switch (g_carData.state) {
+void FSM_Run(CarData_t *CarData, uint8 keyPress, uint8 keyHeld, uint8 startBtn) {
+    /* Global Override: Key held for 2 seconds forces system to OFF (T12)[cite: 1] */
+    if (keyHeld && CarData->state != CS_OFF) {
+        CarData->state = CS_OFF;
+        /* Trigger odometer save sequence here (FR-06)[cite: 1] */
+        return;
+    }
+
+    /* Global Override: Critical Warning (Priority 1-3) forces Limp Home mode (T10)[cite: 1] */
+    if (CarData->state == CS_RUNNING) {
+        Warn_t highest_warn = WRN_Highest(CarData);
+        if (highest_warn == WARN_OIL || highest_warn == WARN_BATT || highest_warn == WARN_COOLANT) {
+            CarData->state = CS_LIMP_HOME;
+            CarData->limpHome = 1;
+        }
+    }
+
+    switch (CarData->state) {
         case CS_OFF:
-            g_carData.engineRun = 0;
+            CarData->engineRun = 0;
+            if (keyPress) {
+                CarData->state = CS_ACC; /* T1: Key press[cite: 1] */
+            }
+            break;
+
+        case CS_ACC:
+            if (keyPress) {
+                CarData->state = CS_IGNITION; /* T2: Key press[cite: 1] */
+                /* Force transition into BULBCHECK (T3)[cite: 1] */
+                CarData->state = CS_BULBCHECK;
+                State_Timer = 0;
+            }
+            break;
+
+        case CS_BULBCHECK:
+            State_Timer++;
+            if (State_Timer >= BULBCHECK_TICKS) {
+                CarData->state = CS_IGNITION; /* T4: 3 seconds elapsed[cite: 1] */
+            }
             break;
 
         case CS_IGNITION:
-            /* Engine starting detection threshold */
-            if (g_carData.rpm > 400) {
-                g_carData.state = CS_RUNNING;
-                g_carData.engineRun = 1;
+            if (startBtn) {
+                CarData->state = CS_CRANKING; /* T5: Start button pressed[cite: 1] */
+                State_Timer = 0;
+                RPM_Timer = 0;
+            }
+            break;
+
+        case CS_CRANKING:
+            State_Timer++;
+            
+            /* Check if engine successfully started (> 500 RPM for 500ms)[cite: 1] */
+            if (CarData->rpm > 500) {
+                RPM_Timer++;
+                if (RPM_Timer >= RUN_THRESH_TICKS) {
+                    CarData->state = CS_RUNNING; /* T6: Engine started[cite: 1] */
+                    CarData->engineRun = 1;
+                }
+            } else {
+                RPM_Timer = 0;
+            }
+
+            /* Check crank timeout (5 seconds)[cite: 1] */
+            if (State_Timer >= CRANK_MAX_TICKS && CarData->state == CS_CRANKING) {
+                CarData->state = CS_IGNITION; /* T7: Crank failed[cite: 1] */
             }
             break;
 
         case CS_RUNNING:
-            /* Stall detection threshold */
-            if (g_carData.rpm < 200) {
-                g_carData.state = CS_STALLED;
-                g_carData.engineRun = 0;
+            /* Check for engine stall (< 300 RPM for 1s)[cite: 1] */
+            if (CarData->rpm < 300) {
+                RPM_Timer++;
+                if (RPM_Timer >= STALL_THRESH_TICKS) {
+                    CarData->state = CS_STALLED; /* T8: Engine stalled[cite: 1] */
+                    CarData->engineRun = 0;
+                }
+            } else {
+                RPM_Timer = 0;
             }
             break;
 
         case CS_STALLED:
-            if (g_carData.rpm > 400) {
-                g_carData.state = CS_RUNNING;
-                g_carData.engineRun = 1;
+            if (startBtn) {
+                CarData->state = CS_CRANKING; /* T9: Start button pressed to restart[cite: 1] */
+                State_Timer = 0;
+                RPM_Timer = 0;
             }
             break;
 
+        case CS_LIMP_HOME:
+            /* Remains in this state until key off only (handled by T12 override)[cite: 1] */
+            break;
+
         default:
-            g_carData.state = CS_IGNITION;
+            CarData->state = CS_OFF;
             break;
     }
-}
-
-CarData_t* Cluster_GetCarData(void) {
-    return &g_carData;
-}
-
-void Cluster_SetPage(DisplayPage_t page) {
-    g_carData.page = page;
 }

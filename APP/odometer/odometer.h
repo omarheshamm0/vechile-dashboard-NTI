@@ -1,18 +1,29 @@
-#ifndef ODOMETER_H_
-#define ODOMETER_H_
+#ifndef ODOMETER_H
+#define ODOMETER_H
 
 #include "STD_TYPES.h"
-#include "dashboard_types.h"
 
-/* --- Public Function Prototypes --- */
+/* 
+ * Description: Adds distance to the accumulators. Called when pulses are counted.
+ * Parameters:  mm_to_add - distance in millimeters (e.g., MM_PER_PULSE = 500)[cite: 1].
+ */
+void ODO_AddDistance(uint16 mm_to_add);
 
-/* Initialize odometer counters and trip metrics */
-void Odometer_Init(void);
+/* 
+ * Description: Safely reads the lifetime odometer value using atomic block.
+ * Parameters:  total - pointer to store the 32-bit total distance in meters.
+ */
+void ODO_GetTotal(uint32 *total);
 
-/* Periodically update distance, max speed, and average speed */
-void Odometer_Update(CarData_t *pCarData, uint16 deltaMs);
+/* 
+ * Description: Safely reads the trip meter value using atomic block.
+ * Parameters:  trip - pointer to store the 32-bit trip distance in meters.
+ */
+void ODO_GetTrip(uint32 *trip);
 
-/* Reset trip distance and trip average speed */
-void Odometer_ResetTrip(CarData_t *pCarData);
+/* 
+ * Description: Resets the trip meter securely.
+ */
+void ODO_ResetTrip(void);
 
-#endif /* ODOMETER_H_ */
+#endif /* ODOMETER_H */
