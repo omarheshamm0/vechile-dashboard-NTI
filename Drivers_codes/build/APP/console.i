@@ -137,7 +137,10 @@ typedef struct {
 # 1 "APP/cluster/cluster.h" 1
 # 10 "APP/cluster/cluster.h"
 void FSM_Init(CarData_t *CarData);
-# 20 "APP/cluster/cluster.h"
+
+CarData_t *Cluster_GetCarData(void);
+void Cluster_SetPage(DisplayPage_t page);
+# 23 "APP/cluster/cluster.h"
 void FSM_Run(CarData_t *CarData, uint8 keyPress, uint8 keyHeld, uint8 startBtn);
 # 11 "APP/console.c" 2
 # 1 "APP/console.h" 1

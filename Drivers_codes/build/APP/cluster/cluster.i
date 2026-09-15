@@ -105,7 +105,10 @@ typedef struct {
 
 
 void FSM_Init(CarData_t *CarData);
-# 20 "APP/cluster/cluster.h"
+
+CarData_t *Cluster_GetCarData(void);
+void Cluster_SetPage(DisplayPage_t page);
+# 23 "APP/cluster/cluster.h"
 void FSM_Run(CarData_t *CarData, uint8 keyPress, uint8 keyHeld, uint8 startBtn);
 # 2 "APP/cluster/cluster.c" 2
 # 1 "APP/warnings/warnings.h" 1
@@ -121,6 +124,15 @@ Warn_t WRN_Highest(const CarData_t *CarData);
 # 11 "APP/cluster/cluster.c"
 static uint16 State_Timer = 0;
 static uint16 RPM_Timer = 0;
+static CarData_t Cluster_Data;
+
+CarData_t *Cluster_GetCarData(void) {
+    return &Cluster_Data;
+}
+
+void Cluster_SetPage(DisplayPage_t page) {
+    Cluster_Data.page = (uint8)page;
+}
 
 void FSM_Init(CarData_t *CarData) {
     CarData->state = CS_OFF;

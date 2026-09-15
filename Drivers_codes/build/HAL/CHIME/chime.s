@@ -84,8 +84,13 @@ CHM_Update:
 .L__stack_usage = 0
 	lds r18,Current_Pattern
 	lds r19,Current_Pattern+1
+<<<<<<< HEAD
+	cp r18,__zero_reg__
+	cpc r19,__zero_reg__
+=======
 	cpi r18,0
 	cpc r19,r18
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 	breq .L7
 	lds r24,Timer_Ticks
 	lds r25,Timer_Ticks+1
@@ -94,6 +99,23 @@ CHM_Update:
 	sts Timer_Ticks+1,r25
 	cpi r18,2
 	cpc r19,__zero_reg__
+<<<<<<< HEAD
+	breq .L10
+	cpi r18,3
+	cpc r19,__zero_reg__
+	breq .L11
+	cpi r18,1
+	cpc r19,__zero_reg__
+	brne .L12
+	cpi r24,5
+	cpc r25,__zero_reg__
+	brne .L13
+.L12:
+	jmp Tone_Off
+.L13:
+	sbiw r24,50
+.L25:
+=======
 	breq .L9
 	cpi r18,3
 	cpc r19,__zero_reg__
@@ -109,37 +131,63 @@ CHM_Update:
 .L12:
 	sbiw r24,50
 .L32:
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 	brlo .L7
 	call Tone_On
 	sts Timer_Ticks,__zero_reg__
 	sts Timer_Ticks+1,__zero_reg__
 	ret
+<<<<<<< HEAD
+.L10:
+	cpi r24,51
+	cpc r25,__zero_reg__
+	brsh .L15
+=======
 .L9:
 	cpi r24,51
 	cpc r25,__zero_reg__
 	brsh .L13
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 	lds r24,Is_Playing
 	cpse r24,__zero_reg__
 	rjmp .L7
 	jmp Tone_On
+<<<<<<< HEAD
+.L15:
+	cpi r24,55
+	cpc r25,__zero_reg__
+	breq .L12
+	cpi r24,-106
+	cpc r25,__zero_reg__
+=======
 .L13:
 	cpi r24,55
 	cpc r25,__zero_reg__
 	breq .L11
 	cpi r24,-106
 	sbci r25,0
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 	brlo .L7
 	call Tone_On
 	ldi r24,lo8(50)
 	sts Timer_Ticks,r24
 	sts Timer_Ticks+1,__zero_reg__
 	ret
+<<<<<<< HEAD
+.L11:
+	cpi r24,4
+	cpc r25,__zero_reg__
+	breq .L12
+	sbiw r24,9
+	rjmp .L25
+=======
 .L10:
 	cpi r24,4
 	cpc r25,__zero_reg__
 	breq .L11
 	sbiw r24,9
 	rjmp .L32
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 .L7:
 /* epilogue start */
 	ret
@@ -159,5 +207,9 @@ Timer_Ticks:
 	.size	Current_Pattern, 2
 Current_Pattern:
 	.zero	2
+<<<<<<< HEAD
+	.ident	"GCC: (GNU) 15.2.0"
+=======
 	.ident	"GCC: (GNU) 16.1.0"
+>>>>>>> 583678454f6a60fadfe10f8612d3ad84b32166d3
 .global __do_clear_bss
