@@ -69,7 +69,7 @@ void CHM_Update(void) {
     switch (Current_Pattern) {
         case CHM_PATTERN_OVERSPEED:
             /* Chime once, repeat every 5 s[cite: 1] */
-            /* 5 seconds = 50 ticks of 100ms */
+            /* 5 seconds = 50 ticks of 100ms */  // 5 ticks of 100ms = 500ms, 50 ticks = 5s
             if (Timer_Ticks == 5) {
                 Tone_Off(); /* Turn off after 500ms */
             } else if (Timer_Ticks >= 50) {

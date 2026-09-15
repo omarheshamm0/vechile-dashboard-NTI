@@ -18,4 +18,4 @@ main:
 /* epilogue start */
 	ret
 	.size	main, .-main
-	.ident	"GCC: (GNU) 15.2.0"
+	.ident	"GCC: (GNU) 16.1.0"
