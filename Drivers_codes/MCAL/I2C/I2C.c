@@ -5,6 +5,9 @@
  * STUDENT TASK — I2C.c  (ATmega32 TWI master)
  * Implement every prototype from I2C_interface.h.
  */
+#ifndef F_CPU
+#define F_CPU 8000000UL
+#endif
 
 #include "STD_TYPES.h"
 #include "I2C_interface.h"
