@@ -13,6 +13,13 @@
 #include "GPIO_interface.h"
 #include "INTERRUPT_interface.h"
 #include "TIMER_interface.h"
+#include "ADC_interface.h"
+#include "UART_interface.h"
+#include "SPI_interface.h"
+#include "I2C_interface.h"
+#include "odometer.h"
+
+
 
 
 int main(void)
