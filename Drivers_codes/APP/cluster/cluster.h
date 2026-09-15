@@ -9,6 +9,9 @@
  */
 void FSM_Init(CarData_t *CarData);
 
+CarData_t *Cluster_GetCarData(void);
+void Cluster_SetPage(DisplayPage_t page);
+
 /* 
  * Description: Runs the state machine logic. Expected to be called every 10ms.
  * Parameters:
