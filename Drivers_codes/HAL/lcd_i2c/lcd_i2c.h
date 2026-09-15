@@ -14,7 +14,7 @@
 #include "dashboard_types.h"
 
 #ifndef LCD_I2C_ADDRESS
-#define LCD_I2C_ADDRESS      0x27u
+#define LCD_I2C_ADDRESS      0x3Eu
 #endif
 
 #define LCD_COLS             16u

@@ -360,74 +360,41 @@ STD_ReturnType LCD_WriteNumber(uint32 Copy_u32Value);
 STD_ReturnType DSP_Next(void);
 STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const uint8 *Copy_pu8Line2);
 # 10 "HAL/lcd_i2c/lcd_i2c.c" 2
-# 27 "HAL/lcd_i2c/lcd_i2c.c"
+# 22 "HAL/lcd_i2c/lcd_i2c.c"
 static uint8 Local_u8CurrentPage;
 static uint8 Local_u8Backlight;
 
-static STD_ReturnType Local_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8IsCommand)
+static STD_ReturnType Local_WriteByteDirect(uint8 Copy_u8ControlByte, uint8 Copy_u8Payload)
 {
-    uint8 Local_u8Data;
-    uint8 Local_u8EnableByte;
-
-    Local_u8Data = (uint8)((Copy_u8Nibble & 0x0Fu) << 4u);
-
-    if (Copy_u8IsCommand == 0u)
-    {
-        Local_u8Data |= (uint8)(1u << 0u);
-    }
-    else
-    {
-        Local_u8Data &= (uint8)~(1u << 0u);
-    }
-
-    Local_u8Data |= (uint8)(Local_u8Backlight << 3u);
-
-
-    Local_u8EnableByte = (uint8)(Local_u8Data | (1u << 2u));
     if ((I2C_SendStart() != E_OK) ||
-        (I2C_SendSlaveAddressWithWrite(0x27u) != E_OK) ||
-        (I2C_SendByte(Local_u8EnableByte) != E_OK))
+        (I2C_SendSlaveAddressWithWrite(0x3Eu) != E_OK) ||
+        (I2C_SendByte(Copy_u8ControlByte) != E_OK) ||
+        (I2C_SendByte(Copy_u8Payload) != E_OK))
     {
         I2C_SendStop();
         return E_NOK;
     }
+
     I2C_SendStop();
-    _delay_us(1u);
-
-
-    if ((I2C_SendStart() != E_OK) ||
-        (I2C_SendSlaveAddressWithWrite(0x27u) != E_OK) ||
-        (I2C_SendByte(Local_u8Data) != E_OK))
-    {
-        I2C_SendStop();
-        return E_NOK;
-    }
-    I2C_SendStop();
-    _delay_us(40u);
-    return E_OK;
-}
-
-static STD_ReturnType Local_WriteByte(uint8 Copy_u8Byte, uint8 Copy_u8IsCommand)
-{
-    if (Local_WriteNibble((uint8)(Copy_u8Byte >> 4u), Copy_u8IsCommand) != E_OK)
-    {
-        return E_NOK;
-    }
-    if (Local_WriteNibble((uint8)(Copy_u8Byte & 0x0Fu), Copy_u8IsCommand) != E_OK)
-    {
-        return E_NOK;
-    }
     return E_OK;
 }
 
 static STD_ReturnType Local_SendCommand(uint8 Copy_u8Command)
 {
-    return Local_WriteByte(Copy_u8Command, 1u);
+    uint8 Local_u8ControlByte;
+
+    Local_u8ControlByte = (uint8)(0x00u |
+                                 (Local_u8Backlight ? 0x08u : 0u));
+    return Local_WriteByteDirect(Local_u8ControlByte, Copy_u8Command);
 }
 
 static STD_ReturnType Local_SendData(uint8 Copy_u8Data)
 {
-    return Local_WriteByte(Copy_u8Data, 0u);
+    uint8 Local_u8ControlByte;
+
+    Local_u8ControlByte = (uint8)(0x40u |
+                                 (Local_u8Backlight ? 0x08u : 0u));
+    return Local_WriteByteDirect(Local_u8ControlByte, Copy_u8Data);
 }
 
 STD_ReturnType LCD_Init(void)
@@ -442,33 +409,17 @@ STD_ReturnType LCD_Init(void)
 
     _delay_ms(50u);
 
-
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    _delay_ms(5u);
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    _delay_us(150u);
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    if (Local_WriteNibble(0x02u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-
-    if ((Local_SendCommand(0x28u) != E_OK) ||
+    if ((Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(0x38u) != E_OK) ||
         (Local_SendCommand(0x0Cu) != E_OK) ||
         (Local_SendCommand(0x06u) != E_OK) ||
         (Local_SendCommand(0x01u) != E_OK))
     {
         return E_NOK;
     }
+
     _delay_ms(2u);
     if (Local_SendCommand(0x02u) != E_OK)
     {

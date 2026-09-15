@@ -8,89 +8,51 @@
 #include "I2C_interface.h"
 #include "lcd_i2c.h"
 
-#define LCD_RS_BIT   0u
-#define LCD_RW_BIT   1u
-#define LCD_EN_BIT   2u
-#define LCD_BL_BIT   3u
-#define LCD_D4_BIT   4u
-#define LCD_D5_BIT   5u
-#define LCD_D6_BIT   6u
-#define LCD_D7_BIT   7u
+#define LCD_AIP31068_CMD_FLAG       0x00u
+#define LCD_AIP31068_DATA_FLAG      0x40u
+#define LCD_AIP31068_BACKLIGHT_BIT  0x08u
 
-#define LCD_CMD_CLEAR            0x01u
-#define LCD_CMD_HOME             0x02u
-#define LCD_CMD_ENTRY_MODE       0x06u
-#define LCD_CMD_DISPLAY_ON       0x0Cu
-#define LCD_CMD_FUNCTION_4BIT    0x28u
-#define LCD_CMD_DDRAM            0x80u
+#define LCD_CMD_CLEAR               0x01u
+#define LCD_CMD_HOME                0x02u
+#define LCD_CMD_ENTRY_MODE          0x06u
+#define LCD_CMD_DISPLAY_ON          0x0Cu
+#define LCD_CMD_FUNCTION_8BIT       0x38u
+#define LCD_CMD_DDRAM               0x80u
 
 static uint8 Local_u8CurrentPage;
 static uint8 Local_u8Backlight;
 
-static STD_ReturnType Local_WriteNibble(uint8 Copy_u8Nibble, uint8 Copy_u8IsCommand) 
+static STD_ReturnType Local_WriteByteDirect(uint8 Copy_u8ControlByte, uint8 Copy_u8Payload)
 {
-    uint8 Local_u8Data;
-    uint8 Local_u8EnableByte;
-
-    Local_u8Data = (uint8)((Copy_u8Nibble & 0x0Fu) << LCD_D4_BIT);
-
-    if (Copy_u8IsCommand == 0u)
-    {
-        Local_u8Data |= (uint8)(1u << LCD_RS_BIT);
-    }
-    else
-    {
-        Local_u8Data &= (uint8)~(1u << LCD_RS_BIT);
-    }
-
-    Local_u8Data |= (uint8)(Local_u8Backlight << LCD_BL_BIT);
-
-    /* Send high pulse on EN (PCF8574 P2). */
-    Local_u8EnableByte = (uint8)(Local_u8Data | (1u << LCD_EN_BIT));
     if ((I2C_SendStart() != E_OK) ||
         (I2C_SendSlaveAddressWithWrite(LCD_I2C_ADDRESS) != E_OK) ||
-        (I2C_SendByte(Local_u8EnableByte) != E_OK))
+        (I2C_SendByte(Copy_u8ControlByte) != E_OK) ||
+        (I2C_SendByte(Copy_u8Payload) != E_OK))
     {
         I2C_SendStop();
         return E_NOK;
     }
-    I2C_SendStop();
-    _delay_us(1u);
 
-    /* Remove EN to create the falling edge. */
-    if ((I2C_SendStart() != E_OK) ||
-        (I2C_SendSlaveAddressWithWrite(LCD_I2C_ADDRESS) != E_OK) ||
-        (I2C_SendByte(Local_u8Data) != E_OK))
-    {
-        I2C_SendStop();
-        return E_NOK;
-    }
     I2C_SendStop();
-    _delay_us(40u);
-    return E_OK;
-}
-
-static STD_ReturnType Local_WriteByte(uint8 Copy_u8Byte, uint8 Copy_u8IsCommand)
-{
-    if (Local_WriteNibble((uint8)(Copy_u8Byte >> 4u), Copy_u8IsCommand) != E_OK)
-    {
-        return E_NOK;
-    }
-    if (Local_WriteNibble((uint8)(Copy_u8Byte & 0x0Fu), Copy_u8IsCommand) != E_OK)
-    {
-        return E_NOK;
-    }
     return E_OK;
 }
 
 static STD_ReturnType Local_SendCommand(uint8 Copy_u8Command)
 {
-    return Local_WriteByte(Copy_u8Command, 1u);
+    uint8 Local_u8ControlByte;
+
+    Local_u8ControlByte = (uint8)(LCD_AIP31068_CMD_FLAG |
+                                 (Local_u8Backlight ? LCD_AIP31068_BACKLIGHT_BIT : 0u));
+    return Local_WriteByteDirect(Local_u8ControlByte, Copy_u8Command);
 }
 
 static STD_ReturnType Local_SendData(uint8 Copy_u8Data)
 {
-    return Local_WriteByte(Copy_u8Data, 0u);
+    uint8 Local_u8ControlByte;
+
+    Local_u8ControlByte = (uint8)(LCD_AIP31068_DATA_FLAG |
+                                 (Local_u8Backlight ? LCD_AIP31068_BACKLIGHT_BIT : 0u));
+    return Local_WriteByteDirect(Local_u8ControlByte, Copy_u8Data);
 }
 
 STD_ReturnType LCD_Init(void)
@@ -105,33 +67,17 @@ STD_ReturnType LCD_Init(void)
 
     _delay_ms(50u);
 
-    /* HD44780 4-bit initialization sequence. */
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    _delay_ms(5u);
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    _delay_us(150u);
-    if (Local_WriteNibble(0x03u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-    if (Local_WriteNibble(0x02u, 1u) != E_OK)
-    {
-        return E_NOK;
-    }
-
-    if ((Local_SendCommand(LCD_CMD_FUNCTION_4BIT) != E_OK) ||
+    if ((Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(0x30u) != E_OK) ||
+        (Local_SendCommand(LCD_CMD_FUNCTION_8BIT) != E_OK) ||
         (Local_SendCommand(LCD_CMD_DISPLAY_ON) != E_OK) ||
         (Local_SendCommand(LCD_CMD_ENTRY_MODE) != E_OK) ||
         (Local_SendCommand(LCD_CMD_CLEAR) != E_OK))
     {
         return E_NOK;
     }
+
     _delay_ms(2u);
     if (Local_SendCommand(LCD_CMD_HOME) != E_OK)
     {
