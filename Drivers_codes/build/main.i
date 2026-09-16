@@ -1067,7 +1067,7 @@ int main(void) {
     GPIO_SetPinDirection(1u, 6u, 0u);
     GPIO_SetPinDirection(1u, 7u, 1u);
 
-    GPIO_SetPinDirection(2u, 0u, 2u);
+    GPIO_SetPinDirection(2u, 0u,2u);
     GPIO_SetPinDirection(2u, 1u, 2u);
     GPIO_SetPinDirection(2u, 2u, 1u);
     GPIO_SetPinDirection(2u, 3u, 2u);
@@ -1078,7 +1078,7 @@ int main(void) {
 
     GPIO_SetPinDirection(3u, 0u, 0u);
     GPIO_SetPinDirection(3u, 1u, 1u);
-    GPIO_SetPinDirection(3u, 2u, 2u);
+    GPIO_SetPinDirection(3u, 2u, 0u);
     GPIO_SetPinDirection(3u, 3u, 2u);
     GPIO_SetPinDirection(3u, 4u, 2u);
     GPIO_SetPinDirection(3u, 5u, 2u);
@@ -1092,6 +1092,9 @@ int main(void) {
     GPIO_SetPinValue(3u, 7u, 0u);
 
 
+
+
+
     char line1[17];
     char line2[17];
     CarData_t myCar = {0};
@@ -1099,23 +1102,76 @@ int main(void) {
 
     LCD_Init();
     GAU_Init();
-    TIMER0_DelayMS(100);
+    _delay_ms(100);
 
     while (1) {
-
-
-
 
         GAU_Update(&myCar);
 
 
-
         snprintf(line1, sizeof(line1), "F:%3d%% C:%3dC", myCar.fuelPct, myCar.coolantC);
-        snprintf(line2, sizeof(line2), "Bat:%uV Oil:%u", myCar.battmV, myCar.oilBarX10);
+        snprintf(line2, sizeof(line2), "Bat:%umV Oil:%u", myCar.battmV, myCar.oilBarX10);
 
         DSP_Render(PG_MAIN, (const uint8*)line1, (const uint8*)line2);
 
         TIMER0_DelayMS(500);
+
+
+
+
+
+        WRN_Update(&myCar);
+
+
+        Warn_t current_warn = WRN_Highest(&myCar);
+
+        char warn_text[17];
+
+
+        switch (current_warn) {
+            case WARN_OIL:
+                sprintf(warn_text, "ERR: Oil Press  ");
+                break;
+            case WARN_BATT:
+                sprintf(warn_text, "ERR: Battery    ");
+                break;
+            case WARN_COOLANT:
+                sprintf(warn_text, "ERR: Overheat!  ");
+                break;
+            case WARN_CHECK:
+                sprintf(warn_text, "Check Engine!   ");
+                break;
+            case WARN_FUEL:
+                sprintf(warn_text, "Warn: Low Fuel  ");
+                break;
+            case WARN_OVERSPEED:
+                sprintf(warn_text, "Warn: Overspeed ");
+                break;
+            case WARN_SEATBELT:
+                sprintf(warn_text, "Fasten Seatbelt ");
+                break;
+            case WARN_DOOR:
+                sprintf(warn_text, "Door is Open!   ");
+                break;
+            case WARN_HANDBRAKE:
+                sprintf(warn_text, "Handbrake ON!   ");
+                break;
+            case WARN_NONE:
+                sprintf(warn_text, "System Normal   ");
+                break;
+            default:
+                sprintf(warn_text, "                ");
+                break;
+        }
+
+
+        LCD_SetCursor(0, 1);
+        LCD_WriteString((const uint8*)warn_text);
+
+        TIMER0_DelayMS(500);
+
+
     }
     return 0;
+
 }
