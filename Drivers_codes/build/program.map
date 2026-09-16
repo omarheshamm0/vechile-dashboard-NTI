@@ -68,8 +68,18 @@ Discarded input sections
                 0x00000000        0x6 build/APP/cluster/cluster.o
  .text.Cluster_SetPage
                 0x00000000        0x6 build/APP/cluster/cluster.o
+ .text.FSM_Init
+                0x00000000       0x1c build/APP/cluster/cluster.o
+ .text.FSM_Run  0x00000000      0x184 build/APP/cluster/cluster.o
+ .jumptables.gcc.FSM_Run
+                0x00000000       0x10 build/APP/cluster/cluster.o
  .bss.Cluster_Data
                 0x00000000       0x20 build/APP/cluster/cluster.o
+ .bss.RPM_Timer
+                0x00000000        0x2 build/APP/cluster/cluster.o
+ .bss.State_Timer
+                0x00000000        0x2 build/APP/cluster/cluster.o
+ .comment       0x00000000       0x13 build/APP/cluster/cluster.o
  .text          0x00000000        0x0 build/APP/odometer/odometer.o
  .data          0x00000000        0x0 build/APP/odometer/odometer.o
  .bss           0x00000000        0x0 build/APP/odometer/odometer.o
@@ -93,6 +103,8 @@ Discarded input sections
  .bss           0x00000000        0x0 build/APP/warnings/warnings.o
  .text.WRN_Update
                 0x00000000      0x138 build/APP/warnings/warnings.o
+ .text.WRN_Highest
+                0x00000000       0x66 build/APP/warnings/warnings.o
  .bss.fuel_warn_active.0
                 0x00000000        0x1 build/APP/warnings/warnings.o
  .bss.batt_high_warn.1
@@ -111,6 +123,7 @@ Discarded input sections
                 0x00000000        0x1 build/APP/warnings/warnings.o
  .bss.Latched_Oil
                 0x00000000        0x1 build/APP/warnings/warnings.o
+ .comment       0x00000000       0x13 build/APP/warnings/warnings.o
  .text          0x00000000        0x0 build/HAL/bodysw/bodysw.o
  .data          0x00000000        0x0 build/HAL/bodysw/bodysw.o
  .bss           0x00000000        0x0 build/HAL/bodysw/bodysw.o
@@ -122,22 +135,6 @@ Discarded input sections
  .text          0x00000000        0x0 build/HAL/CHIME/chime.o
  .data          0x00000000        0x0 build/HAL/CHIME/chime.o
  .bss           0x00000000        0x0 build/HAL/CHIME/chime.o
- .text.Tone_On  0x00000000       0x10 build/HAL/CHIME/chime.o
- .text.Tone_Off
-                0x00000000        0xa build/HAL/CHIME/chime.o
- .text.CHM_Init
-                0x00000000        0xe build/HAL/CHIME/chime.o
- .text.CHM_Play
-                0x00000000       0x2c build/HAL/CHIME/chime.o
- .text.CHM_Update
-                0x00000000       0x88 build/HAL/CHIME/chime.o
- .bss.Is_Playing
-                0x00000000        0x1 build/HAL/CHIME/chime.o
- .bss.Timer_Ticks
-                0x00000000        0x2 build/HAL/CHIME/chime.o
- .bss.Current_Pattern
-                0x00000000        0x2 build/HAL/CHIME/chime.o
- .comment       0x00000000       0x13 build/HAL/CHIME/chime.o
  .text          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .data          0x00000000        0x0 build/HAL/GAUGES/gauges.o
  .bss           0x00000000        0x0 build/HAL/GAUGES/gauges.o
@@ -403,6 +400,7 @@ Discarded input sections
                 0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
  .text.libgcc.div
                 0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .text.libgcc   0x00000000        0xc C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
  .text.libgcc.prologue
                 0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
  .text.libgcc.builtins
@@ -411,6 +409,14 @@ Discarded input sections
                 0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
  .text.libgcc.fixed
                 0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_line    0x00000000       0x69 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_line_str
+                0x00000000       0x5c C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_info    0x00000000       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_abbrev  0x00000000       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_aranges
+                0x00000000       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+ .debug_str     0x00000000       0x6a C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
  .text          0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
  .data          0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
  .bss           0x00000000        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
@@ -713,7 +719,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xa7c
+.text           0x00000000      0x8be
  *(.vectors)
  .vectors       0x00000000       0x54 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/../../../../avr/lib/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -796,86 +802,88 @@ END GROUP
                 0x00000092                        . = ALIGN (0x2)
  *(.text.*)
  .text.startup.main
-                0x00000092      0x23c build/main.o
+                0x00000092      0x1c4 build/main.o
                 0x00000092                main
- .text.FSM_Init
-                0x000002ce       0x1c build/APP/cluster/cluster.o
-                0x000002ce                FSM_Init
- .text.FSM_Run  0x000002ea      0x184 build/APP/cluster/cluster.o
-                0x000002ea                FSM_Run
- .text.WRN_Highest
-                0x0000046e       0x66 build/APP/warnings/warnings.o
-                0x0000046e                WRN_Highest
+ .text.Tone_On  0x00000256       0x10 build/HAL/CHIME/chime.o
+ .text.Tone_Off
+                0x00000266        0xa build/HAL/CHIME/chime.o
+ .text.CHM_Init
+                0x00000270        0xe build/HAL/CHIME/chime.o
+                0x00000270                CHM_Init
+ .text.CHM_Play
+                0x0000027e       0x2c build/HAL/CHIME/chime.o
+                0x0000027e                CHM_Play
+ .text.CHM_Update
+                0x000002aa       0x88 build/HAL/CHIME/chime.o
+                0x000002aa                CHM_Update
  .text.GAU_Init
-                0x000004d4        0x8 build/HAL/GAUGES/gauges.o
-                0x000004d4                GAU_Init
+                0x00000332        0x8 build/HAL/GAUGES/gauges.o
+                0x00000332                GAU_Init
  .text.Local_WriteByteDirect
-                0x000004dc       0x46 build/HAL/lcd_i2c/lcd_i2c.o
+                0x0000033a       0x46 build/HAL/lcd_i2c/lcd_i2c.o
  .text.Local_SendCommand
-                0x00000522       0x1a build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000380       0x1a build/HAL/lcd_i2c/lcd_i2c.o
  .text.Local_SendData
-                0x0000053c       0x14 build/HAL/lcd_i2c/lcd_i2c.o
+                0x0000039a       0x14 build/HAL/lcd_i2c/lcd_i2c.o
  .text.LCD_Init
-                0x00000550       0x9a build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000550                LCD_Init
+                0x000003ae       0x9a build/HAL/lcd_i2c/lcd_i2c.o
+                0x000003ae                LCD_Init
  .text.LCD_SetCursor
-                0x000005ea       0x1c build/HAL/lcd_i2c/lcd_i2c.o
-                0x000005ea                LCD_SetCursor
+                0x00000448       0x1c build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000448                LCD_SetCursor
  .text.LCD_WriteString
-                0x00000606       0x36 build/HAL/lcd_i2c/lcd_i2c.o
-                0x00000606                LCD_WriteString
+                0x00000464       0x36 build/HAL/lcd_i2c/lcd_i2c.o
+                0x00000464                LCD_WriteString
  .text.SPD_OnCaptureISR
-                0x0000063c       0x7c build/HAL/SPEEDO/speedo.o
-                0x0000063c                SPD_OnCaptureISR
+                0x0000049a       0x7c build/HAL/SPEEDO/speedo.o
+                0x0000049a                SPD_OnCaptureISR
  .text.SPD_OnOverflowISR
-                0x000006b8       0x10 build/HAL/SPEEDO/speedo.o
-                0x000006b8                SPD_OnOverflowISR
+                0x00000516       0x10 build/HAL/SPEEDO/speedo.o
+                0x00000516                SPD_OnOverflowISR
  .text.__vector_6
-                0x000006c8       0x48 build/HAL/SPEEDO/speedo.o
-                0x000006c8                __vector_6
+                0x00000526       0x48 build/HAL/SPEEDO/speedo.o
+                0x00000526                __vector_6
  .text.__vector_9
-                0x00000710       0x48 build/HAL/SPEEDO/speedo.o
-                0x00000710                __vector_9
+                0x0000056e       0x48 build/HAL/SPEEDO/speedo.o
+                0x0000056e                __vector_9
  .text.ADC_Init
-                0x00000758       0x38 build/MCAL/ADC/ADC.o
-                0x00000758                ADC_Init
+                0x000005b6       0x38 build/MCAL/ADC/ADC.o
+                0x000005b6                ADC_Init
  .text.GPIO_SetPinDirection
-                0x00000790       0xd6 build/MCAL/GPIO/GPIO.o
-                0x00000790                GPIO_SetPinDirection
+                0x000005ee       0xd6 build/MCAL/GPIO/GPIO.o
+                0x000005ee                GPIO_SetPinDirection
  .text.GPIO_SetPinValue
-                0x00000866       0x82 build/MCAL/GPIO/GPIO.o
-                0x00000866                GPIO_SetPinValue
+                0x000006c4       0x82 build/MCAL/GPIO/GPIO.o
+                0x000006c4                GPIO_SetPinValue
  .text.GPIO_GetPinValue
-                0x000008e8       0x50 build/MCAL/GPIO/GPIO.o
-                0x000008e8                GPIO_GetPinValue
+                0x00000746       0x50 build/MCAL/GPIO/GPIO.o
+                0x00000746                GPIO_GetPinValue
  .text.I2C_InitMaster
-                0x00000938       0x4c build/MCAL/I2C/I2C.o
-                0x00000938                I2C_InitMaster
+                0x00000796       0x4c build/MCAL/I2C/I2C.o
+                0x00000796                I2C_InitMaster
  .text.I2C_SendStart
-                0x00000984       0x1c build/MCAL/I2C/I2C.o
-                0x00000984                I2C_SendStart
+                0x000007e2       0x1c build/MCAL/I2C/I2C.o
+                0x000007e2                I2C_SendStart
  .text.I2C_SendStop
-                0x000009a0        0xc build/MCAL/I2C/I2C.o
-                0x000009a0                I2C_SendStop
+                0x000007fe        0xc build/MCAL/I2C/I2C.o
+                0x000007fe                I2C_SendStop
  .text.I2C_SendSlaveAddressWithWrite
-                0x000009ac       0x20 build/MCAL/I2C/I2C.o
-                0x000009ac                I2C_SendSlaveAddressWithWrite
+                0x0000080a       0x20 build/MCAL/I2C/I2C.o
+                0x0000080a                I2C_SendSlaveAddressWithWrite
  .text.I2C_SendByte
-                0x000009cc       0x1e build/MCAL/I2C/I2C.o
-                0x000009cc                I2C_SendByte
+                0x0000082a       0x1e build/MCAL/I2C/I2C.o
+                0x0000082a                I2C_SendByte
  .text.TIMER0_DelayMS
-                0x000009ea       0x2e build/MCAL/TIMER/TIMER.o
-                0x000009ea                TIMER0_DelayMS
+                0x00000848       0x2e build/MCAL/TIMER/TIMER.o
+                0x00000848                TIMER0_DelayMS
  .text.libgcc.div
-                0x00000a18       0x44 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
-                0x00000a18                __udivmodsi4
- .text.libgcc   0x00000a5c        0xc C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
-                0x00000a5c                __tablejump2__
-                0x00000a68                        . = ALIGN (0x2)
+                0x00000876       0x44 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
+                0x00000876                __udivmodsi4
+                0x000008ba                        . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000a68        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
-                0x00000a68                _exit
-                0x00000a68                exit
+ .fini9         0x000008ba        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+                0x000008ba                _exit
+                0x000008ba                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -894,58 +902,60 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000a68        0x4 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x000008ba        0x4 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
  *(.hightext)
  *(.hightext*)
  *(.progmemx)
  *(.progmemx.*)
-                0x00000a6c                        . = ALIGN (0x2)
+                0x000008be                        . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
- .jumptables.gcc.FSM_Run
-                0x00000a6c       0x10 build/APP/cluster/cluster.o
-                0x00000a7c                        _etext = .
+                0x000008be                        _etext = .
 
-.data           0x00800060       0x98 load address 0x00000a7c
+.data           0x00800060       0x4c load address 0x000008be
                 0x00800060                        PROVIDE (__data_start = .)
  *(.data)
  *(.data*)
+ .data.PatternNames
+                0x00800060        0x8 build/main.o
+                0x00800060                PatternNames
  *(.gnu.linkonce.d*)
  *(.rodata)
- .rodata        0x00800060       0x10 build/main.o
  *(.rodata*)
- .rodata.main.str1.1
-                0x00800070       0x88 build/main.o
+ .rodata.str1.1
+                0x00800068       0x44 build/main.o
  *(.gnu.linkonce.r*)
-                0x008000f8                        . = ALIGN (0x2)
-                0x008000f8                        _edata = .
-                0x008000f8                        PROVIDE (__data_end = .)
+                0x008000ac                        . = ALIGN (0x2)
+                0x008000ac                        _edata = .
+                0x008000ac                        PROVIDE (__data_end = .)
 
-.bss            0x008000f8       0x11
-                0x008000f8                        PROVIDE (__bss_start = .)
+.bss            0x008000ac       0x12
+                0x008000ac                        PROVIDE (__bss_start = .)
  *(.bss)
  *(.bss*)
- .bss.RPM_Timer
-                0x008000f8        0x2 build/APP/cluster/cluster.o
- .bss.State_Timer
-                0x008000fa        0x2 build/APP/cluster/cluster.o
+ .bss.Is_Playing
+                0x008000ac        0x1 build/HAL/CHIME/chime.o
+ .bss.Timer_Ticks
+                0x008000ad        0x2 build/HAL/CHIME/chime.o
+ .bss.Current_Pattern
+                0x008000af        0x2 build/HAL/CHIME/chime.o
  .bss.Local_u8Backlight
-                0x008000fc        0x1 build/HAL/lcd_i2c/lcd_i2c.o
+                0x008000b1        0x1 build/HAL/lcd_i2c/lcd_i2c.o
  .bss.Local_u8CurrentPage
-                0x008000fd        0x1 build/HAL/lcd_i2c/lcd_i2c.o
+                0x008000b2        0x1 build/HAL/lcd_i2c/lcd_i2c.o
  .bss.g_captureData
-                0x008000fe        0xb build/HAL/SPEEDO/speedo.o
+                0x008000b3        0xb build/HAL/SPEEDO/speedo.o
  *(COMMON)
-                0x00800109                        PROVIDE (__bss_end = .)
-                0x00000a7c                        __data_load_start = LOADADDR (.data)
-                0x00000b14                        __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x008000be                        PROVIDE (__bss_end = .)
+                0x000008be                        __data_load_start = LOADADDR (.data)
+                0x0000090a                        __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00800109        0x0
+.noinit         0x008000be        0x0
                 [!provide]                        PROVIDE (__noinit_start = .)
  *(.noinit .noinit.* .gnu.linkonce.n.*)
                 [!provide]                        PROVIDE (__noinit_end = .)
-                0x00800109                        _end = .
+                0x008000be                        _end = .
                 [!provide]                        PROVIDE (__heap_start = .)
                 0x00000000                        __flmap_init_label = DEFINED (__flmap_noinit_start)?__flmap_noinit_start:0x0
                 0x00000000                        __flmap = DEFINED (__flmap)?__flmap:0x0
@@ -988,9 +998,7 @@ END GROUP
  *(.comment)
  .comment       0x00000000       0x24 build/main.o
                                  0x13 (size before relaxing)
- .comment       0x00000024        0x0 build/APP/cluster/cluster.o
-                                 0x13 (size before relaxing)
- .comment       0x00000024        0x0 build/APP/warnings/warnings.o
+ .comment       0x00000024        0x0 build/HAL/CHIME/chime.o
                                  0x13 (size before relaxing)
  .comment       0x00000024        0x0 build/HAL/GAUGES/gauges.o
                                  0x13 (size before relaxing)
@@ -1030,48 +1038,43 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0xa0
+.debug_aranges  0x00000000       0x80
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
  .debug_aranges
-                0x00000020       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
+                0x00000020       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
  .debug_aranges
-                0x00000040       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
+                0x00000040       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
  .debug_aranges
-                0x00000060       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
- .debug_aranges
-                0x00000080       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+                0x00000060       0x20 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x59a
+.debug_info     0x00000000      0x576
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4e6 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_info    0x000004e6       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_info    0x0000050a       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
- .debug_info    0x0000052e       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
- .debug_info    0x00000552       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
- .debug_info    0x00000576       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+ .debug_info    0x0000050a       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
+ .debug_info    0x0000052e       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_info    0x00000552       0x24 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
 
-.debug_abbrev   0x00000000      0x507
+.debug_abbrev   0x00000000      0x4f3
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4a3 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_abbrev  0x000004a3       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_abbrev  0x000004b7       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
- .debug_abbrev  0x000004cb       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
- .debug_abbrev  0x000004df       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
- .debug_abbrev  0x000004f3       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+ .debug_abbrev  0x000004b7       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
+ .debug_abbrev  0x000004cb       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_abbrev  0x000004df       0x14 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
 
-.debug_line     0x00000000      0x2e4
+.debug_line     0x00000000      0x27b
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000       0x1d C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_line    0x0000001d      0x111 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_line    0x0000012e       0x69 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
- .debug_line    0x00000197       0x87 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
- .debug_line    0x0000021e       0x75 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
- .debug_line    0x00000293       0x51 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
+ .debug_line    0x0000012e       0x87 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
+ .debug_line    0x000001b5       0x75 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
+ .debug_line    0x0000022a       0x51 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_exit.o)
 
 .debug_frame
  *(.debug_frame)
@@ -1080,8 +1083,6 @@ END GROUP
  *(.debug_str)
  .debug_str     0x00000000      0x196 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/../../../../avr/lib/avr5/crtatmega32.o
  .debug_str     0x00000196       0x6a C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_str     0x00000200        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
-                                 0x6a (size before relaxing)
  .debug_str     0x00000200        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
                                  0x6a (size before relaxing)
  .debug_str     0x00000200        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_clear_bss.o)
@@ -1121,9 +1122,6 @@ END GROUP
  *(.debug_line_str)
  .debug_line_str
                 0x00000000       0x5c C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_udivmodsi4.o)
- .debug_line_str
-                0x0000005c        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_tablejump2.o)
-                                 0x5c (size before relaxing)
  .debug_line_str
                 0x0000005c        0x0 C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/bin/../lib/gcc/avr/16.1.0/avr5\libgcc.a(_copy_data.o)
                                  0x5c (size before relaxing)

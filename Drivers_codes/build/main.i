@@ -1048,7 +1048,13 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
 # 26 "main.c" 2
-# 36 "main.c"
+# 35 "main.c"
+const char* PatternNames[] = {
+    "Chime: OFF      ",
+    "Chime: OVERSPEED",
+    "Chime: LIMP_HOME",
+    "Chime: TURN_TICK"
+};
 int main(void) {
 
 
@@ -1104,81 +1110,45 @@ int main(void) {
     GAU_Init();
     TIMER0_DelayMS(100);
 
-    FSM_Init(&myCar);
 
-    uint8 last_key_state = 1u;
-    uint16 key_hold_counter = 0;
-    const char* StateNames[] = {
-    "State: OFF      ",
-    "State: ACC      ",
-    "State: BULBCHK  ",
-    "State: IGNITION ",
-    "State: CRANKING ",
-    "State: RUNNING  ",
-    "State: STALLED  ",
-    "State: LIMP_HOME"
-};
+    CHM_Init();
 
+    uint8 last_btn_state = 1u;
+    ChimePattern_t test_pattern = CHM_PATTERN_OFF;
     while (1) {
-# 120 "main.c"
-        uint8 current_key_state ;
-         GPIO_GetPinValue(3u, 3u,&current_key_state);
-        uint8 start_btn_state ;
-        GPIO_GetPinValue(3u, 4u,&start_btn_state);
 
-        uint8 keyPress = 0;
-        uint8 keyHeld = 0;
-        uint8 startBtn = (start_btn_state == 0u) ? 1 : 0;
+        uint8 current_btn_state ;
+         GPIO_GetPinValue(3u, 5u,&current_btn_state);
 
 
-        if (last_key_state == 1u && current_key_state == 0u) {
-            keyPress = 1;
-        }
+        if (last_btn_state == 1u && current_btn_state == 0u) {
 
-
-        if (current_key_state == 0u) {
-            key_hold_counter++;
-            if (key_hold_counter >= 200) {
-                keyHeld = 1;
+            test_pattern++;
+            if (test_pattern > CHM_PATTERN_TURN_TICK) {
+                test_pattern = CHM_PATTERN_OFF;
             }
-        } else {
-            key_hold_counter = 0;
+
+
+            CHM_Play(test_pattern);
         }
-        last_key_state = current_key_state;
+        last_btn_state = current_btn_state;
 
 
 
 
-
-        if (myCar.state == CS_CRANKING && startBtn) {
-            myCar.rpm = 800;
-        }
-
-        else if (myCar.state == CS_RUNNING) {
-            myCar.rpm = 800;
-        }
-        else {
-            myCar.rpm = 0;
-        }
-
-
-
-
-        FSM_Run(&myCar, keyPress, keyHeld, startBtn);
+        CHM_Update();
 
 
 
 
         LCD_SetCursor(0, 0);
-        LCD_WriteString((const uint8*)StateNames[myCar.state]);
+        LCD_WriteString((const uint8*)PatternNames[test_pattern]);
 
 
 
 
-        TIMER0_DelayMS(10);
+        TIMER0_DelayMS(100);
     }
-
-
 
 
 

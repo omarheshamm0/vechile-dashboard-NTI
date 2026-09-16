@@ -32,7 +32,12 @@
 #define APP_1S_TICKS    100u
 #define F_CPU 8000000UL
 
-
+const char* PatternNames[] = {
+    "Chime: OFF      ",
+    "Chime: OVERSPEED",
+    "Chime: LIMP_HOME",
+    "Chime: TURN_TICK"
+};
 int main(void) {
 
 
@@ -88,93 +93,45 @@ int main(void) {
     GAU_Init();
     TIMER0_DelayMS(100);
    
-    FSM_Init(&myCar);
+    // LCD_Init();
+    CHM_Init(); /* تهيئة البازر والتايمر 2 */
 
-    uint8 last_key_state = GPIO_HIGH; // حالة زرار الكونتاكت السابقة
-    uint16 key_hold_counter = 0;
-    const char* StateNames[] = {
-    "State: OFF      ", 
-    "State: ACC      ", 
-    "State: BULBCHK  ", 
-    "State: IGNITION ",
-    "State: CRANKING ", 
-    "State: RUNNING  ", 
-    "State: STALLED  ", 
-    "State: LIMP_HOME"
-};
-   
+    uint8 last_btn_state = GPIO_HIGH;
+    ChimePattern_t test_pattern = CHM_PATTERN_OFF;
     while (1) {
-        /* تحديث الحساسات وقراءتها من الـ ADC مع الفلترة */
-        /*GAU_Update(&myCar);
-
-        /* عرض النتائج على الشاشة للتأكد من التحويل والـ Scaling */
-       // snprintf(line1, sizeof(line1), "F:%3d%% C:%3dC", myCar.fuelPct, myCar.coolantC);
-        //snprintf(line2, sizeof(line2), "Bat:%uV Oil:%u", myCar.battmV, myCar.oilBarX10);
-
-       // DSP_Render(PG_MAIN, (const uint8*)line1, (const uint8*)line2);
-
-       // TIMER0_DelayMS(500); /* تحديث كل نص ثانية */
-        //LCD_Clear();
+        /* ========================================================== */
+        uint8 current_btn_state ;
+         GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN5,&current_btn_state);
         
-        // قراءة زرار الكونتاكت (PD3) وزرار التشغيل (PD4) - Active Low
-        uint8 current_key_state ;
-         GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN3,&current_key_state);
-        uint8 start_btn_state ; 
-        GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN4,&start_btn_state);
-        
-        uint8 keyPress = 0;
-        uint8 keyHeld = 0;
-        uint8 startBtn = (start_btn_state == GPIO_LOW) ? 1 : 0;
-
-        /* فحص ضغطة الكونتاكت (Falling Edge) */
-        if (last_key_state == GPIO_HIGH && current_key_state == GPIO_LOW) {
-            keyPress = 1;
-        }
-        
-        /* فحص الضغطة المطولة للكونتاكت (لعمل الإطفاء الإجباري) */
-        if (current_key_state == GPIO_LOW) {
-            key_hold_counter++;
-            if (key_hold_counter >= 200) { // 200 * 10ms = 2 ثانية
-                keyHeld = 1; 
+        /* فحص ضغطة الزرار (Falling Edge) */
+        if (last_btn_state == GPIO_HIGH && current_btn_state == GPIO_LOW) {
+            /* قلب للحالة اللي بعدها */
+            test_pattern++;
+            if (test_pattern > CHM_PATTERN_TURN_TICK) {
+                test_pattern = CHM_PATTERN_OFF;
             }
-        } else {
-            key_hold_counter = 0;
+            
+            /* شغل النغمة الجديدة */
+            CHM_Play(test_pattern);
         }
-        last_key_state = current_key_state;
+        last_btn_state = current_btn_state;
 
         /* ==========================================================
-         * 2. محاكاة الـ RPM (عشان الموتور يشتغل)
+         * 2. تحديث حالة البازر (دي الدالة اللي بتعد الـ 100ms)
          * ========================================================== */
-        // لو بندوس Start، ارفع الـ RPM وهمياً عشان السيستم يحس إن الموتور قام
-        if (myCar.state == CS_CRANKING && startBtn) {
-            myCar.rpm = 800; 
-        } 
-        // لو شيلنا إيدنا والموتور كان شغال، سيبه 800 عشان مايقعش في الـ Stall
-        else if (myCar.state == CS_RUNNING) {
-            myCar.rpm = 800;
-        }
-        else {
-            myCar.rpm = 0;
-        }
+        CHM_Update();
 
         /* ==========================================================
-         * 3. تشغيل الـ State Machine
-         * ========================================================== */
-        FSM_Run(&myCar, keyPress, keyHeld, startBtn);
-
-        /* ==========================================================
-         * 4. طباعة الحالة الحالية على الـ LCD
+         * 3. طباعة النغمة الحالية على الشاشة
          * ========================================================== */
         LCD_SetCursor(0, 0);
-        LCD_WriteString((const uint8*)StateNames[myCar.state]);
+        LCD_WriteString((const uint8*)PatternNames[test_pattern]);
 
         /* ==========================================================
-         * 5. قلب التايمر (Delay 10ms) - ده أهم سطر لضبط الوقت!
+         * 4.หน Delay 100ms (أساسي عشان CHM_Update تشتغل صح)
          * ========================================================== */
-        TIMER0_DelayMS(10); 
+        TIMER0_DelayMS(100); 
     }
-
-    /* 1. اقرأ الحساسات وحدث القيم */
     
         
         /* 2. شغل دالة التحذيرات عشان تحسب وتفلتر وتعمل Latching */
