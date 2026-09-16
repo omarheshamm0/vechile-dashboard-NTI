@@ -349,24 +349,27 @@ void ODO_ResetTrip(void) {
 
 
 
+
+
     {
         uint8 sreg = 
-# 75 "APP/odometer/odometer.c" 3
+# 77 "APP/odometer/odometer.c" 3
                     (*(volatile uint8_t *)((0x3F) + 0x20))
-# 75 "APP/odometer/odometer.c"
+# 77 "APP/odometer/odometer.c"
                         ;
         
-# 76 "APP/odometer/odometer.c" 3
+# 78 "APP/odometer/odometer.c" 3
        __asm__ __volatile__ ("cli" ::: "memory")
-# 76 "APP/odometer/odometer.c"
+# 78 "APP/odometer/odometer.c"
             ;
 
         Odo_TripMetres = 0;
+        Accumulator_mm = 0;
 
         
-# 80 "APP/odometer/odometer.c" 3
+# 83 "APP/odometer/odometer.c" 3
        (*(volatile uint8_t *)((0x3F) + 0x20)) 
-# 80 "APP/odometer/odometer.c"
+# 83 "APP/odometer/odometer.c"
             = sreg;
     }
 }
