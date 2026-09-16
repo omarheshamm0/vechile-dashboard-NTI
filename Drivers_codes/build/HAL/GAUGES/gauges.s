@@ -23,7 +23,7 @@ Check_Plausibility:
 	subi r25,lo8(-(1))
 	cpi r25,lo8(10)
 	brsh .L5
-.L9:
+.L10:
 	ldi r24,0
 .L3:
 	movw r30,r22
@@ -32,7 +32,7 @@ Check_Plausibility:
 	ret
 .L4:
 	ldi r25,0
-	rjmp .L9
+	rjmp .L10
 .L5:
 	ldi r24,lo8(1)
 	ldi r25,lo8(10)
@@ -47,7 +47,7 @@ GAU_Init:
 /* stack size = 0 */
 .L__stack_usage = 0
 	ldi r22,lo8(6)
-	ldi r24,0
+	ldi r24,lo8(1)
 	jmp ADC_Init
 	.size	GAU_Init, .-GAU_Init
 	.section	.text.GAU_Update,"ax",@progbits
@@ -85,19 +85,27 @@ GAU_Update:
 /* stack size = 28 */
 .L__stack_usage = 28
 	movw r16,r24
-	movw r22,r28
-	subi r22,-7
-	sbci r23,-1
+	std Y+7,__zero_reg__
+	std Y+8,__zero_reg__
+	std Y+5,__zero_reg__
+	std Y+6,__zero_reg__
+	std Y+3,__zero_reg__
+	std Y+4,__zero_reg__
+	std Y+1,__zero_reg__
+	std Y+2,__zero_reg__
+	movw r24,r28
+	adiw r24,7
+	movw r22,r24
 	ldi r24,0
 	call ADC_ReadChannel
-	movw r22,r28
-	subi r22,-5
-	sbci r23,-1
+	movw r24,r28
+	adiw r24,5
+	movw r22,r24
 	ldi r24,lo8(1)
 	call ADC_ReadChannel
-	movw r22,r28
-	subi r22,-3
-	sbci r23,-1
+	movw r24,r28
+	adiw r24,3
+	movw r22,r24
 	ldi r24,lo8(2)
 	call ADC_ReadChannel
 	movw r22,r28
@@ -105,112 +113,113 @@ GAU_Update:
 	sbci r23,-1
 	ldi r24,lo8(3)
 	call ADC_ReadChannel
-	ldd r8,Y+7
-	ldd r9,Y+8
+	ldd r10,Y+7
+	ldd r11,Y+8
 	ldi r22,lo8(ErrCount_Fuel)
 	ldi r23,hi8(ErrCount_Fuel)
-	movw r24,r8
-	call Check_Plausibility
-	mov r7,r24
-	ldd r10,Y+5
-	ldd r11,Y+6
-	ldi r22,lo8(ErrCount_Coolant)
-	ldi r23,hi8(ErrCount_Coolant)
 	movw r24,r10
 	call Check_Plausibility
-	mov r6,r24
-	ldd r12,Y+3
-	ldd r13,Y+4
-	ldi r22,lo8(ErrCount_Batt)
-	ldi r23,hi8(ErrCount_Batt)
+	mov r3,r24
+	ldd r12,Y+5
+	ldd r13,Y+6
+	ldi r22,lo8(ErrCount_Coolant)
+	ldi r23,hi8(ErrCount_Coolant)
 	movw r24,r12
 	call Check_Plausibility
+	mov r2,r24
+	ldd r14,Y+3
+	ldd r15,Y+4
+	ldi r22,lo8(ErrCount_Batt)
+	ldi r23,hi8(ErrCount_Batt)
+	movw r24,r14
+	call Check_Plausibility
 	std Y+9,r24
-	ldd r14,Y+1
-	ldd r15,Y+2
+	ldd r8,Y+1
+	ldd r9,Y+2
 	ldi r22,lo8(ErrCount_Oil)
 	ldi r23,hi8(ErrCount_Oil)
-	movw r24,r14
+	movw r24,r8
 	call Check_Plausibility
 	std Y+10,r24
 	movw r30,r16
 	ldd r24,Z+22
 	ldd r25,Z+23
-	cp r7, __zero_reg__
-	brne .+2
-	rjmp .L12
-	cp r6, __zero_reg__
-	brne .+2
-	rjmp .L12
-	ldd r31,Y+9
-	cp r31, __zero_reg__
-	brne .+2
-	rjmp .L12
+	mov r18,r3
+	cpi r18,lo8(1)
+	breq .L13
+	mov r18,r2
+	cpi r18,lo8(1)
+	breq .L13
+	ldd r18,Y+9
+	cpi r18,lo8(1)
+	breq .L13
 	ldd r18,Y+10
-	cp r18, __zero_reg__
-	brne .+2
-	rjmp .L12
-	ori r24,lo8(16)
+	cpi r18,lo8(1)
+	breq .+2
+	rjmp .L14
 .L13:
+	ori r24,lo8(16)
+.L15:
 	movw r30,r16
 	std Z+22,r24
 	std Z+23,r25
-	lds r24,Filter_Idx
-	ldi r25,0
-	movw r18,r24
-	lsl r18
-	rol r19
-	movw r30,r18
+	lds r18,Filter_Idx
+	ldi r19,0
+	movw r24,r18
+	lsl r24
+	rol r25
+	movw r30,r24
 	subi r30,lo8(-(Fuel_Buffer))
 	sbci r31,hi8(-(Fuel_Buffer))
-	st Z,r8
-	std Z+1,r9
-	subi r18,lo8(-(Coolant_Buffer))
-	sbci r19,hi8(-(Coolant_Buffer))
-	movw r30,r18
 	st Z,r10
 	std Z+1,r11
-	adiw r24,1
-	andi r24,7
-	sts Filter_Idx,r24
+	subi r24,lo8(-(Coolant_Buffer))
+	sbci r25,hi8(-(Coolant_Buffer))
+	movw r30,r24
+	st Z,r12
+	std Z+1,r13
+	subi r18,-1
+	sbci r19,-1
+	andi r18,7
+	sts Filter_Idx,r18
 	ldi r30,lo8(Fuel_Buffer)
 	ldi r31,hi8(Fuel_Buffer)
 	ldi r26,lo8(Coolant_Buffer)
 	ldi r27,hi8(Coolant_Buffer)
 	ldi r24,lo8(Fuel_Buffer+16)
 	ldi r25,hi8(Fuel_Buffer+16)
-	mov r10,__zero_reg__
-	mov r11,__zero_reg__
-	movw r8,r10
-	movw r2,r8
-	movw r4,r8
-.L14:
+	mov r12,__zero_reg__
+	mov r13,__zero_reg__
+	movw r10,r12
+	movw r4,r10
+	movw r6,r10
+.L16:
 	ld r20,Z+
 	ld r21,Z+
-	add r2,r20
-	adc r3,r21
-	adc r4,__zero_reg__
-	adc r5,__zero_reg__
+	add r4,r20
+	adc r5,r21
+	adc r6,__zero_reg__
+	adc r7,__zero_reg__
 	ld r20,X+
 	ld r21,X+
-	add r8,r20
-	adc r9,r21
-	adc r10,__zero_reg__
-	adc r11,__zero_reg__
+	add r10,r20
+	adc r11,r21
+	adc r12,__zero_reg__
+	adc r13,__zero_reg__
 	cp r24,r30
 	cpc r25,r31
-	brne .L14
-	cp r7, __zero_reg__
-	breq .L15
-	ldi r25,3
+	brne .L16
+	cpse r3,__zero_reg__
+	rjmp .L17
+	ldi r20,3
 	1:
-	lsr r5
+	lsr r7
+	ror r6
+	ror r5
 	ror r4
-	ror r3
-	ror r2
-	dec r25
+	dec r20
 	brne 1b
-	movw r18,r2
+	movw r18,r4
 	ldi r26,lo8(100)
 	ldi r27,0
 	call __umulhisi3
@@ -221,18 +230,18 @@ GAU_Update:
 	call __udivmodsi4
 	movw r30,r16
 	std Z+4,r18
-.L15:
-	cp r6, __zero_reg__
-	breq .L16
-	ldi r24,3
+.L17:
+	cpse r2,__zero_reg__
+	rjmp .L18
+	ldi r19,3
 	1:
-	lsr r11
+	lsr r13
+	ror r12
+	ror r11
 	ror r10
-	ror r9
-	ror r8
-	dec r24
+	dec r19
 	brne 1b
-	movw r18,r8
+	movw r18,r10
 	ldi r26,lo8(-86)
 	ldi r27,0
 	call __umulhisi3
@@ -242,18 +251,25 @@ GAU_Update:
 	ldi r21,0
 	call __udivmodsi4
 	subi r18,40
-	sbc r19,__zero_reg__
+	sbci r19,0
 	movw r30,r16
 	std Z+5,r18
 	std Z+6,r19
-.L16:
-	ldd r31,Y+9
-	cp r31, __zero_reg__
-	breq .L17
-	movw r18,r12
-	ldi r26,lo8(-128)
-	ldi r27,lo8(62)
-	call __umulhisi3
+.L18:
+	ldd r24,Y+9
+	cpse r24,__zero_reg__
+	rjmp .L19
+	movw r22,r14
+	ldi r24,0
+	ldi r25,0
+	andi r25,15
+	ori r25,16
+	1:
+	lsl r22
+	rol r23
+	rol r24
+	rol r25
+	brcc 1b
 	ldi r18,lo8(-1)
 	ldi r19,lo8(3)
 	ldi r20,0
@@ -262,11 +278,11 @@ GAU_Update:
 	movw r30,r16
 	std Z+7,r18
 	std Z+8,r19
-.L17:
-	ldd r31,Y+10
-	cp r31, __zero_reg__
-	breq .L11
-	movw r18,r14
+.L19:
+	ldd r24,Y+10
+	cpse r24,__zero_reg__
+	rjmp .L12
+	movw r18,r8
 	ldi r26,lo8(100)
 	ldi r27,0
 	call __umulhisi3
@@ -277,7 +293,7 @@ GAU_Update:
 	call __udivmodsi4
 	movw r30,r16
 	std Z+9,r18
-.L11:
+.L12:
 /* epilogue start */
 	adiw r28,10
 	in __tmp_reg__,__SREG__
@@ -304,9 +320,9 @@ GAU_Update:
 	pop r3
 	pop r2
 	ret
-.L12:
+.L14:
 	andi r24,lo8(-17)
-	rjmp .L13
+	rjmp .L15
 	.size	GAU_Update, .-GAU_Update
 	.section	.bss.ErrCount_Oil,"aw",@nobits
 	.type	ErrCount_Oil, @object
@@ -343,5 +359,5 @@ Coolant_Buffer:
 	.size	Fuel_Buffer, 16
 Fuel_Buffer:
 	.zero	16
-	.ident	"GCC: (GNU) 15.2.0"
+	.ident	"GCC: (GNU) 16.1.0"
 .global __do_clear_bss

@@ -144,15 +144,7 @@ static uint8 ErrCount_Batt = 0;
 static uint8 ErrCount_Oil = 0;
 
 
-static uint16 Get_Median_Of_3(uint16 a, uint16 b, uint16 c) {
-    if ((a <= b && b <= c) || (c <= b && b <= a)) return b;
-    if ((b <= a && a <= c) || (c <= a && a <= b)) return a;
-    return c;
-}
-
-
 static uint8 Check_Plausibility(uint16 raw, uint8 *err_count) {
-
     if (raw == 0 || raw == 1023) {
         (*err_count)++;
         if (*err_count >= 10) {
@@ -167,10 +159,11 @@ static uint8 Check_Plausibility(uint16 raw, uint8 *err_count) {
 
 void GAU_Init(void) {
 
-    ADC_Init(0u, 6u);
+    ADC_Init(1u, 6u);
 }
+
 void GAU_Update(CarData_t *CarData) {
-    uint16 raw_fuel, raw_coolant, raw_batt, raw_oil;
+    uint16 raw_fuel = 0, raw_coolant = 0, raw_batt = 0, raw_oil = 0;
     uint32 sum_fuel = 0, sum_coolant = 0;
     uint8 i;
 
@@ -186,7 +179,8 @@ void GAU_Update(CarData_t *CarData) {
     uint8 batt_ok = Check_Plausibility(raw_batt, &ErrCount_Batt);
     uint8 oil_ok = Check_Plausibility(raw_oil, &ErrCount_Oil);
 
-    if (fuel_ok && cool_ok && batt_ok && oil_ok) {
+
+    if ((fuel_ok == E_NOK) || (cool_ok == E_NOK) || (batt_ok == E_NOK) || (oil_ok == E_NOK)) {
         CarData->warnMask |= (1 << WARN_CHECK);
     } else {
         CarData->warnMask &= ~(1 << WARN_CHECK);
@@ -205,21 +199,19 @@ void GAU_Update(CarData_t *CarData) {
     raw_coolant = sum_coolant / 8;
 
 
-
-
-    if (fuel_ok) {
+    if (fuel_ok == E_OK) {
         CarData->fuelPct = (uint8)(((uint32)raw_fuel * 100) / 1023);
     }
 
-    if (cool_ok) {
+    if (cool_ok == E_OK) {
         CarData->coolantC = (uint16)((((uint32)raw_coolant * 170) / 1023) - 40);
     }
 
-    if (batt_ok) {
-        CarData->battmV = (uint16)(((uint32)raw_batt * 16000) / 1023);
+    if (batt_ok == E_OK) {
+       CarData->battmV = (uint16)(((uint32)raw_batt * 16) / 1023);
     }
 
-    if (oil_ok) {
+    if (oil_ok == E_OK) {
         CarData->oilBarX10 = (uint8)(((uint32)raw_oil * 100) / 1023);
     }
 }

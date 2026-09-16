@@ -104,28 +104,70 @@ typedef struct {
 void WRN_Update(CarData_t *CarData);
 Warn_t WRN_Highest(const CarData_t *CarData);
 # 2 "APP/warnings/warnings.c" 2
-
-
+# 12 "APP/warnings/warnings.c"
 static uint8 Latched_Oil = 0;
 static uint8 Latched_Coolant = 0;
 
 void WRN_Update(CarData_t *CarData) {
 
+    static uint16 oil_counter = 0;
+    static uint16 coolant_counter = 0;
+    static uint16 batt_low_counter = 0;
+    static uint16 batt_high_counter = 0;
 
-    if (CarData->engineRun && CarData->oilBarX10 < 10) {
-        Latched_Oil = 1;
+
+
+
+    if (CarData->engineRun && (CarData->oilBarX10 < 10)) {
+        oil_counter++;
+        if (oil_counter >= (2000 / 50)) {
+            Latched_Oil = 1;
+        }
+    } else {
+        oil_counter = 0;
     }
+
+
 
 
     if (CarData->coolantC > 110) {
-        Latched_Coolant = 1;
+        coolant_counter++;
+        if (coolant_counter >= (3000 / 50)) {
+            Latched_Coolant = 1;
+        }
+    } else {
+        coolant_counter = 0;
     }
 
 
-    uint8 batt_warn = 0;
-    if ((CarData->engineRun && CarData->battmV < 12000) || (CarData->battmV > 15000)) {
-        batt_warn = 1;
+
+
+    static uint8 batt_low_warn = 0;
+    if (CarData->engineRun && (CarData->battmV < 12000)) {
+        batt_low_counter++;
+        if (batt_low_counter >= (5000 / 50)) batt_low_warn = 1;
+    } else if (CarData->battmV > 12500) {
+        batt_low_counter = 0;
+        batt_low_warn = 0;
+    } else {
+        batt_low_counter = 0;
     }
+
+
+
+
+    static uint8 batt_high_warn = 0;
+    if (CarData->battmV > 15000) {
+        batt_high_counter++;
+        if (batt_high_counter >= (5000 / 50)) batt_high_warn = 1;
+    } else if (CarData->battmV < 14500) {
+        batt_high_counter = 0;
+        batt_high_warn = 0;
+    } else {
+        batt_high_counter = 0;
+    }
+
+
 
 
     static uint8 fuel_warn_active = 0;
@@ -136,19 +178,19 @@ void WRN_Update(CarData_t *CarData) {
     }
 
 
+
+
     if (Latched_Oil) CarData->warnMask |= (1 << WARN_OIL);
     else CarData->warnMask &= ~(1 << WARN_OIL);
 
     if (Latched_Coolant) CarData->warnMask |= (1 << WARN_COOLANT);
     else CarData->warnMask &= ~(1 << WARN_COOLANT);
 
-    if (batt_warn) CarData->warnMask |= (1 << WARN_BATT);
+    if (batt_low_warn || batt_high_warn) CarData->warnMask |= (1 << WARN_BATT);
     else CarData->warnMask &= ~(1 << WARN_BATT);
 
     if (fuel_warn_active) CarData->warnMask |= (1 << WARN_FUEL);
     else CarData->warnMask &= ~(1 << WARN_FUEL);
-
-
 }
 
 Warn_t WRN_Highest(const CarData_t *CarData) {
