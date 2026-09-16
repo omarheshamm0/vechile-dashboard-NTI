@@ -1102,76 +1102,84 @@ int main(void) {
 
     LCD_Init();
     GAU_Init();
-    _delay_ms(100);
+    TIMER0_DelayMS(100);
+
+    FSM_Init(&myCar);
+
+    uint8 last_key_state = 1u;
+    uint16 key_hold_counter = 0;
+    const char* StateNames[] = {
+    "State: OFF      ",
+    "State: ACC      ",
+    "State: BULBCHK  ",
+    "State: IGNITION ",
+    "State: CRANKING ",
+    "State: RUNNING  ",
+    "State: STALLED  ",
+    "State: LIMP_HOME"
+};
 
     while (1) {
+# 120 "main.c"
+        uint8 current_key_state ;
+         GPIO_GetPinValue(3u, 3u,&current_key_state);
+        uint8 start_btn_state ;
+        GPIO_GetPinValue(3u, 4u,&start_btn_state);
 
-        GAU_Update(&myCar);
-
-
-        snprintf(line1, sizeof(line1), "F:%3d%% C:%3dC", myCar.fuelPct, myCar.coolantC);
-        snprintf(line2, sizeof(line2), "Bat:%umV Oil:%u", myCar.battmV, myCar.oilBarX10);
-
-        DSP_Render(PG_MAIN, (const uint8*)line1, (const uint8*)line2);
-
-        TIMER0_DelayMS(500);
-
+        uint8 keyPress = 0;
+        uint8 keyHeld = 0;
+        uint8 startBtn = (start_btn_state == 0u) ? 1 : 0;
 
 
-
-
-        WRN_Update(&myCar);
-
-
-        Warn_t current_warn = WRN_Highest(&myCar);
-
-        char warn_text[17];
-
-
-        switch (current_warn) {
-            case WARN_OIL:
-                sprintf(warn_text, "ERR: Oil Press  ");
-                break;
-            case WARN_BATT:
-                sprintf(warn_text, "ERR: Battery    ");
-                break;
-            case WARN_COOLANT:
-                sprintf(warn_text, "ERR: Overheat!  ");
-                break;
-            case WARN_CHECK:
-                sprintf(warn_text, "Check Engine!   ");
-                break;
-            case WARN_FUEL:
-                sprintf(warn_text, "Warn: Low Fuel  ");
-                break;
-            case WARN_OVERSPEED:
-                sprintf(warn_text, "Warn: Overspeed ");
-                break;
-            case WARN_SEATBELT:
-                sprintf(warn_text, "Fasten Seatbelt ");
-                break;
-            case WARN_DOOR:
-                sprintf(warn_text, "Door is Open!   ");
-                break;
-            case WARN_HANDBRAKE:
-                sprintf(warn_text, "Handbrake ON!   ");
-                break;
-            case WARN_NONE:
-                sprintf(warn_text, "System Normal   ");
-                break;
-            default:
-                sprintf(warn_text, "                ");
-                break;
+        if (last_key_state == 1u && current_key_state == 0u) {
+            keyPress = 1;
         }
 
 
-        LCD_SetCursor(0, 1);
-        LCD_WriteString((const uint8*)warn_text);
+        if (current_key_state == 0u) {
+            key_hold_counter++;
+            if (key_hold_counter >= 200) {
+                keyHeld = 1;
+            }
+        } else {
+            key_hold_counter = 0;
+        }
+        last_key_state = current_key_state;
 
-        TIMER0_DelayMS(500);
 
 
+
+
+        if (myCar.state == CS_CRANKING && startBtn) {
+            myCar.rpm = 800;
+        }
+
+        else if (myCar.state == CS_RUNNING) {
+            myCar.rpm = 800;
+        }
+        else {
+            myCar.rpm = 0;
+        }
+
+
+
+
+        FSM_Run(&myCar, keyPress, keyHeld, startBtn);
+
+
+
+
+        LCD_SetCursor(0, 0);
+        LCD_WriteString((const uint8*)StateNames[myCar.state]);
+
+
+
+
+        TIMER0_DelayMS(10);
     }
-    return 0;
+
+
+
+
 
 }

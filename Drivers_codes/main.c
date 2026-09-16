@@ -86,79 +86,100 @@ int main(void) {
     /* تهيئة الشاشة والـ ADC */
     LCD_Init();
     GAU_Init();
-    _delay_ms(100);
+    TIMER0_DelayMS(100);
+   
+    FSM_Init(&myCar);
 
+    uint8 last_key_state = GPIO_HIGH; // حالة زرار الكونتاكت السابقة
+    uint16 key_hold_counter = 0;
+    const char* StateNames[] = {
+    "State: OFF      ", 
+    "State: ACC      ", 
+    "State: BULBCHK  ", 
+    "State: IGNITION ",
+    "State: CRANKING ", 
+    "State: RUNNING  ", 
+    "State: STALLED  ", 
+    "State: LIMP_HOME"
+};
+   
     while (1) {
         /* تحديث الحساسات وقراءتها من الـ ADC مع الفلترة */
-        GAU_Update(&myCar);
+        /*GAU_Update(&myCar);
 
         /* عرض النتائج على الشاشة للتأكد من التحويل والـ Scaling */
-        snprintf(line1, sizeof(line1), "F:%3d%% C:%3dC", myCar.fuelPct, myCar.coolantC);
-        snprintf(line2, sizeof(line2), "Bat:%umV Oil:%u", myCar.battmV, myCar.oilBarX10);
+       // snprintf(line1, sizeof(line1), "F:%3d%% C:%3dC", myCar.fuelPct, myCar.coolantC);
+        //snprintf(line2, sizeof(line2), "Bat:%uV Oil:%u", myCar.battmV, myCar.oilBarX10);
 
-        DSP_Render(PG_MAIN, (const uint8*)line1, (const uint8*)line2);
+       // DSP_Render(PG_MAIN, (const uint8*)line1, (const uint8*)line2);
 
-        TIMER0_DelayMS(500); /* تحديث كل نص ثانية */
+       // TIMER0_DelayMS(500); /* تحديث كل نص ثانية */
+        //LCD_Clear();
+        
+        // قراءة زرار الكونتاكت (PD3) وزرار التشغيل (PD4) - Active Low
+        uint8 current_key_state ;
+         GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN3,&current_key_state);
+        uint8 start_btn_state ; 
+        GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN4,&start_btn_state);
+        
+        uint8 keyPress = 0;
+        uint8 keyHeld = 0;
+        uint8 startBtn = (start_btn_state == GPIO_LOW) ? 1 : 0;
+
+        /* فحص ضغطة الكونتاكت (Falling Edge) */
+        if (last_key_state == GPIO_HIGH && current_key_state == GPIO_LOW) {
+            keyPress = 1;
+        }
+        
+        /* فحص الضغطة المطولة للكونتاكت (لعمل الإطفاء الإجباري) */
+        if (current_key_state == GPIO_LOW) {
+            key_hold_counter++;
+            if (key_hold_counter >= 200) { // 200 * 10ms = 2 ثانية
+                keyHeld = 1; 
+            }
+        } else {
+            key_hold_counter = 0;
+        }
+        last_key_state = current_key_state;
+
+        /* ==========================================================
+         * 2. محاكاة الـ RPM (عشان الموتور يشتغل)
+         * ========================================================== */
+        // لو بندوس Start، ارفع الـ RPM وهمياً عشان السيستم يحس إن الموتور قام
+        if (myCar.state == CS_CRANKING && startBtn) {
+            myCar.rpm = 800; 
+        } 
+        // لو شيلنا إيدنا والموتور كان شغال، سيبه 800 عشان مايقعش في الـ Stall
+        else if (myCar.state == CS_RUNNING) {
+            myCar.rpm = 800;
+        }
+        else {
+            myCar.rpm = 0;
+        }
+
+        /* ==========================================================
+         * 3. تشغيل الـ State Machine
+         * ========================================================== */
+        FSM_Run(&myCar, keyPress, keyHeld, startBtn);
+
+        /* ==========================================================
+         * 4. طباعة الحالة الحالية على الـ LCD
+         * ========================================================== */
+        LCD_SetCursor(0, 0);
+        LCD_WriteString((const uint8*)StateNames[myCar.state]);
+
+        /* ==========================================================
+         * 5. قلب التايمر (Delay 10ms) - ده أهم سطر لضبط الوقت!
+         * ========================================================== */
+        TIMER0_DelayMS(10); 
+    }
 
     /* 1. اقرأ الحساسات وحدث القيم */
     
         
         /* 2. شغل دالة التحذيرات عشان تحسب وتفلتر وتعمل Latching */
-        WRN_Update(&myCar);
-        
-        /* 3. هات أعلى تحذير موجود حالياً */
-        Warn_t current_warn = WRN_Highest(&myCar);
-        
-        char warn_text[17]; /* 16 حرف للشاشة + 1 للـ Null terminator */
-
-        /* 4. حدد النص اللي هيتكتب بناءً على نوع الخطر */
-        switch (current_warn) {
-            case WARN_OIL:       
-                sprintf(warn_text, "ERR: Oil Press  "); 
-                break;
-            case WARN_BATT:      
-                sprintf(warn_text, "ERR: Battery    "); 
-                break;
-            case WARN_COOLANT:   
-                sprintf(warn_text, "ERR: Overheat!  "); 
-                break;
-            case WARN_CHECK:     
-                sprintf(warn_text, "Check Engine!   "); 
-                break;
-            case WARN_FUEL:      
-                sprintf(warn_text, "Warn: Low Fuel  "); 
-                break;
-            case WARN_OVERSPEED: 
-                sprintf(warn_text, "Warn: Overspeed "); 
-                break;
-            case WARN_SEATBELT:  
-                sprintf(warn_text, "Fasten Seatbelt "); 
-                break;
-            case WARN_DOOR:      
-                sprintf(warn_text, "Door is Open!   "); 
-                break;
-            case WARN_HANDBRAKE: 
-                sprintf(warn_text, "Handbrake ON!   "); 
-                break;
-            case WARN_NONE:      
-                sprintf(warn_text, "System Normal   "); 
-                break;
-            default:             
-                sprintf(warn_text, "                "); 
-                break;
-        }
-
-        /* 5. اطبع الجملة دي على السطر التاني في الشاشة */
-        LCD_SetCursor(0, 1);
-        LCD_WriteString((const uint8*)warn_text);
-        
-        TIMER0_DelayMS(500);
-
-
-    }
-    return 0;
-
 }
+
 
 
 
