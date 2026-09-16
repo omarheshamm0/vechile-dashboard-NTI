@@ -2,6 +2,10 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
+
+
+
+
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 1 3
 # 93 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/sfr_defs.h" 1 3
@@ -195,9 +199,9 @@ typedef struct
 
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/lock.h" 1 3
 # 741 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 2 3
-# 2 "main.c" 2
+# 6 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/interrupt.h" 1 3
-# 3 "main.c" 2
+# 7 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 1 3
 # 46 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay_basic.h" 1 3
@@ -286,7 +290,7 @@ _delay_us(double __us)
     __builtin_avr_delay_cycles(__ticks_dc);
 # 296 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 3
 }
-# 4 "main.c" 2
+# 8 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/stdio.h" 1 3
 # 42 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/stdio.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/lib/gcc/avr/16.1.0/include/stdarg.h" 1 3
@@ -570,7 +574,7 @@ extern void setbuf(FILE *stream, char *buf);
 extern int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 extern FILE *tmpfile(void);
 extern char *tmpnam (char *s);
-# 5 "main.c" 2
+# 9 "main.c" 2
 
 # 1 "LIB/STD_TYPES.h" 1
 # 11 "LIB/STD_TYPES.h"
@@ -590,7 +594,7 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 7 "main.c" 2
+# 11 "main.c" 2
 # 1 "LIB/dashboard_types.h" 1
 
 
@@ -667,7 +671,7 @@ typedef struct {
     volatile uint8 fresh;
     uint16 stallTicks;
 } Capture_t;
-# 8 "main.c" 2
+# 12 "main.c" 2
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
 # 43 "MCAL/GPIO/GPIO_interface.h"
 STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
@@ -701,7 +705,34 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 9 "main.c" 2
+# 13 "main.c" 2
+# 1 "MCAL/ADC/ADC_interface.h" 1
+# 46 "MCAL/ADC/ADC_interface.h"
+STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
+
+
+
+
+
+STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading);
+
+
+
+
+STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel);
+
+
+
+
+
+STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
+
+
+
+
+
+STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
+# 14 "main.c" 2
 # 1 "MCAL/TIMER/TIMER_interface.h" 1
 # 29 "MCAL/TIMER/TIMER_interface.h"
 STD_ReturnType TIMER0_Init(void);
@@ -747,39 +778,7 @@ STD_ReturnType TIMER1_PWM(uint16 Copy_u16FrequencyHz, uint8 Copy_u8DutyPercent);
 
 
 STD_ReturnType TIMER1_Stop(void);
-# 10 "main.c" 2
-# 1 "MCAL/UART/UART_interface.h" 1
-# 20 "MCAL/UART/UART_interface.h"
-STD_ReturnType UART_Init(uint32 Copy_u32BaudRate);
-
-
-
-
-STD_ReturnType UART_SendByte(uint8 Copy_u8Data);
-
-
-
-
-STD_ReturnType UART_ReceiveByte(uint8 *Copy_pu8Data);
-
-
-
-
-STD_ReturnType UART_SendString(const uint8 *Copy_pu8String);
-
-
-
-
-
-STD_ReturnType UART_IsDataReady(void);
-
-
-
-
-
-STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State);
-STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
-# 11 "main.c" 2
+# 15 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -811,7 +810,7 @@ STD_ReturnType SPI_Acquire(uint8 Copy_u8Owner);
 
 
 void SPI_Release(void);
-# 12 "main.c" 2
+# 16 "main.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
 # 14 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 # 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
@@ -849,7 +848,7 @@ STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
 STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
 # 69 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 13 "main.c" 2
+# 17 "main.c" 2
 
 # 1 "HAL/bodysw/bodysw.h" 1
 # 26 "HAL/bodysw/bodysw.h"
@@ -857,7 +856,7 @@ STD_ReturnType BSW_Init(void);
 
 
 STD_ReturnType BSW_Read(uint8 *Copy_pu8SwitchMask);
-# 15 "main.c" 2
+# 19 "main.c" 2
 # 1 "HAL/lamps595/lamps595.h" 1
 # 27 "HAL/lamps595/lamps595.h"
 STD_ReturnType LMP_Init(void);
@@ -871,7 +870,7 @@ STD_ReturnType LMP_Refresh(void);
 
 STD_ReturnType LMP_BulbCheckStart(void);
 STD_ReturnType LMP_BulbCheckUpdate(uint16 Copy_u16ElapsedMs);
-# 16 "main.c" 2
+# 20 "main.c" 2
 # 1 "HAL/lcd_i2c/lcd_i2c.h" 1
 # 32 "HAL/lcd_i2c/lcd_i2c.h"
 STD_ReturnType LCD_Init(void);
@@ -885,7 +884,7 @@ STD_ReturnType LCD_WriteNumber(uint32 Copy_u32Value);
 
 STD_ReturnType DSP_Next(void);
 STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const uint8 *Copy_pu8Line2);
-# 17 "main.c" 2
+# 21 "main.c" 2
 # 1 "HAL/GAUGES/gauges.h" 1
 
 
@@ -896,7 +895,7 @@ STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const u
 
 void GAU_Init(void);
 void GAU_Update(CarData_t *CarData);
-# 18 "main.c" 2
+# 22 "main.c" 2
 # 1 "HAL/CHIME/chime.h" 1
 
 
@@ -927,29 +926,50 @@ void CHM_Play(ChimePattern_t pattern);
 
 
 void CHM_Update(void);
-# 19 "main.c" 2
+# 23 "main.c" 2
 # 1 "HAL/SPEEDO/speedo.h" 1
 
 
 
 
+# 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
+# 6 "HAL/SPEEDO/speedo.h" 2
+
+# 1 "HAL/SPEEDO/../../LIB/dashboard_types.h" 1
+# 8 "HAL/SPEEDO/speedo.h" 2
+
 
 void SPD_Init(void);
-void SPD_OnCapture(uint16 current_icr);
-void SPD_OnOverflow(void);
-uint8 SPD_GetKmh(void);
-# 20 "main.c" 2
+
+
+void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);
+
+
+void SPD_OnCaptureISR(void);
+
+
+void SPD_OnOverflowISR(void);
+# 24 "main.c" 2
 # 1 "HAL/TACHO/tacho.h" 1
 
 
 
 
+# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
+# 6 "HAL/TACHO/tacho.h" 2
+
+# 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
+# 8 "HAL/TACHO/tacho.h" 2
+
 
 void TAC_Init(void);
+
+
+void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg);
+
+
 void TAC_OnPulse(void);
-void TAC_Update250ms(void);
-uint16 TAC_GetRpm(void);
-# 21 "main.c" 2
+# 25 "main.c" 2
 # 1 "APP/warnings/warnings.h" 1
 
 
@@ -959,7 +979,7 @@ uint16 TAC_GetRpm(void);
 
 void WRN_Update(CarData_t *CarData);
 Warn_t WRN_Highest(const CarData_t *CarData);
-# 22 "main.c" 2
+# 26 "main.c" 2
 # 1 "APP/odometer/odometer.h" 1
 # 10 "APP/odometer/odometer.h"
 void ODO_AddDistance(uint16 mm_to_add);
@@ -980,7 +1000,7 @@ void ODO_GetTrip(uint32 *trip);
 
 
 void ODO_ResetTrip(void);
-# 23 "main.c" 2
+# 27 "main.c" 2
 # 1 "APP/cluster/cluster.h" 1
 # 10 "APP/cluster/cluster.h"
 void FSM_Init(CarData_t *CarData);
@@ -989,7 +1009,7 @@ CarData_t *Cluster_GetCarData(void);
 void Cluster_SetPage(DisplayPage_t page);
 # 23 "APP/cluster/cluster.h"
 void FSM_Run(CarData_t *CarData, uint8 keyPress, uint8 keyHeld, uint8 startBtn);
-# 24 "main.c" 2
+# 28 "main.c" 2
 # 1 "APP/console.h" 1
 # 9 "APP/console.h"
 void Console_Init(void);
@@ -999,35 +1019,14 @@ void Console_SendTelemetry(void);
 
 
 void Console_ProcessCommand(void);
-# 25 "main.c" 2
-# 1 "MCAL/ADC/ADC_interface.h" 1
-# 46 "MCAL/ADC/ADC_interface.h"
-STD_ReturnType ADC_Init(uint8 Copy_u8Ref, uint8 Copy_u8Prescaler);
+# 29 "main.c" 2
 
 
 
 
 
-STD_ReturnType ADC_ReadChannel(uint8 Copy_u8Channel, uint16 *Copy_pu16Reading);
 
 
-
-
-STD_ReturnType ADC_StartConversion(uint8 Copy_u8Channel);
-
-
-
-
-
-STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
-
-
-
-
-
-STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
-# 26 "main.c" 2
-# 38 "main.c"
 static void App_ConfigPins(void)
 {
 
@@ -1035,6 +1034,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(0u, 1u, 0u);
     GPIO_SetPinDirection(0u, 2u, 0u);
     GPIO_SetPinDirection(0u, 3u, 0u);
+
 
     GPIO_SetPinDirection(1u, 0u, 2u);
     GPIO_SetPinDirection(1u, 1u, 2u);
@@ -1045,7 +1045,8 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(1u, 6u, 0u);
     GPIO_SetPinDirection(1u, 7u, 1u);
 
-    GPIO_SetPinDirection(2u, 0u,2u);
+
+    GPIO_SetPinDirection(2u, 0u, 2u);
     GPIO_SetPinDirection(2u, 1u, 2u);
     GPIO_SetPinDirection(2u, 2u, 1u);
     GPIO_SetPinDirection(2u, 3u, 2u);
@@ -1053,6 +1054,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(2u, 5u, 2u);
     GPIO_SetPinDirection(2u, 6u, 1u);
     GPIO_SetPinDirection(2u, 7u, 1u);
+
 
     GPIO_SetPinDirection(3u, 0u, 0u);
     GPIO_SetPinDirection(3u, 1u, 1u);
@@ -1063,6 +1065,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(3u, 6u, 0u);
     GPIO_SetPinDirection(3u, 7u, 1u);
 
+
     GPIO_SetPinValue(1u, 4u, 1u);
     GPIO_SetPinValue(2u, 2u, 0u);
     GPIO_SetPinValue(2u, 6u, 0u);
@@ -1070,15 +1073,9 @@ static void App_ConfigPins(void)
     GPIO_SetPinValue(3u, 7u, 0u);
 }
 
-static uint8 Local_u8IgnitionPrev = 1u;
-static uint8 Local_u8StartPrev = 1u;
-static uint8 Local_u8DispPrev = 1u;
-static uint16 Local_u16SysTicks = 0u;
-
-
-
 static void App_InitSystem(void)
 {
+
     App_ConfigPins();
     TIMER0_Init();
     SPI_InitMaster(1u);
@@ -1094,7 +1091,7 @@ static void App_InitSystem(void)
     INTERRUPT_EnableGlobal();
 }
 
-static uint8 App_ReadButton(uint8 port, uint8 pin, uint8 prevState)
+static uint8 App_ReadFallingEdge(uint8 port, uint8 pin, uint8 prevState)
 {
     uint8 current = 1u;
     uint8 edge = 0u;
@@ -1106,6 +1103,7 @@ static uint8 App_ReadButton(uint8 port, uint8 pin, uint8 prevState)
             edge = 1u;
         }
     }
+
     return edge;
 }
 
@@ -1126,17 +1124,11 @@ static void App_UpdateSwitchInputs(CarData_t *CarData)
 
 static void App_UpdateLampByte(CarData_t *CarData)
 {
-    uint8 fuelWarn = (CarData->fuelPct < 10u) ? 1u : 0u;
-    uint8 oilWarn = (CarData->warnMask & (1u << WARN_OIL)) ? 1u : 0u;
-    uint8 battWarn = (CarData->warnMask & (1u << WARN_BATT)) ? 1u : 0u;
-    uint8 coolWarn = (CarData->warnMask & (1u << WARN_COOLANT)) ? 1u : 0u;
-    uint8 checkWarn = (CarData->warnMask & (1u << WARN_CHECK)) ? 1u : 0u;
-
-    LMP_Set(0u, fuelWarn);
-    LMP_Set(1u, oilWarn);
-    LMP_Set(2u, battWarn);
-    LMP_Set(3u, coolWarn);
-    LMP_Set(4u, checkWarn);
+    LMP_Set(0u, (CarData->fuelPct < 10u) ? 1u : 0u);
+    LMP_Set(1u, (CarData->warnMask & (1u << WARN_OIL)) ? 1u : 0u);
+    LMP_Set(2u, (CarData->warnMask & (1u << WARN_BATT)) ? 1u : 0u);
+    LMP_Set(3u, (CarData->warnMask & (1u << WARN_COOLANT)) ? 1u : 0u);
+    LMP_Set(4u, (CarData->warnMask & (1u << WARN_CHECK)) ? 1u : 0u);
     LMP_Set(5u, CarData->turnLeft ? 1u : 0u);
     LMP_Set(6u, CarData->turnRight ? 1u : 0u);
     LMP_Set(7u, CarData->highBeam ? 1u : 0u);
@@ -1180,16 +1172,18 @@ static void App_RenderDisplay(CarData_t *CarData)
 int main(void)
 {
     CarData_t *CarData = ((void *)0);
+    DashCfg_t cfg;
     uint16 tickCounter = 0u;
     uint8 ignitionPress = 0u;
     uint8 ignitionHeld = 0u;
-    uint8 displayCycle = 0u;
     uint8 startPressed = 0u;
+    uint8 displayCycle = 0u;
     uint8 keyState = 0u;
-    uint8 previousKey = 1u;
-    uint8 previousStart = 1u;
-    uint8 previousDisp = 1u;
-    DashCfg_t cfg;
+    uint8 prevKey = 1u;
+    uint8 prevStart = 1u;
+    uint8 prevDisp = 1u;
+    uint16 keyHoldCounter = 0u;
+
 
     cfg.magic = 0x4443u;
     cfg.version = 0x01u;
@@ -1216,26 +1210,43 @@ int main(void)
 
     while (1)
     {
+
         TIMER0_DelayMS(10u);
-        Local_u16SysTicks++;
         tickCounter++;
 
-        GPIO_GetPinValue(3u, 3u, &keyState);
-        ignitionPress = (keyState == 0u) && (previousKey == 1u) ? 1u : 0u;
-        ignitionHeld = (keyState == 0u) ? 1u : 0u;
-        previousKey = keyState;
 
-        GPIO_GetPinValue(3u, 4u, &startPressed);
-        startPressed = (startPressed == 0u) ? 1u : 0u;
-        if (startPressed && (previousStart == 1u))
+        if (GPIO_GetPinValue(3u, 3u, &keyState) == E_OK)
         {
+            ignitionPress = (keyState == 0u) && (prevKey == 1u) ? 1u : 0u;
 
+            if (keyState == 0u)
+            {
+                keyHoldCounter++;
+                ignitionHeld = (keyHoldCounter >= 200u) ? 1u : 0u;
+            }
+            else
+            {
+                keyHoldCounter = 0u;
+                ignitionHeld = 0u;
+            }
+
+            prevKey = keyState;
         }
-        previousStart = (GPIO_GetPinValue(3u, 4u, &keyState) == E_OK) ? keyState : previousStart;
 
-        GPIO_GetPinValue(3u, 5u, &keyState);
-        displayCycle = (keyState == 0u) && (previousDisp == 1u) ? 1u : 0u;
-        previousDisp = keyState;
+
+        if (GPIO_GetPinValue(3u, 4u, &keyState) == E_OK)
+        {
+            startPressed = (keyState == 0u) ? 1u : 0u;
+            prevStart = keyState;
+        }
+
+
+        if (GPIO_GetPinValue(3u, 5u, &keyState) == E_OK)
+        {
+            displayCycle = (keyState == 0u) && (prevDisp == 1u) ? 1u : 0u;
+            prevDisp = keyState;
+        }
+
 
         App_UpdateSwitchInputs(CarData);
         GAU_Update(CarData);
@@ -1250,24 +1261,12 @@ int main(void)
         App_UpdateLampByte(CarData);
         CHM_Update();
 
+
         if ((tickCounter % 10u) == 0u)
         {
             SPD_Task100ms(CarData, &cfg);
             Console_SendTelemetry();
-        }
 
-        if ((tickCounter % 25u) == 0u)
-        {
-            TAC_Task250ms(CarData, &cfg);
-        }
-
-        if ((tickCounter % 50u) == 0u)
-        {
-            App_RenderDisplay(CarData);
-        }
-
-        if ((tickCounter % 100u) == 0u)
-        {
             if (CarData->speedKmh > cfg.speedLimitKmh)
             {
                 CHM_Play(CHM_PATTERN_OVERSPEED);
@@ -1284,6 +1283,24 @@ int main(void)
             {
                 CHM_Play(CHM_PATTERN_OFF);
             }
+        }
+
+
+        if ((tickCounter % 25u) == 0u)
+        {
+            TAC_Task250ms(CarData, &cfg);
+        }
+
+
+        if ((tickCounter % 50u) == 0u)
+        {
+            App_RenderDisplay(CarData);
+        }
+
+
+        if ((tickCounter % 100u) == 0u)
+        {
+
         }
 
         Console_ProcessCommand();
