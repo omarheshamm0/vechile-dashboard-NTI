@@ -7,48 +7,47 @@ __zero_reg__ = 1
 	.text
 	.section	.rodata.main.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"F:%3d%% C:%3dC"
+	.string	"State: OFF      "
 .LC1:
-	.string	"Bat:%umV Oil:%u"
+	.string	"State: ACC      "
 .LC2:
-	.string	"ERR: Oil Press  "
+	.string	"State: BULBCHK  "
 .LC3:
-	.string	"ERR: Battery    "
+	.string	"State: IGNITION "
 .LC4:
-	.string	"ERR: Overheat!  "
+	.string	"State: CRANKING "
 .LC5:
-	.string	"Check Engine!   "
+	.string	"State: RUNNING  "
 .LC6:
-	.string	"Warn: Low Fuel  "
+	.string	"State: STALLED  "
 .LC7:
-	.string	"Warn: Overspeed "
-.LC8:
-	.string	"Fasten Seatbelt "
+	.string	"State: LIMP_HOME"
+	.section	.rodata
 .LC9:
-	.string	"Door is Open!   "
-.LC10:
-	.string	"Handbrake ON!   "
-.LC11:
-	.string	"System Normal   "
-.LC12:
-	.string	"                "
+	.word	.LC0
+	.word	.LC1
+	.word	.LC2
+	.word	.LC3
+	.word	.LC4
+	.word	.LC5
+	.word	.LC6
+	.word	.LC7
 	.section	.text.startup.main,"ax",@progbits
 .global	main
 	.type	main, @function
 main:
 	in r28,__SP_L__
 	in r29,__SP_H__
-	subi r28,83
-	sbci r29,0
+	sbiw r28,50
 	in __tmp_reg__,__SREG__
 	cli
 	out __SP_H__,r29
 	out __SREG__,__tmp_reg__
 	out __SP_L__,r28
 /* prologue: function */
-/* frame size = 83 */
-/* stack size = 83 */
-.L__stack_usage = 83
+/* frame size = 50 */
+/* stack size = 50 */
+.L__stack_usage = 50
 	ldi r20,0
 	ldi r22,0
 	ldi r24,0
@@ -192,157 +191,110 @@ main:
 	brne 0b
 	call LCD_Init
 	call GAU_Init
-	ldi r24,lo8(159999)
-	ldi r25,hi8(159999)
-	ldi r18,hlo8(159999)
-1:	subi r24,1
-	sbci r25,0
-	sbci r18,0
-	brne 1b
-	rjmp .
-	nop
-	mov r12,r16
-	mov r11,r17
-	ldi r24,lo8(17)
-	mov r13,r24
-	movw r16,r28
-	subi r16,-67
-	sbci r17,-1
-	movw r14,r28
-	ldi r24,50
-	add r14,r24
-	adc r15,__zero_reg__
-.L15:
-	mov r24,r12
-	mov r25,r11
-	call GAU_Update
-	ldd r24,Y+7
-	push r24
-	ldd r24,Y+6
-	push r24
-	ldd r24,Y+5
-	push __zero_reg__
-	push r24
-	ldi r24,lo8(.LC0)
-	ldi r25,hi8(.LC0)
-	push r25
-	push r24
-	push __zero_reg__
-	push r13
-	push r17
-	push r16
-	call snprintf
-	ldd r24,Y+10
-	push __zero_reg__
-	push r24
-	ldd r24,Y+9
-	push r24
-	ldd r24,Y+8
-	push r24
-	ldi r24,lo8(.LC1)
-	ldi r25,hi8(.LC1)
-	push r25
-	push r24
-	push __zero_reg__
-	push r13
-	push r15
-	push r14
-	call snprintf
-	movw r20,r14
-	movw r22,r16
-	ldi r24,0
-	call DSP_Render
-	ldi r24,lo8(-12)
-	ldi r25,lo8(1)
+	ldi r24,lo8(100)
+	ldi r25,0
 	call TIMER0_DelayMS
-	mov r24,r12
-	mov r25,r11
-	call WRN_Update
-	mov r24,r12
-	mov r25,r11
-	call WRN_Highest
-	in __tmp_reg__,__SREG__
-	cli
-	out __SP_H__,r29
-	out __SREG__,__tmp_reg__
-	out __SP_L__,r28
-	ldi r22,lo8(.LC12)
-	ldi r23,hi8(.LC12)
-	cpi r24,10
-	cpc r25,__zero_reg__
-	brsh .L16
-	subi r24,lo8(-(gs(.L4)))
-	sbci r25,hi8(-(gs(.L4)))
-	movw r30,r24
-	jmp __tablejump2__
-	.section	.jumptables.gcc.main,"a",@progbits
-	.p2align	1
-	.type	.L4, @object
-.L4:
-	.word gs(.L13)
-	.word gs(.L12)
-	.word gs(.L11)
-	.word gs(.L10)
-	.word gs(.L9)
-	.word gs(.L8)
-	.word gs(.L7)
-	.word gs(.L6)
-	.word gs(.L5)
-	.word gs(.L3)
-	.section	.text.startup.main
-.L12:
-	ldi r22,lo8(.LC2)
-	ldi r23,hi8(.LC2)
-.L16:
+	movw r24,r16
+	call FSM_Init
+	ldi r24,lo8(16)
+	ldi r30,lo8(.LC9)
+	ldi r31,hi8(.LC9)
+	movw r26,r28
+	adiw r26,33
+	0:
+	ld r0,Z+
+	st X+,r0
+	dec r24
+	brne 0b
+	mov r14,__zero_reg__
+	mov r15,__zero_reg__
+	clr r12
+	inc r12
+.L9:
 	movw r24,r28
-	adiw r24,33
-	call strcpy
+	adiw r24,50
+	movw r20,r24
+	ldi r22,lo8(3)
+	ldi r24,lo8(3)
+	call GPIO_GetPinValue
+	movw r24,r28
+	adiw r24,49
+	movw r20,r24
+	ldi r22,lo8(4)
+	ldi r24,lo8(3)
+	call GPIO_GetPinValue
+	ldd r19,Y+49
+	ldd r13,Y+50
 	ldi r22,lo8(1)
+	mov r24,r12
+	cpi r24,lo8(1)
+	breq .L2
+	ldi r22,0
+.L2:
+	ldi r24,lo8(1)
+	cpse r13,__zero_reg__
+	ldi r24,0
+.L3:
+	and r22,r24
+	cpse r13,__zero_reg__
+	rjmp .L10
+	ldi r24,-1
+	sub r14,r24
+	sbc r15,r24
+	ldi r20,lo8(1)
+	ldi r24,-56
+	cp r14,r24
+	cpc r15,__zero_reg__
+	brsh .L4
+	ldi r20,0
+.L4:
+	ldd r24,Y+27
+	cpi r24,lo8(4)
+	brne .L6
+	cpi r19,lo8(0)
+.L25:
+	breq .L12
+	ldi r24,0
+	ldi r25,0
+.L7:
+	std Y+3,r25
+	std Y+4,r24
+	ldi r18,lo8(1)
+	cpse r19,__zero_reg__
+	ldi r18,0
+.L8:
+	movw r24,r16
+	call FSM_Run
+	ldi r22,0
 	ldi r24,0
 	call LCD_SetCursor
-	movw r24,r28
-	adiw r24,33
+	ldd r30,Y+27
+	movw r24,r16
+	add r24,r30
+	adc r25,__zero_reg__
+	add r24,r30
+	adc r25,__zero_reg__
+	movw r30,r24
+	ldd r24,Z+32
+	ldd r25,Z+33
 	call LCD_WriteString
-	ldi r24,lo8(-12)
-	ldi r25,lo8(1)
+	ldi r24,lo8(10)
+	ldi r25,0
 	call TIMER0_DelayMS
-	rjmp .L15
-.L11:
-	ldi r22,lo8(.LC3)
-	ldi r23,hi8(.LC3)
-	rjmp .L16
+	mov r12,r13
+	rjmp .L9
 .L10:
-	ldi r22,lo8(.LC4)
-	ldi r23,hi8(.LC4)
-	rjmp .L16
-.L9:
-	ldi r22,lo8(.LC5)
-	ldi r23,hi8(.LC5)
-	rjmp .L16
-.L8:
-	ldi r22,lo8(.LC6)
-	ldi r23,hi8(.LC6)
-	rjmp .L16
-.L7:
-	ldi r22,lo8(.LC7)
-	ldi r23,hi8(.LC7)
-	rjmp .L16
+	ldi r20,0
+	mov r14,__zero_reg__
+	mov r15,__zero_reg__
+	rjmp .L4
 .L6:
-	ldi r22,lo8(.LC8)
-	ldi r23,hi8(.LC8)
-	rjmp .L16
-.L5:
-	ldi r22,lo8(.LC9)
-	ldi r23,hi8(.LC9)
-	rjmp .L16
-.L3:
-	ldi r22,lo8(.LC10)
-	ldi r23,hi8(.LC10)
-	rjmp .L16
-.L13:
-	ldi r22,lo8(.LC11)
-	ldi r23,hi8(.LC11)
-	rjmp .L16
+	cpi r24,lo8(5)
+	rjmp .L25
+.L12:
+	ldi r24,lo8(3)
+	ldi r25,lo8(32)
+	rjmp .L7
 	.size	main, .-main
 	.ident	"GCC: (GNU) 16.1.0"
 .global __do_copy_data
