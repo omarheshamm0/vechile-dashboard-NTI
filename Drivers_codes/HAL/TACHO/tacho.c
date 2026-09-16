@@ -1,52 +1,45 @@
-#include "tacho.h"
-#include "../../MCAL/INTERRUPT/INTERRUPT_interface.h"
+#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stddef.h>
 
-/* Holds the total number of engine pulses recorded by INT0 */
-static volatile uint16 g_pulseCount = 0;
+#include "LIB/STD_TYPES.h"
+#include "LIB/dashboard_types.h"
+#include "HAL/TACHO/tacho.h"
 
-/* Interrupt callback: increments count each time an engine pulse arrives */
-void TAC_OnPulse(void)
+static volatile uint16_t s_tachoPulseCount = 0;
+
+/* External Interrupt 0 ISR (PD2 / Pin 15) */
+ISR(INT0_vect)
 {
-    g_pulseCount++;
+    s_tachoPulseCount++;
 }
 
-/* Configure INT0 to trigger on rising signal edges */
 void TAC_Init(void)
 {
-    EXTI_SetSense(EXTI_INT0, EXTI_RISING_EDGE);
-    EXTI_SetCallback(EXTI_INT0, TAC_OnPulse);
-    EXTI_Enable(EXTI_INT0);
+    /* Set PD2 (INT0) as Input with Internal Pull-Up */
+    DDRD &= ~(1 << PD2);
+    PORTD |= (1 << PD2);
+
+    /* Configure INT0 for Rising Edge Trigger */
+    MCUCR &= ~((1 << ISC01) | (1 << ISC00));
+    MCUCR |= (1 << ISC01) | (1 << ISC00);
+    GICR  |= (1 << INT0);
 }
 
-/* Task called every 250 ms to compute RPM and engine state */
-void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg)
+void TAC_Task250ms(CarData_t *pData, const DashCfg_t *pCfg)
 {
-    uint16 count = 0;
-
-    /* Safely fetch and reset pulse counter without interrupt interference */
-    INTERRUPT_DisableGlobal();
-    count = g_pulseCount;
-    g_pulseCount = 0;
-    INTERRUPT_EnableGlobal();
-
-    /* Convert 250ms pulse count to Revolutions Per Minute (RPM) */
-    if (pCfg->tachPulsesPerRev > 0)
+    if ((pData == NULL) || (pCfg == NULL) || (pCfg->tachPulsesPerRev == 0))
     {
-        pCarData->rpm = (uint16)(((uint32)count * 240UL) / pCfg->tachPulsesPerRev);
-    }
-    else
-    {
-        pCarData->rpm = count * 120U; /* Default fall-back calculation */
+        return;
     }
 
-    /* Update engine running state based on RPM threshold */
-    if (pCarData->rpm > 500)
-    {
-        pCarData->engineRun = 1; /* Engine running */
-    }
-    else if (pCarData->rpm < 300)
-    {
-        pCarData->engineRun = 0; /* Engine stopped / stalled */
-    }
+    /* Atomic Read and Reset */
+    uint8_t sreg = SREG;
+    cli();
+    uint16_t pulses = s_tachoPulseCount;
+    s_tachoPulseCount = 0;
+    SREG = sreg;
+
+    /* RPM = (pulses * 4 * 60) / tachPulsesPerRev */
+    pData->rpm = (uint16_t)(((uint32_t)pulses * 240UL) / pCfg->tachPulsesPerRev);
 }
