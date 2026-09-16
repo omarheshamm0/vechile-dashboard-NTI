@@ -9,6 +9,7 @@
 #include "STD_TYPES.h"
 #include "UART_interface.h"
 #include "UART_private.h"
+#include "INTERRUPT_interface.h"
 
 #ifndef F_CPU
 #define F_CPU 8000000UL
@@ -122,9 +123,14 @@ STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State)
 	}
 
 	if (Copy_u8State == 1u)
+	{
 		UART_UCSRB |= (uint8)(1u << UART_RXCIE);
+		INTERRUPT_EnableGlobal();
+	}
 	else
+	{
 		UART_UCSRB &= (uint8)~(1u << UART_RXCIE);
+	}
 
 	return E_OK;
 }
@@ -137,9 +143,14 @@ STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State)
 	}
 
 	if (Copy_u8State == 1u)
+	{
 		UART_UCSRB |= (uint8)(1u << UART_UDRIE);
+		INTERRUPT_EnableGlobal();
+	}
 	else
+	{
 		UART_UCSRB &= (uint8)~(1u << UART_UDRIE);
+	}
 
 	return E_OK;
 }

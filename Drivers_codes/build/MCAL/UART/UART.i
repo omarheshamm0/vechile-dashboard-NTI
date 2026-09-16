@@ -54,7 +54,45 @@ STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State);
 # 11 "MCAL/UART/UART.c" 2
 # 1 "MCAL/UART/UART_private.h" 1
 # 12 "MCAL/UART/UART.c" 2
-# 25 "MCAL/UART/UART.c"
+# 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
+# 14 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+# 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
+# 15 "MCAL/INTERRUPT/INTERRUPT_interface.h" 2
+
+typedef void (*EXTI_CallbackType)(void);
+# 32 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+STD_ReturnType INTERRUPT_EnableGlobal(void);
+
+
+
+
+STD_ReturnType INTERRUPT_DisableGlobal(void);
+
+
+
+
+
+STD_ReturnType EXTI_SetSense(uint8 Copy_u8Int, uint8 Copy_u8Sense);
+
+
+
+
+
+STD_ReturnType EXTI_Enable(uint8 Copy_u8Int);
+
+
+
+
+STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
+
+
+
+
+STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
+# 69 "MCAL/INTERRUPT/INTERRUPT_interface.h"
+STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
+# 13 "MCAL/UART/UART.c" 2
+# 26 "MCAL/UART/UART.c"
 STD_ReturnType UART_Init(uint32 Copy_u32BaudRate)
 {
  uint32 Local_u32Ubrr;
@@ -155,9 +193,14 @@ STD_ReturnType UART_SetRxInterrupt(uint8 Copy_u8State)
  }
 
  if (Copy_u8State == 1u)
+ {
   (*(volatile uint8 *)0x2A) |= (uint8)(1u << 7u);
+  INTERRUPT_EnableGlobal();
+ }
  else
+ {
   (*(volatile uint8 *)0x2A) &= (uint8)~(1u << 7u);
+ }
 
  return E_OK;
 }
@@ -170,9 +213,14 @@ STD_ReturnType UART_SetTxInterrupt(uint8 Copy_u8State)
  }
 
  if (Copy_u8State == 1u)
+ {
   (*(volatile uint8 *)0x2A) |= (uint8)(1u << 5u);
+  INTERRUPT_EnableGlobal();
+ }
  else
+ {
   (*(volatile uint8 *)0x2A) &= (uint8)~(1u << 5u);
+ }
 
  return E_OK;
 }

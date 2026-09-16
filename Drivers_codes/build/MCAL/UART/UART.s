@@ -160,6 +160,7 @@ UART_SetRxInterrupt:
 	brlo .L22
 	brne .L24
 	sbi 0xa,7
+	call INTERRUPT_EnableGlobal
 .L23:
 	ldi r24,0
 	ldi r25,0
@@ -185,6 +186,7 @@ UART_SetTxInterrupt:
 	brlo .L27
 	brne .L29
 	sbi 0xa,5
+	call INTERRUPT_EnableGlobal
 .L28:
 	ldi r24,0
 	ldi r25,0
