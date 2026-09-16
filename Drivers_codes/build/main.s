@@ -7,25 +7,9 @@ __zero_reg__ = 1
 	.text
 	.section	.rodata.main.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"TRIP:%lu m"
+	.string	"F:%3d%% C:%3dC"
 .LC1:
-	.string	"MAX:%u km/h"
-.LC2:
-	.string	"RPM:%u"
-.LC3:
-	.string	"RNG:%u%%"
-.LC4:
-	.string	"BAT:%u mV"
-.LC5:
-	.string	"P:%u/10 OIL:%u"
-.LC6:
-	.string	"SPD:%u RPM:%u"
-.LC7:
-	.string	"WARN:0x%04X"
-.LC8:
-	.string	"SPD:%3u KM/H"
-.LC9:
-	.string	"ODO:%lu m"
+	.string	"Bat:%uV Oil:%u"
 	.section	.text.startup.main,"ax",@progbits
 .global	main
 	.type	main, @function
@@ -43,56 +27,6 @@ main:
 /* frame size = 66 */
 /* stack size = 66 */
 .L__stack_usage = 66
-	adiw r28,66-63
-	std Y+63,__zero_reg__
-	sbiw r28,66-63
-	adiw r28,65-63
-	std Y+63,__zero_reg__
-	sbiw r28,65-63
-	ldi r24,lo8(67)
-	ldi r25,lo8(68)
-	std Y+1,r24
-	std Y+2,r25
-	ldi r24,lo8(1)
-	std Y+3,r24
-	std Y+4,__zero_reg__
-	std Y+5,__zero_reg__
-	std Y+6,__zero_reg__
-	std Y+7,__zero_reg__
-	std Y+8,__zero_reg__
-	std Y+9,__zero_reg__
-	std Y+10,__zero_reg__
-	std Y+11,__zero_reg__
-	std Y+12,__zero_reg__
-	std Y+13,__zero_reg__
-	ldi r24,lo8(120)
-	std Y+14,r24
-	std Y+15,__zero_reg__
-	ldi r24,lo8(10)
-	std Y+16,r24
-	ldi r25,lo8(110)
-	std Y+17,r25
-	std Y+18,r24
-	ldi r24,lo8(-32)
-	ldi r25,lo8(46)
-	std Y+19,r24
-	std Y+20,r25
-	ldi r24,lo8(-104)
-	ldi r25,lo8(58)
-	std Y+21,r24
-	std Y+22,r25
-	ldi r24,lo8(4)
-	std Y+23,r24
-	ldi r24,lo8(-48)
-	ldi r25,lo8(7)
-	std Y+24,r24
-	std Y+25,r25
-	ldi r24,lo8(2)
-	std Y+26,r24
-	std Y+27,__zero_reg__
-	std Y+28,__zero_reg__
-	std Y+29,__zero_reg__
-	std Y+30,__zero_reg__
 	ldi r20,0
 	ldi r22,0
 	ldi r24,0
@@ -141,11 +75,11 @@ main:
 	ldi r22,lo8(7)
 	ldi r24,lo8(1)
 	call GPIO_SetPinDirection
-	ldi r20,lo8(1)
+	ldi r20,lo8(2)
 	ldi r22,0
 	ldi r24,lo8(2)
 	call GPIO_SetPinDirection
-	ldi r20,lo8(1)
+	ldi r20,lo8(2)
 	ldi r22,lo8(1)
 	ldi r24,lo8(2)
 	call GPIO_SetPinDirection
@@ -225,469 +159,80 @@ main:
 	ldi r22,lo8(7)
 	ldi r24,lo8(3)
 	call GPIO_SetPinValue
-	call TIMER0_Init
-	ldi r24,lo8(1)
-	call SPI_InitMaster
-	call LCD_Init
-	ldi r24,lo8(1)
-	call LCD_SetBacklight
-	call BSW_Init
-	call LMP_Init
-	call GAU_Init
-	call Console_Init
-	call CHM_Init
-	call SPD_Init
-	call TAC_Init
-	call INTERRUPT_EnableGlobal
-	call Cluster_GetCarData
-	movw r16,r24
-	call FSM_Init
+	movw r16,r28
+	subi r16,-1
+	sbci r17,-1
 	movw r30,r16
-	std Z+27,__zero_reg__
-	clr r6
-	inc r6
-	mov r8,r6
-	mov r10,__zero_reg__
-	mov r11,__zero_reg__
-	movw r14,r28
-	ldi r24,31
-	add r14,r24
-	adc r15,__zero_reg__
-	movw r12,r28
-	ldi r24,48
-	add r12,r24
-	adc r13,__zero_reg__
-	mov r4,r12
-	mov r3,r13
-.L22:
-	ldi r24,lo8(10)
+	ldi r24,lo8(32)
+	0:
+	st Z+,__zero_reg__
+	dec r24
+	brne 0b
+	call LCD_Init
+	call GAU_Init
+	ldi r24,lo8(100)
 	ldi r25,0
 	call TIMER0_DelayMS
-	lds r24,Local_u16SysTicks
-	lds r25,Local_u16SysTicks+1
-	adiw r24,1
-	sts Local_u16SysTicks,r24
-	sts Local_u16SysTicks+1,r25
-	ldi r24,-1
-	sub r10,r24
-	sbc r11,r24
-	movw r24,r28
-	subi r24,-65
-	sbci r25,-1
-	movw r20,r24
-	ldi r22,lo8(3)
-	ldi r24,lo8(3)
-	call GPIO_GetPinValue
-	adiw r28,65-63
-	ldd r7,Y+63
-	sbiw r28,65-63
-	mov r9,__zero_reg__
-	mov r5,__zero_reg__
-	cpse r7,__zero_reg__
-	rjmp .L2
-	clr r9
-	inc r9
-	mov r24,r8
-	cpi r24,lo8(1)
-	breq .L3
-	mov r9,__zero_reg__
-.L3:
-	clr r5
-	inc r5
-.L2:
-	movw r24,r28
-	subi r24,-66
-	sbci r25,-1
-	movw r20,r24
-	ldi r22,lo8(4)
-	ldi r24,lo8(3)
-	call GPIO_GetPinValue
-	ldi r24,lo8(1)
-	adiw r28,66-63
-	ldd r25,Y+63
-	sbiw r28,66-63
-	cpse r25,__zero_reg__
-	ldi r24,0
-.L4:
-	adiw r28,66-63
-	std Y+63,r24
-	sbiw r28,66-63
-	movw r24,r28
-	subi r24,-65
-	sbci r25,-1
-	movw r20,r24
-	ldi r22,lo8(4)
-	ldi r24,lo8(3)
-	call GPIO_GetPinValue
-	movw r24,r28
-	subi r24,-65
-	sbci r25,-1
-	movw r20,r24
-	ldi r22,lo8(5)
-	ldi r24,lo8(3)
-	call GPIO_GetPinValue
-	adiw r28,65-63
-	ldd r8,Y+63
-	sbiw r28,65-63
-	ldi r25,lo8(1)
-	cpse r8,__zero_reg__
-	ldi r25,0
-.L5:
-	ldi r24,lo8(1)
-	mov r18,r6
-	cpi r18,lo8(1)
-	breq .L6
-	ldi r24,0
-.L6:
-	and r25,r24
-	mov r6,r25
-	std Y+31,__zero_reg__
-	movw r24,r14
-	call BSW_Read
-	or r24,r25
-	brne .L7
-	ldd r24,Y+31
-	andi r24,lo8(63)
-	movw r30,r16
-	ldd r25,Z+25
-	andi r25,lo8(-64)
-	or r24,r25
-	std Z+25,r24
-.L7:
-	movw r24,r16
-	call GAU_Update
-	movw r24,r16
-	call WRN_Update
-	adiw r28,66-63
-	ldd r18,Y+63
-	sbiw r28,66-63
-	mov r20,r5
-	mov r22,r9
-	movw r24,r16
-	call FSM_Run
-	cp r6,__zero_reg__
-	breq .L8
-	movw r30,r16
-	ldd r24,Z+27
-	ldi r25,0
-	adiw r24,1
-	ldi r22,lo8(5)
-	ldi r23,0
-	call __udivmodhi4
-	std Z+27,r24
-.L8:
-	movw r30,r16
-	ldd r9,Z+22
-	ldi r22,lo8(1)
-	ldd r24,Z+4
-	cpi r24,lo8(10)
-	brlo .L9
-	ldi r22,0
-.L9:
-	ldi r24,0
-	call LMP_Set
-	bst r9,1
-	clr r22
-	bld r22,0
-	ldi r24,lo8(1)
-	call LMP_Set
-	bst r9,2
-	clr r22
-	bld r22,0
-	ldi r24,lo8(2)
-	call LMP_Set
-	bst r9,3
-	clr r22
-	bld r22,0
-	ldi r24,lo8(3)
-	call LMP_Set
-	bst r9,4
-	clr r22
-	bld r22,0
-	ldi r24,lo8(4)
-	call LMP_Set
-	movw r30,r16
-	ldd r22,Z+25
-	andi r22,lo8(1)
-	ldi r24,lo8(5)
-	call LMP_Set
-	movw r30,r16
-	ldd r22,Z+25
-	lsr r22
-	andi r22,1
-	ldi r24,lo8(6)
-	call LMP_Set
-	movw r30,r16
-	ldd r22,Z+25
-	bst r22,2
-	clr r22
-	bld r22,0
-	ldi r24,lo8(7)
-	call LMP_Set
-	call LMP_Refresh
-	call CHM_Update
-	movw r24,r10
-	ldi r22,lo8(10)
-	ldi r23,0
-	call __udivmodhi4
-	or r24,r25
-	brne .L10
-	movw r24,r28
-	adiw r24,1
-	movw r22,r24
-	movw r24,r16
-	call SPD_Task100ms
-	call Console_SendTelemetry
-.L10:
-	movw r24,r10
-	ldi r22,lo8(25)
-	ldi r23,0
-	call __udivmodhi4
-	or r24,r25
-	brne .L11
-	movw r24,r28
-	adiw r24,1
-	movw r22,r24
-	movw r24,r16
-	call TAC_Task250ms
-.L11:
-	movw r24,r10
-	ldi r22,lo8(50)
-	ldi r23,0
-	call __udivmodhi4
-	or r24,r25
-	breq .+2
-	rjmp .L12
+	mov r12,r16
+	mov r11,r17
 	ldi r24,lo8(17)
-	mov r9,r24
-	movw r30,r12
-	mov r24,r9
-	0:
-	st Z+,__zero_reg__
-	dec r24
-	brne 0b
-	movw r30,r14
-	mov r24,r9
-	0:
-	st Z+,__zero_reg__
-	dec r24
-	brne 0b
-	movw r30,r16
-	ldd r24,Z+27
-	cpi r24,lo8(1)
-	brne .L13
-	ldd r24,Z+17
+	mov r13,r24
+	movw r16,r28
+	subi r16,-50
+	sbci r17,-1
+	movw r14,r28
+	ldi r24,33
+	add r14,r24
+	adc r15,__zero_reg__
+.L2:
+	mov r24,r12
+	mov r25,r11
+	call GAU_Update
+	ldd r24,Y+7
 	push r24
-	ldd r24,Z+16
+	ldd r24,Y+6
 	push r24
-	ldd r24,Z+15
-	push r24
-	ldd r24,Z+14
+	ldd r24,Y+5
+	push __zero_reg__
 	push r24
 	ldi r24,lo8(.LC0)
 	ldi r25,hi8(.LC0)
 	push r25
 	push r24
 	push __zero_reg__
-	push r9
 	push r13
-	push r12
+	push r17
+	push r16
 	call snprintf
-	movw r30,r16
-	ldd r24,Z+19
+	ldd r24,Y+10
+	push __zero_reg__
 	push r24
-	ldd r24,Z+18
+	ldd r24,Y+9
+	push r24
+	ldd r24,Y+8
 	push r24
 	ldi r24,lo8(.LC1)
 	ldi r25,hi8(.LC1)
 	push r25
-.L47:
 	push r24
 	push __zero_reg__
-	push r9
-	push r15
-	push r14
-	rjmp .L48
-.L13:
-	cpi r24,lo8(2)
-	breq .+2
-	rjmp .L15
-	ldd r24,Z+3
-	push r24
-	ldd r24,Z+2
-	push r24
-	ldi r24,lo8(.LC2)
-	ldi r25,hi8(.LC2)
-	push r25
-	push r24
-	push __zero_reg__
-	push r9
 	push r13
-	push r12
-	call snprintf
-	movw r30,r16
-	ldd r24,Z+4
-	push __zero_reg__
-	push r24
-	ldi r24,lo8(.LC3)
-	ldi r25,hi8(.LC3)
-	push r25
-	push r24
-	push __zero_reg__
-	push r9
 	push r15
 	push r14
-.L48:
 	call snprintf
-.L44:
+	movw r20,r14
+	movw r22,r16
+	ldi r24,0
+	call DSP_Render
+	ldi r24,lo8(-12)
+	ldi r25,lo8(1)
+	call TIMER0_DelayMS
 	in __tmp_reg__,__SREG__
 	cli
 	out __SP_H__,r29
 	out __SREG__,__tmp_reg__
 	out __SP_L__,r28
-	movw r20,r14
-	mov r22,r4
-	mov r23,r3
-	movw r30,r16
-	ldd r24,Z+27
-	call DSP_Render
-.L12:
-	movw r24,r10
-	ldi r22,lo8(100)
-	ldi r23,0
-	call __udivmodhi4
-	or r24,r25
-	brne .L18
-	movw r30,r16
-	ld r24,Z
-	ldd r25,Z+1
-	ldd r18,Y+14
-	ldd r19,Y+15
-	cp r18,r24
-	cpc r19,r25
-	brlo .+2
-	rjmp .L19
-	ldi r24,lo8(1)
-	ldi r25,0
-.L46:
-	call CHM_Play
-.L18:
-	call Console_ProcessCommand
-	mov r6,r8
-	mov r8,r7
-	rjmp .L22
-.L15:
-	cpi r24,lo8(3)
-	brne .L16
-	ldd r24,Z+8
-	push r24
-	ldd r24,Z+7
-	push r24
-	ldi r24,lo8(.LC4)
-	ldi r25,hi8(.LC4)
-	push r25
-	push r24
-	push __zero_reg__
-	push r9
-	push r13
-	push r12
-	call snprintf
-	movw r30,r16
-	ldd r24,Z+9
-	push __zero_reg__
-	push r24
-	ldi r22,lo8(10)
-	call __udivmodqi4
-	push __zero_reg__
-	push r24
-	ldi r24,lo8(.LC5)
-	ldi r25,hi8(.LC5)
-	push r25
-.L45:
-	push r24
-	push __zero_reg__
-	push r9
-	push r15
-	push r14
-	call snprintf
-	rjmp .L44
-.L16:
-	ld r25,Z
-	ldd r18,Z+1
-	cpi r24,lo8(4)
-	brne .L17
-	ldd r24,Z+3
-	push r24
-	ldd r24,Z+2
-	push r24
-	push r18
-	push r25
-	ldi r24,lo8(.LC6)
-	ldi r25,hi8(.LC6)
-	push r25
-	push r24
-	push __zero_reg__
-	push r9
-	push r13
-	push r12
-	call snprintf
-	movw r30,r16
-	ldd r24,Z+23
-	push r24
-	ldd r24,Z+22
-	push r24
-	ldi r24,lo8(.LC7)
-	ldi r25,hi8(.LC7)
-	push r25
-	rjmp .L47
-.L17:
-	push r18
-	push r25
-	ldi r24,lo8(.LC8)
-	ldi r25,hi8(.LC8)
-	push r25
-	push r24
-	push __zero_reg__
-	push r9
-	push r13
-	push r12
-	call snprintf
-	movw r30,r16
-	ldd r24,Z+13
-	push r24
-	ldd r24,Z+12
-	push r24
-	ldd r24,Z+11
-	push r24
-	ldd r24,Z+10
-	push r24
-	ldi r24,lo8(.LC9)
-	ldi r25,hi8(.LC9)
-	push r25
-	rjmp .L45
-.L19:
-	ldd r24,Z+25
-	sbrs r24,7
-	rjmp .L20
-	ldi r24,lo8(2)
-	ldi r25,0
-	rjmp .L46
-.L20:
-	andi r24,lo8(3)
-	breq .L21
-	ldi r24,lo8(3)
-	ldi r25,0
-	rjmp .L46
-.L21:
-	ldi r24,0
-	ldi r25,0
-	rjmp .L46
+	rjmp .L2
 	.size	main, .-main
-	.section	.bss.Local_u16SysTicks,"aw",@nobits
-	.type	Local_u16SysTicks, @object
-	.size	Local_u16SysTicks, 2
-Local_u16SysTicks:
-	.zero	2
 	.ident	"GCC: (GNU) 16.1.0"
 .global __do_copy_data
-.global __do_clear_bss
