@@ -1038,7 +1038,7 @@ static void App_ConfigPins(void)
 
     GPIO_SetPinDirection(1u, 0u, 2u);
     GPIO_SetPinDirection(1u, 1u, 2u);
-    GPIO_SetPinDirection(1u, 2u, 2u);
+    GPIO_SetPinDirection(1u, 2u, 0u);
     GPIO_SetPinDirection(1u, 3u, 2u);
     GPIO_SetPinDirection(1u, 4u, 1u);
     GPIO_SetPinDirection(1u, 5u, 1u);
@@ -1052,7 +1052,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(2u, 3u, 2u);
     GPIO_SetPinDirection(2u, 4u, 2u);
     GPIO_SetPinDirection(2u, 5u, 2u);
-    GPIO_SetPinDirection(2u, 6u, 1u);
+    GPIO_SetPinDirection(2u, 6u, 0u);
     GPIO_SetPinDirection(2u, 7u, 1u);
 
 

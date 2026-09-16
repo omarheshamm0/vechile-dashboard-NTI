@@ -114,7 +114,7 @@ main:
 	ldi r22,lo8(1)
 	ldi r24,lo8(1)
 	call GPIO_SetPinDirection
-	ldi r20,lo8(2)
+	ldi r20,0
 	ldi r22,lo8(2)
 	ldi r24,lo8(1)
 	call GPIO_SetPinDirection
@@ -162,7 +162,7 @@ main:
 	ldi r22,lo8(5)
 	ldi r24,lo8(2)
 	call GPIO_SetPinDirection
-	ldi r20,lo8(1)
+	ldi r20,0
 	ldi r22,lo8(6)
 	ldi r24,lo8(2)
 	call GPIO_SetPinDirection
