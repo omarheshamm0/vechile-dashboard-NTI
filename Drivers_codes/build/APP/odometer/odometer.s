@@ -155,7 +155,7 @@ ODO_ResetTrip:
 .L__stack_usage = 0
 	in r24,__SREG__
 /* #APP */
- ;  76 "APP/odometer/odometer.c" 1
+ ;  78 "APP/odometer/odometer.c" 1
 	cli
  ;  0 "" 2
 /* #NOAPP */
@@ -163,6 +163,8 @@ ODO_ResetTrip:
 	sts Odo_TripMetres+1,__zero_reg__
 	sts Odo_TripMetres+2,__zero_reg__
 	sts Odo_TripMetres+3,__zero_reg__
+	sts Accumulator_mm+1,__zero_reg__
+	sts Accumulator_mm,__zero_reg__
 	out __SREG__,r24
 /* epilogue start */
 	ret

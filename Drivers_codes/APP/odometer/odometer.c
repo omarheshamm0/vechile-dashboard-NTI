@@ -70,12 +70,15 @@ void ODO_ResetTrip(void) {
     /* 
      * Holding the trip-reset button for 2s zeroes trip distance. 
      * Lifetime odometer is untouched (FR-07)[cite: 1].
+     * Also clear any residual millimeter accumulator so the next distance update
+     * does not carry over a stale partial metre value.
      */
     {
         uint8 sreg = SREG;
         cli();
         
         Odo_TripMetres = 0;
+        Accumulator_mm = 0;
         
         SREG = sreg;
     }
