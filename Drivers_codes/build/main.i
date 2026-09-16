@@ -933,43 +933,22 @@ void CHM_Update(void);
 
 
 
-# 1 "HAL/SPEEDO/../../LIB/STD_TYPES.h" 1
-# 6 "HAL/SPEEDO/speedo.h" 2
-
-# 1 "HAL/SPEEDO/../../LIB/dashboard_types.h" 1
-# 8 "HAL/SPEEDO/speedo.h" 2
-
 
 void SPD_Init(void);
-
-
-void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);
-
-
-void SPD_OnCaptureISR(void);
-
-
-void SPD_OnOverflowISR(void);
+void SPD_OnCapture(uint16 current_icr);
+void SPD_OnOverflow(void);
+uint8 SPD_GetKmh(void);
 # 20 "main.c" 2
 # 1 "HAL/TACHO/tacho.h" 1
 
 
 
 
-# 1 "HAL/TACHO/../../LIB/STD_TYPES.h" 1
-# 6 "HAL/TACHO/tacho.h" 2
-
-# 1 "HAL/TACHO/../../LIB/dashboard_types.h" 1
-# 8 "HAL/TACHO/tacho.h" 2
-
 
 void TAC_Init(void);
-
-
-void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg);
-
-
 void TAC_OnPulse(void);
+void TAC_Update250ms(void);
+uint16 TAC_GetRpm(void);
 # 21 "main.c" 2
 # 1 "APP/warnings/warnings.h" 1
 
@@ -1048,16 +1027,9 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
 # 26 "main.c" 2
-# 35 "main.c"
-const char* PatternNames[] = {
-    "Chime: OFF      ",
-    "Chime: OVERSPEED",
-    "Chime: LIMP_HOME",
-    "Chime: TURN_TICK"
-};
-int main(void) {
-
-
+# 38 "main.c"
+static void App_ConfigPins(void)
+{
 
     GPIO_SetPinDirection(0u, 0u, 0u);
     GPIO_SetPinDirection(0u, 1u, 0u);
@@ -1096,60 +1068,226 @@ int main(void) {
     GPIO_SetPinValue(2u, 6u, 0u);
     GPIO_SetPinValue(2u, 7u, 0u);
     GPIO_SetPinValue(3u, 7u, 0u);
+}
+
+static uint8 Local_u8IgnitionPrev = 1u;
+static uint8 Local_u8StartPrev = 1u;
+static uint8 Local_u8DispPrev = 1u;
+static uint16 Local_u16SysTicks = 0u;
 
 
 
-
-
-    char line1[17];
-    char line2[17];
-    CarData_t myCar = {0};
-
-
+static void App_InitSystem(void)
+{
+    App_ConfigPins();
+    TIMER0_Init();
+    SPI_InitMaster(1u);
     LCD_Init();
+    LCD_SetBacklight(1u);
+    BSW_Init();
+    LMP_Init();
     GAU_Init();
-    TIMER0_DelayMS(100);
-
-
+    Console_Init();
     CHM_Init();
+    SPD_Init();
+    TAC_Init();
+    INTERRUPT_EnableGlobal();
+}
 
-    uint8 last_btn_state = 1u;
-    ChimePattern_t test_pattern = CHM_PATTERN_OFF;
-    while (1) {
+static uint8 App_ReadButton(uint8 port, uint8 pin, uint8 prevState)
+{
+    uint8 current = 1u;
+    uint8 edge = 0u;
 
-        uint8 current_btn_state ;
-         GPIO_GetPinValue(3u, 5u,&current_btn_state);
-
-
-        if (last_btn_state == 1u && current_btn_state == 0u) {
-
-            test_pattern++;
-            if (test_pattern > CHM_PATTERN_TURN_TICK) {
-                test_pattern = CHM_PATTERN_OFF;
-            }
-
-
-            CHM_Play(test_pattern);
+    if (GPIO_GetPinValue(port, pin, &current) == E_OK)
+    {
+        if ((current == 0u) && (prevState == 1u))
+        {
+            edge = 1u;
         }
-        last_btn_state = current_btn_state;
+    }
+    return edge;
+}
 
+static void App_UpdateSwitchInputs(CarData_t *CarData)
+{
+    uint8 switchMask = 0u;
 
+    if (BSW_Read(&switchMask) == E_OK)
+    {
+        CarData->turnLeft = (switchMask & (1u << 0u)) ? 1u : 0u;
+        CarData->turnRight = (switchMask & (1u << 1u)) ? 1u : 0u;
+        CarData->highBeam = (switchMask & (1u << 2u)) ? 1u : 0u;
+        CarData->handbrake = (switchMask & (1u << 3u)) ? 1u : 0u;
+        CarData->seatbelt = (switchMask & (1u << 4u)) ? 1u : 0u;
+        CarData->doorOpen = (switchMask & (1u << 5u)) ? 1u : 0u;
+    }
+}
 
+static void App_UpdateLampByte(CarData_t *CarData)
+{
+    uint8 fuelWarn = (CarData->fuelPct < 10u) ? 1u : 0u;
+    uint8 oilWarn = (CarData->warnMask & (1u << WARN_OIL)) ? 1u : 0u;
+    uint8 battWarn = (CarData->warnMask & (1u << WARN_BATT)) ? 1u : 0u;
+    uint8 coolWarn = (CarData->warnMask & (1u << WARN_COOLANT)) ? 1u : 0u;
+    uint8 checkWarn = (CarData->warnMask & (1u << WARN_CHECK)) ? 1u : 0u;
 
-        CHM_Update();
+    LMP_Set(0u, fuelWarn);
+    LMP_Set(1u, oilWarn);
+    LMP_Set(2u, battWarn);
+    LMP_Set(3u, coolWarn);
+    LMP_Set(4u, checkWarn);
+    LMP_Set(5u, CarData->turnLeft ? 1u : 0u);
+    LMP_Set(6u, CarData->turnRight ? 1u : 0u);
+    LMP_Set(7u, CarData->highBeam ? 1u : 0u);
+    LMP_Refresh();
+}
 
+static void App_RenderDisplay(CarData_t *CarData)
+{
+    char line1[17] = {0};
+    char line2[17] = {0};
 
-
-
-        LCD_SetCursor(0, 0);
-        LCD_WriteString((const uint8*)PatternNames[test_pattern]);
-
-
-
-
-        TIMER0_DelayMS(100);
+    if (CarData->page == PG_TRIP)
+    {
+        snprintf(line1, sizeof(line1), "TRIP:%lu m", (unsigned long)CarData->tripMetres);
+        snprintf(line2, sizeof(line2), "MAX:%u km/h", CarData->maxSpeedKmh);
+    }
+    else if (CarData->page == PG_ENGINE)
+    {
+        snprintf(line1, sizeof(line1), "RPM:%u", CarData->rpm);
+        snprintf(line2, sizeof(line2), "RNG:%u%%", CarData->fuelPct);
+    }
+    else if (CarData->page == PG_ELECTRICAL)
+    {
+        snprintf(line1, sizeof(line1), "BAT:%u mV", CarData->battmV);
+        snprintf(line2, sizeof(line2), "P:%u/10 OIL:%u", CarData->oilBarX10 / 10u, CarData->oilBarX10);
+    }
+    else if (CarData->page == PG_DIAG)
+    {
+        snprintf(line1, sizeof(line1), "SPD:%u RPM:%u", CarData->speedKmh, CarData->rpm);
+        snprintf(line2, sizeof(line2), "WARN:0x%04X", CarData->warnMask);
+    }
+    else
+    {
+        snprintf(line1, sizeof(line1), "SPD:%3u KM/H", CarData->speedKmh);
+        snprintf(line2, sizeof(line2), "ODO:%lu m", (unsigned long)CarData->odoMetres);
     }
 
+    DSP_Render(CarData->page, (const uint8 *)line1, (const uint8 *)line2);
+}
 
+int main(void)
+{
+    CarData_t *CarData = ((void *)0);
+    uint16 tickCounter = 0u;
+    uint8 ignitionPress = 0u;
+    uint8 ignitionHeld = 0u;
+    uint8 displayCycle = 0u;
+    uint8 startPressed = 0u;
+    uint8 keyState = 0u;
+    uint8 previousKey = 1u;
+    uint8 previousStart = 1u;
+    uint8 previousDisp = 1u;
+    DashCfg_t cfg;
 
+    cfg.magic = 0x4443u;
+    cfg.version = 0x01u;
+    cfg.odoMetres = 0u;
+    cfg.tripMetres = 0u;
+    cfg.maxSpeedRecord = 0u;
+    cfg.speedLimitKmh = 120u;
+    cfg.fuelWarnPct = 10u;
+    cfg.coolantWarnC = 110u;
+    cfg.oilWarnBarX10 = 10u;
+    cfg.battLowmV = 12000u;
+    cfg.battHighmV = 15000u;
+    cfg.pulsesPerRev = 4u;
+    cfg.wheelCircMm = 2000u;
+    cfg.tachPulsesPerRev = 2u;
+    cfg.ignitionCycles = 0u;
+    cfg.writeSlot = 0u;
+    cfg.checksum = 0u;
+
+    App_InitSystem();
+    CarData = Cluster_GetCarData();
+    FSM_Init(CarData);
+    CarData->page = PG_MAIN;
+
+    while (1)
+    {
+        TIMER0_DelayMS(10u);
+        Local_u16SysTicks++;
+        tickCounter++;
+
+        GPIO_GetPinValue(3u, 3u, &keyState);
+        ignitionPress = (keyState == 0u) && (previousKey == 1u) ? 1u : 0u;
+        ignitionHeld = (keyState == 0u) ? 1u : 0u;
+        previousKey = keyState;
+
+        GPIO_GetPinValue(3u, 4u, &startPressed);
+        startPressed = (startPressed == 0u) ? 1u : 0u;
+        if (startPressed && (previousStart == 1u))
+        {
+
+        }
+        previousStart = (GPIO_GetPinValue(3u, 4u, &keyState) == E_OK) ? keyState : previousStart;
+
+        GPIO_GetPinValue(3u, 5u, &keyState);
+        displayCycle = (keyState == 0u) && (previousDisp == 1u) ? 1u : 0u;
+        previousDisp = keyState;
+
+        App_UpdateSwitchInputs(CarData);
+        GAU_Update(CarData);
+        WRN_Update(CarData);
+        FSM_Run(CarData, ignitionPress, ignitionHeld, startPressed);
+
+        if (displayCycle)
+        {
+            CarData->page = (CarData->page + 1u) % 5u;
+        }
+
+        App_UpdateLampByte(CarData);
+        CHM_Update();
+
+        if ((tickCounter % 10u) == 0u)
+        {
+            SPD_Task100ms(CarData, &cfg);
+            Console_SendTelemetry();
+        }
+
+        if ((tickCounter % 25u) == 0u)
+        {
+            TAC_Task250ms(CarData, &cfg);
+        }
+
+        if ((tickCounter % 50u) == 0u)
+        {
+            App_RenderDisplay(CarData);
+        }
+
+        if ((tickCounter % 100u) == 0u)
+        {
+            if (CarData->speedKmh > cfg.speedLimitKmh)
+            {
+                CHM_Play(CHM_PATTERN_OVERSPEED);
+            }
+            else if (CarData->limpHome)
+            {
+                CHM_Play(CHM_PATTERN_LIMP_HOME);
+            }
+            else if (CarData->turnLeft || CarData->turnRight)
+            {
+                CHM_Play(CHM_PATTERN_TURN_TICK);
+            }
+            else
+            {
+                CHM_Play(CHM_PATTERN_OFF);
+            }
+        }
+
+        Console_ProcessCommand();
+    }
+
+    return 0;
 }
