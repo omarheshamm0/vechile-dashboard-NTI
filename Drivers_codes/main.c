@@ -1,3 +1,7 @@
+#ifndef F_CPU
+#define F_CPU 8000000UL
+#endif
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -6,8 +10,8 @@
 #include "STD_TYPES.h"
 #include "dashboard_types.h"
 #include "GPIO_interface.h"
+#include "ADC_interface.h"
 #include "TIMER_interface.h"
-#include "UART_interface.h"
 #include "SPI_interface.h"
 #include "INTERRUPT_interface.h"
 
@@ -22,45 +26,42 @@
 #include "odometer.h"
 #include "cluster.h"
 #include "console.h"
-#include"ADC_interface.h"
 
-#define F_CPU 8000000UL
 #define APP_TICK_MS     10u
 #define APP_100MS_TICKS 10u
 #define APP_250MS_TICKS 25u
 #define APP_500MS_TICKS 50u
 #define APP_1S_TICKS    100u
-#define F_CPU 8000000UL
-
-
-
 
 static void App_ConfigPins(void)
 {
-
+    /* ADC channels for the four analog sensors */
     GPIO_SetPinDirection(GPIO_PORTA, GPIO_PIN0, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTA, GPIO_PIN1, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTA, GPIO_PIN2, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTA, GPIO_PIN3, GPIO_INPUT);
 
+    /* Body-switch inputs and shared SPI pins */
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN0, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN1, GPIO_INPUT_PULLUP);
-    GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN2, GPIO_INPUT_PULLUP);
+    GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN2, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN3, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN4, GPIO_OUTPUT);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN5, GPIO_OUTPUT);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN6, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTB, GPIO_PIN7, GPIO_OUTPUT);
 
-    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN0,GPIO_INPUT_PULLUP);
+    /* 595 latch, I2C pins, body-switch inputs and control outputs */
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN0, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN1, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN2, GPIO_OUTPUT);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN3, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN4, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN5, GPIO_INPUT_PULLUP);
-    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_OUTPUT);
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN7, GPIO_OUTPUT);
 
+    /* UART, INT0 / INT1, speed input and buzzer */
     GPIO_SetPinDirection(GPIO_PORTD, GPIO_PIN0, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTD, GPIO_PIN1, GPIO_OUTPUT);
     GPIO_SetPinDirection(GPIO_PORTD, GPIO_PIN2, GPIO_INPUT);
@@ -70,6 +71,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(GPIO_PORTD, GPIO_PIN6, GPIO_INPUT);
     GPIO_SetPinDirection(GPIO_PORTD, GPIO_PIN7, GPIO_OUTPUT);
 
+    /* Keep the 74HC165 SH/LD and 595 latch idle at startup */
     GPIO_SetPinValue(GPIO_PORTB, GPIO_PIN4, GPIO_HIGH);
     GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN2, GPIO_LOW);
     GPIO_SetPinValue(GPIO_PORTC, GPIO_PIN6, GPIO_LOW);
@@ -77,15 +79,9 @@ static void App_ConfigPins(void)
     GPIO_SetPinValue(GPIO_PORTD, GPIO_PIN7, GPIO_LOW);
 }
 
-static uint8 Local_u8IgnitionPrev = GPIO_HIGH;
-static uint8 Local_u8StartPrev = GPIO_HIGH;
-static uint8 Local_u8DispPrev = GPIO_HIGH;
-static uint16 Local_u16SysTicks = 0u;
-
-
-
 static void App_InitSystem(void)
 {
+    /* Driver init order follows the README / hardware requirements */
     App_ConfigPins();
     TIMER0_Init();
     SPI_InitMaster(SPI_PRESC_16);
@@ -101,7 +97,7 @@ static void App_InitSystem(void)
     INTERRUPT_EnableGlobal();
 }
 
-static uint8 App_ReadButton(uint8 port, uint8 pin, uint8 prevState)
+static uint8 App_ReadFallingEdge(uint8 port, uint8 pin, uint8 prevState)
 {
     uint8 current = GPIO_HIGH;
     uint8 edge = 0u;
@@ -113,6 +109,7 @@ static uint8 App_ReadButton(uint8 port, uint8 pin, uint8 prevState)
             edge = 1u;
         }
     }
+
     return edge;
 }
 
@@ -122,28 +119,22 @@ static void App_UpdateSwitchInputs(CarData_t *CarData)
 
     if (BSW_Read(&switchMask) == E_OK)
     {
-        CarData->turnLeft  = (switchMask & (1u << BSW_TURN_LEFT)) ? 1u : 0u;
+        CarData->turnLeft  = (switchMask & (1u << BSW_TURN_LEFT))  ? 1u : 0u;
         CarData->turnRight = (switchMask & (1u << BSW_TURN_RIGHT)) ? 1u : 0u;
-        CarData->highBeam  = (switchMask & (1u << BSW_HIGH_BEAM)) ? 1u : 0u;
+        CarData->highBeam  = (switchMask & (1u << BSW_HIGH_BEAM))  ? 1u : 0u;
         CarData->handbrake = (switchMask & (1u << BSW_HANDBRAKE)) ? 1u : 0u;
-        CarData->seatbelt  = (switchMask & (1u << BSW_SEATBELT)) ? 1u : 0u;
-        CarData->doorOpen  = (switchMask & (1u << BSW_DOOR)) ? 1u : 0u;
+        CarData->seatbelt  = (switchMask & (1u << BSW_SEATBELT))  ? 1u : 0u;
+        CarData->doorOpen  = (switchMask & (1u << BSW_DOOR))      ? 1u : 0u;
     }
 }
 
 static void App_UpdateLampByte(CarData_t *CarData)
 {
-    uint8 fuelWarn = (CarData->fuelPct < 10u) ? LMP_STATE_ON : LMP_STATE_OFF;
-    uint8 oilWarn  = (CarData->warnMask & (1u << WARN_OIL)) ? LMP_STATE_ON : LMP_STATE_OFF;
-    uint8 battWarn = (CarData->warnMask & (1u << WARN_BATT)) ? LMP_STATE_ON : LMP_STATE_OFF;
-    uint8 coolWarn = (CarData->warnMask & (1u << WARN_COOLANT)) ? LMP_STATE_ON : LMP_STATE_OFF;
-    uint8 checkWarn = (CarData->warnMask & (1u << WARN_CHECK)) ? LMP_STATE_ON : LMP_STATE_OFF;
-
-    LMP_Set(LMP_LOW_FUEL, fuelWarn);
-    LMP_Set(LMP_OIL_PRESSURE, oilWarn);
-    LMP_Set(LMP_BATTERY, battWarn);
-    LMP_Set(LMP_COOLANT, coolWarn);
-    LMP_Set(LMP_CHECK_ENGINE, checkWarn);
+    LMP_Set(LMP_LOW_FUEL, (CarData->fuelPct < 10u) ? LMP_STATE_ON : LMP_STATE_OFF);
+    LMP_Set(LMP_OIL_PRESSURE, (CarData->warnMask & (1u << WARN_OIL)) ? LMP_STATE_ON : LMP_STATE_OFF);
+    LMP_Set(LMP_BATTERY, (CarData->warnMask & (1u << WARN_BATT)) ? LMP_STATE_ON : LMP_STATE_OFF);
+    LMP_Set(LMP_COOLANT, (CarData->warnMask & (1u << WARN_COOLANT)) ? LMP_STATE_ON : LMP_STATE_OFF);
+    LMP_Set(LMP_CHECK_ENGINE, (CarData->warnMask & (1u << WARN_CHECK)) ? LMP_STATE_ON : LMP_STATE_OFF);
     LMP_Set(LMP_LEFT_TURN, CarData->turnLeft ? LMP_STATE_ON : LMP_STATE_OFF);
     LMP_Set(LMP_RIGHT_TURN, CarData->turnRight ? LMP_STATE_ON : LMP_STATE_OFF);
     LMP_Set(LMP_HIGH_BEAM, CarData->highBeam ? LMP_STATE_ON : LMP_STATE_OFF);
@@ -187,17 +178,19 @@ static void App_RenderDisplay(CarData_t *CarData)
 int main(void)
 {
     CarData_t *CarData = NULL;
+    DashCfg_t cfg;
     uint16 tickCounter = 0u;
     uint8 ignitionPress = 0u;
     uint8 ignitionHeld = 0u;
-    uint8 displayCycle = 0u;
     uint8 startPressed = 0u;
+    uint8 displayCycle = 0u;
     uint8 keyState = 0u;
-    uint8 previousKey = GPIO_HIGH;
-    uint8 previousStart = GPIO_HIGH;
-    uint8 previousDisp = GPIO_HIGH;
-    DashCfg_t cfg;
+    uint8 prevKey = GPIO_HIGH;
+    uint8 prevStart = GPIO_HIGH;
+    uint8 prevDisp = GPIO_HIGH;
+    uint16 keyHoldCounter = 0u;
 
+    /* Default configuration values used by the dashboard tasks */
     cfg.magic = DSH_MAGIC;
     cfg.version = DSH_VERSION;
     cfg.odoMetres = 0u;
@@ -223,27 +216,44 @@ int main(void)
 
     while (1)
     {
+        /* 10 ms system tick */
         TIMER0_DelayMS(APP_TICK_MS);
-        Local_u16SysTicks++;
         tickCounter++;
 
-        GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN3, &keyState);
-        ignitionPress = (keyState == GPIO_LOW) && (previousKey == GPIO_HIGH) ? 1u : 0u;
-        ignitionHeld = (keyState == GPIO_LOW) ? 1u : 0u;
-        previousKey = keyState;
-
-        GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN4, &startPressed);
-        startPressed = (startPressed == GPIO_LOW) ? 1u : 0u;
-        if (startPressed && (previousStart == GPIO_HIGH))
+        /* Ignition key: detect short press and 2 s hold */
+        if (GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN3, &keyState) == E_OK)
         {
-            /* edge detected in the start button; state machine handles button state each tick */
+            ignitionPress = (keyState == GPIO_LOW) && (prevKey == GPIO_HIGH) ? 1u : 0u;
+
+            if (keyState == GPIO_LOW)
+            {
+                keyHoldCounter++;
+                ignitionHeld = (keyHoldCounter >= 200u) ? 1u : 0u;
+            }
+            else
+            {
+                keyHoldCounter = 0u;
+                ignitionHeld = 0u;
+            }
+
+            prevKey = keyState;
         }
-        previousStart = (GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN4, &keyState) == E_OK) ? keyState : previousStart;
 
-        GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN5, &keyState);
-        displayCycle = (keyState == GPIO_LOW) && (previousDisp == GPIO_HIGH) ? 1u : 0u;
-        previousDisp = keyState;
+        /* START button is polled, as required for the FSM */
+        if (GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN4, &keyState) == E_OK)
+        {
+            startPressed = (keyState == GPIO_LOW) ? 1u : 0u;
+            prevStart = keyState;
+        }
 
+        /* Display-cycle button: single-step page change */
+        if (GPIO_GetPinValue(GPIO_PORTD, GPIO_PIN5, &keyState) == E_OK)
+        {
+            displayCycle = (keyState == GPIO_LOW) && (prevDisp == GPIO_HIGH) ? 1u : 0u;
+            prevDisp = keyState;
+        }
+
+        /* Read body switches and update the analog sensors every tick */
         App_UpdateSwitchInputs(CarData);
         GAU_Update(CarData);
         WRN_Update(CarData);
@@ -257,24 +267,12 @@ int main(void)
         App_UpdateLampByte(CarData);
         CHM_Update();
 
+        /* 100 ms tasks: speed, telemetry and tone selection */
         if ((tickCounter % APP_100MS_TICKS) == 0u)
         {
             SPD_Task100ms(CarData, &cfg);
             Console_SendTelemetry();
-        }
 
-        if ((tickCounter % APP_250MS_TICKS) == 0u)
-        {
-            TAC_Task250ms(CarData, &cfg);
-        }
-
-        if ((tickCounter % APP_500MS_TICKS) == 0u)
-        {
-            App_RenderDisplay(CarData);
-        }
-
-        if ((tickCounter % APP_1S_TICKS) == 0u)
-        {
             if (CarData->speedKmh > cfg.speedLimitKmh)
             {
                 CHM_Play(CHM_PATTERN_OVERSPEED);
@@ -291,6 +289,24 @@ int main(void)
             {
                 CHM_Play(CHM_PATTERN_OFF);
             }
+        }
+
+        /* 250 ms tasks: engine RPM */
+        if ((tickCounter % APP_250MS_TICKS) == 0u)
+        {
+            TAC_Task250ms(CarData, &cfg);
+        }
+
+        /* 500 ms tasks: LCD refresh */
+        if ((tickCounter % APP_500MS_TICKS) == 0u)
+        {
+            App_RenderDisplay(CarData);
+        }
+
+        /* 1 s tasks: reserved for future additions, but not implemented here */
+        if ((tickCounter % APP_1S_TICKS) == 0u)
+        {
+            /* Keep the system deterministic and within the README scope */
         }
 
         Console_ProcessCommand();
