@@ -47,24 +47,32 @@ void WRN_Update(CarData_t *CarData) {
      * 3. Evaluate Battery Low (< 12.0 V, engine running, 5 s)
      * ============================================================== */
     static uint8 batt_low_warn = 0;
-    if (CarData->engineRun && (CarData->battmV < 12)) {
-        batt_low_counter++;
-        if (batt_low_counter >= BATT_TIME_LIMIT) batt_low_warn = 1;
-    } else if (CarData->battmV > 13) { /* يطفي لو عدى 12.5V */
+    
+    if (CarData->engineRun == 0) {
+        /* لو المحرك مطفي، مفيش تحذير هبوط بطارية لأن الدينامو أصلا مش شغال */
         batt_low_counter = 0;
         batt_low_warn = 0; 
     } else {
-        batt_low_counter = 0;
+        /* لو المحرك شغال، نبدأ نقيم الفولت */
+        if (CarData->battmV < 12000) {
+            batt_low_counter++;
+            if (batt_low_counter >= BATT_TIME_LIMIT) batt_low_warn = 1;
+        } else if (CarData->battmV > 12500) { /* يطفي لو عدى 12.5V */
+            batt_low_counter = 0;
+            batt_low_warn = 0; 
+        } else {
+            batt_low_counter = 0;
+        }
     }
 
     /* ==============================================================
      * 4. Evaluate Battery High (> 15.0 V, 5 s)
      * ============================================================== */
     static uint8 batt_high_warn = 0;
-    if (CarData->battmV > 15) {
+    if (CarData->battmV > 15000) {
         batt_high_counter++;
         if (batt_high_counter >= BATT_TIME_LIMIT) batt_high_warn = 1;
-    } else if (CarData->battmV < 14) { /* يطفي لو نزل تحت 14.5V */
+    } else if (CarData->battmV < 14500) { /* يطفي لو نزل تحت 14.5V */
         batt_high_counter = 0;
         batt_high_warn = 0;
     } else {

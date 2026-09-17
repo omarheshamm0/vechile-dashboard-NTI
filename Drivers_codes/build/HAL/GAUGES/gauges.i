@@ -132,7 +132,7 @@ STD_ReturnType ADC_GetResult(uint16 *Copy_pu16Reading);
 
 STD_ReturnType ADC_SetInterrupt(uint8 Copy_u8State);
 # 3 "HAL/GAUGES/gauges.c" 2
-# 11 "HAL/GAUGES/gauges.c"
+# 14 "HAL/GAUGES/gauges.c"
 static uint16 Fuel_Buffer[8] = {0};
 static uint16 Coolant_Buffer[8] = {0};
 static uint8 Filter_Idx = 0;
@@ -208,7 +208,7 @@ void GAU_Update(CarData_t *CarData) {
     }
 
     if (batt_ok == E_OK) {
-       CarData->battmV = (uint16)(((uint32)raw_batt * 16) / 1023);
+       CarData->battmV = (uint16)(((uint32)raw_batt * 16000) / 1023);
     }
 
     if (oil_ok == E_OK) {

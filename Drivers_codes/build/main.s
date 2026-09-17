@@ -487,7 +487,7 @@ main:
 	cpi r18,-56
 	sbci r19,0
 	brlo .L19
-.L96:
+.L95:
 	ldi r25,lo8(1)
 	sts s_tripHeldFired,r25
 	movw r30,r16
@@ -618,7 +618,7 @@ main:
 	sts s_overspeedActive,r24
 .L37:
 	ori r18,lo8(64)
-	rjmp .L95
+	rjmp .L94
 .L12:
 	sts s_keyHoldTicks,__zero_reg__
 	sts s_keyHoldTicks+1,__zero_reg__
@@ -653,7 +653,7 @@ main:
 	sts s_overspeedActive,__zero_reg__
 .L36:
 	andi r18,lo8(-65)
-.L95:
+.L94:
 	movw r30,r16
 	std Z+22,r18
 	std Z+23,r19
@@ -667,7 +667,7 @@ main:
 	ldd r24,Z+26
 	cpi r24,lo8(3)
 	brne .+2
-	rjmp .L97
+	rjmp .L96
 	brlo .+2
 	rjmp .L42
 	cpi r24,lo8(2)
@@ -690,40 +690,40 @@ main:
 	sbci r23,hi8(2)
 	sbci r22,lo8(2)
 	breq .+2
-	rjmp .L57
+	rjmp .L56
 	movw r30,r16
 	ldd r24,Z+26
 	cpi r24,lo8(0)
 	brne .+2
-	rjmp .L58
+	rjmp .L57
 	movw r24,r28
 	adiw r24,1
 	movw r22,r24
 	movw r24,r16
 	call SPD_Task100ms
-.L59:
+.L58:
 	movw r30,r16
 	ld r24,Z
 	ldd r25,Z+1
 	cpi r24,-5
 	cpc r25,__zero_reg__
-	brsh .L60
+	brsh .L59
 	ldd r18,Y+12
 	ldd r19,Y+13
 	cp r18,r24
 	cpc r19,r25
-	brsh .L60
+	brsh .L59
 	std Y+12,r24
 	std Y+13,r25
-.L60:
+.L59:
 	movw r30,r16
 	ldd r25,Z+26
 	cpse r25,__zero_reg__
-	rjmp .L61
-.L67:
+	rjmp .L60
+.L66:
 	ldi r24,0
 	ldi r25,0
-	rjmp .L210
+	rjmp .L204
 .L38:
 	lds r25,s_blinkOn
 	sts s_blinkCallCount,__zero_reg__
@@ -750,11 +750,11 @@ main:
 	ldi r24,lo8(2)
 	cpi r18,1
 	cpc r19,__zero_reg__
-	breq .L209
+	breq .L203
 	ldi r24,lo8(8)
 	cpi r18,3
 	cpc r19,__zero_reg__
-	breq .L209
+	breq .L203
 	ldi r24,lo8(1)
 	cpi r18,2
 	sbci r19,0
@@ -763,25 +763,20 @@ main:
 .L48:
 	lsl r24
 	lsl r24
-.L209:
+.L203:
 	ori r24,lo8(16)
 	rjmp .L41
 .L43:
-	bst r18,5
-	clr r24
-	bld r24,0
-	sbrc r18,1
-	ori r24,lo8(2)
+	ldi r24,lo8(6)
+	sbrc r18,5
+	ldi r24,lo8(7)
 .L49:
-	sbrc r18,2
-	ori r24,lo8(4)
-.L50:
 	sbrc r18,3
 	ori r24,lo8(8)
-.L51:
+.L50:
 	sbrs r18,4
 	rjmp .L41
-	rjmp .L209
+	rjmp .L203
 .L46:
 	lds r25,s_blinkOn
 	bst r18,5
@@ -789,19 +784,19 @@ main:
 	bld r24,0
 	sbrc r18,1
 	ori r24,lo8(2)
-.L52:
+.L51:
 	sbrc r18,2
 	ori r24,lo8(4)
-.L53:
+.L52:
 	sbrc r18,3
 	ori r24,lo8(8)
-.L54:
+.L53:
 	sbrc r18,4
 	ori r24,lo8(16)
-.L55:
+.L54:
 	sbrc r20,2
 	ori r24,lo8(-128)
-.L56:
+.L55:
 	cpi r25,lo8(0)
 	brne .+2
 	rjmp .L41
@@ -813,32 +808,32 @@ main:
 	rjmp .L41
 	ori r24,lo8(64)
 	rjmp .L41
-.L97:
+.L96:
 	ldi r24,lo8(-1)
 	rjmp .L41
-.L58:
+.L57:
 	st Z,__zero_reg__
 	std Z+1,__zero_reg__
-	rjmp .L59
-.L61:
+	rjmp .L58
+.L60:
 	ldd r24,Z+25
 	andi r24,lo8(3)
-	breq .L62
+	breq .L61
 	ldi r24,lo8(1)
 	lds r18,s_blinkOn
 	cpse r18,__zero_reg__
-	rjmp .L62
+	rjmp .L61
 	ldi r24,0
-.L62:
+.L61:
 	cpi r25,lo8(6)
 	breq .+2
-	rjmp .L64
+	rjmp .L63
 	ldi r24,lo8(2)
 	ldi r25,0
-.L210:
+.L204:
 	call CHM_Play
 	call CHM_Update
-.L57:
+.L56:
 	movw r22,r8
 	movw r24,r10
 	ldi r18,lo8(25)
@@ -851,13 +846,13 @@ main:
 	cpc r24,r23
 	cpc r25,r23
 	breq .+2
-	rjmp .L68
+	rjmp .L67
 	movw r24,r28
 	adiw r24,1
 	movw r22,r24
 	movw r24,r16
 	call TAC_Task250ms
-.L69:
+.L68:
 	movw r22,r8
 	movw r24,r10
 	ldi r18,lo8(50)
@@ -868,10 +863,10 @@ main:
 	sbiw r24,0
 	sbci r23,hi8(4)
 	sbci r22,lo8(4)
-	brne .L89
+	brne .L88
 	movw r24,r16
 	call GAU_Update
-.L89:
+.L88:
 	movw r22,r8
 	movw r24,r10
 	ldi r18,lo8(100)
@@ -883,11 +878,11 @@ main:
 	sbci r23,hi8(6)
 	sbci r22,lo8(6)
 	breq .+2
-	rjmp .L90
+	rjmp .L89
 	movw r30,r16
 	ldd r24,Z+26
 	cpi r24,lo8(0)
-	breq .L91
+	breq .L90
 	lds r24,s_tripSeconds
 	lds r25,s_tripSeconds+1
 	lds r26,s_tripSeconds+2
@@ -911,7 +906,7 @@ main:
 	sts s_tripSeconds+1,r25
 	sts s_tripSeconds+2,r26
 	sts s_tripSeconds+3,r27
-.L91:
+.L90:
 	lds r4,s_tripSeconds
 	lds r5,s_tripSeconds+1
 	lds r6,s_tripSeconds+2
@@ -922,7 +917,7 @@ main:
 	cpc r5,r4
 	cpc r6,r4
 	cpc r7,r4
-	breq .L92
+	breq .L91
 	movw r30,r16
 	ldd r18,Z+14
 	ldd r19,Z+15
@@ -950,11 +945,11 @@ main:
 	ldd r25,Y+63
 	sbiw r28,68-60
 	call __udivmodsi4
-.L92:
+.L91:
 	movw r30,r16
 	std Z+20,r18
 	std Z+21,r19
-.L90:
+.L89:
 	movw r22,r8
 	movw r24,r10
 	ldi r18,lo8(-12)
@@ -965,34 +960,34 @@ main:
 	sbiw r24,0
 	sbci r23,hi8(8)
 	sbci r22,lo8(8)
-	brne .L93
+	brne .L92
 	call Console_SendTelemetry
-.L93:
+.L92:
 	ldi r20,0
 	ldi r22,lo8(6)
 	ldi r24,lo8(2)
 	call GPIO_SetPinValue
 	rjmp .L9
-.L64:
+.L63:
 	lds r25,s_overspeedActive
 	cpi r25,lo8(0)
-	breq .L66
+	breq .L65
 	ldi r24,lo8(1)
 	ldi r25,0
-	rjmp .L210
-.L66:
+	rjmp .L204
+.L65:
 	cpi r24,lo8(0)
 	brne .+2
-	rjmp .L67
+	rjmp .L66
 	ldi r24,lo8(3)
 	ldi r25,0
-	rjmp .L210
-.L68:
+	rjmp .L204
+.L67:
 	sbiw r24,0
 	sbci r23,hi8(5)
 	sbci r22,lo8(5)
 	breq .+2
-	rjmp .L69
+	rjmp .L68
 	movw r30,r14
 	ldi r24,lo8(17)
 	0:
@@ -1009,21 +1004,21 @@ main:
 	movw r30,r16
 	ldd r24,Z+26
 	cpse r24,__zero_reg__
-	rjmp .L70
+	rjmp .L69
 	lds r24,s_offTicks250
 	lds r25,s_offTicks250+1
 	adiw r24,1
 	sts s_offTicks250,r24
 	sts s_offTicks250+1,r25
 	sbiw r24,41
-	brsh .L71
+	brsh .L70
 	cpse r18,__zero_reg__
-	rjmp .L72
+	rjmp .L71
 	ldi r24,lo8(1)
 	call LCD_SetBacklight
 	ldi r24,lo8(1)
 	sts s_lcdBacklightOn,r24
-.L72:
+.L71:
 	movw r30,r16
 	ldd r24,Z+13
 	push r24
@@ -1047,63 +1042,63 @@ main:
 	ldi r23,hi8(.LC1)
 	movw r24,r12
 	call strcpy
-.L217:
+.L211:
 	movw r20,r12
 	movw r22,r14
 	ldi r24,0
-.L216:
+.L210:
 	call DSP_Render
 	in __tmp_reg__,__SREG__
 	cli
 	out __SP_H__,r29
 	out __SREG__,__tmp_reg__
 	out __SP_L__,r28
-	rjmp .L69
-.L71:
+	rjmp .L68
+.L70:
 	cpi r18,lo8(0)
 	brne .+2
-	rjmp .L69
+	rjmp .L68
 	ldi r24,0
 	call LCD_SetBacklight
 	call LCD_Clear
 	sts s_lcdBacklightOn,__zero_reg__
-	rjmp .L69
-.L70:
+	rjmp .L68
+.L69:
 	sts s_offTicks250,__zero_reg__
 	sts s_offTicks250+1,__zero_reg__
 	cpse r18,__zero_reg__
-	rjmp .L74
+	rjmp .L73
 	ldi r24,lo8(1)
 	call LCD_SetBacklight
 	ldi r24,lo8(1)
 	sts s_lcdBacklightOn,r24
-.L74:
+.L73:
 	movw r30,r16
 	ldd r24,Z+26
 	cpi r24,lo8(4)
 	brne .+2
-	rjmp .L75
-	brsh .L76
+	rjmp .L74
+	brsh .L75
 	cpi r24,lo8(1)
-	breq .L77
+	breq .L76
 	cpi r24,lo8(3)
 	brne .+2
-	rjmp .L78
-.L79:
+	rjmp .L77
+.L78:
 	movw r30,r16
 	ldd r24,Z+27
 	cpi r24,lo8(3)
 	brne .+2
-	rjmp .L82
+	rjmp .L81
 	brlo .+2
-	rjmp .L83
+	rjmp .L82
 	cpi r24,lo8(1)
 	brne .+2
-	rjmp .L84
+	rjmp .L83
 	cpi r24,lo8(2)
 	brne .+2
-	rjmp .L85
-.L86:
+	rjmp .L84
+.L85:
 	movw r30,r16
 	ldd r24,Z+1
 	push r24
@@ -1130,21 +1125,21 @@ main:
 	push r24
 	ldi r24,lo8(.LC17)
 	ldi r25,hi8(.LC17)
-	rjmp .L213
-.L76:
+	rjmp .L207
+.L75:
 	cpi r24,lo8(6)
 	brne .+2
-	rjmp .L80
+	rjmp .L79
 	cpi r24,lo8(7)
-	brne .L79
+	brne .L78
 	ldi r22,lo8(.LC7)
 	ldi r23,hi8(.LC7)
 	movw r24,r14
 	call strcpy
 	ldi r22,lo8(.LC8)
 	ldi r23,hi8(.LC8)
-	rjmp .L219
-.L77:
+	rjmp .L213
+.L76:
 	ldd r24,Z+13
 	push r24
 	ldd r24,Z+12
@@ -1182,24 +1177,24 @@ main:
 	push r13
 	push r12
 	call snprintf
-	rjmp .L217
-.L78:
+	rjmp .L211
+.L77:
 	ldi r22,lo8(.LC3)
 	ldi r23,hi8(.LC3)
 	movw r24,r14
 	call strcpy
 	ldi r22,lo8(.LC4)
 	ldi r23,hi8(.LC4)
-.L219:
+.L213:
 	movw r24,r12
 	call strcpy
 	movw r20,r12
 	movw r22,r14
 	ldi r24,lo8(4)
-.L214:
+.L208:
 	call DSP_Render
-	rjmp .L69
-.L75:
+	rjmp .L68
+.L74:
 	ldi r22,lo8(.LC5)
 	ldi r23,hi8(.LC5)
 	movw r24,r14
@@ -1219,12 +1214,12 @@ main:
 	push r13
 	push r12
 	call snprintf
-.L215:
+.L209:
 	movw r20,r12
 	movw r22,r14
 	ldi r24,lo8(4)
-	rjmp .L216
-.L80:
+	rjmp .L210
+.L79:
 	ldi r24,lo8(.LC9)
 	ldi r25,hi8(.LC9)
 	push r25
@@ -1254,11 +1249,11 @@ main:
 	push r13
 	push r12
 	call snprintf
-	rjmp .L215
-.L83:
+	rjmp .L209
+.L82:
 	cpi r24,lo8(4)
 	breq .+2
-	rjmp .L86
+	rjmp .L85
 	ldd r24,Z+3
 	push r24
 	ldd r24,Z+2
@@ -1292,7 +1287,7 @@ main:
 	push r13
 	push r12
 	call snprintf
-.L212:
+.L206:
 	in __tmp_reg__,__SREG__
 	cli
 	out __SP_H__,r29
@@ -1302,8 +1297,8 @@ main:
 	movw r22,r14
 	movw r30,r16
 	ldd r24,Z+27
-	rjmp .L214
-.L84:
+	rjmp .L208
+.L83:
 	ldd r24,Z+17
 	push r24
 	ldd r24,Z+16
@@ -1334,17 +1329,17 @@ main:
 	push r24
 	ldi r24,lo8(.LC11)
 	ldi r25,hi8(.LC11)
-.L218:
+.L212:
 	push r25
 	push r24
 	push __zero_reg__
 	push r7
 	push r13
 	push r12
-.L211:
+.L205:
 	call snprintf
-	rjmp .L212
-.L85:
+	rjmp .L206
+.L84:
 	ldd r24,Z+6
 	push r24
 	ldd r24,Z+5
@@ -1374,8 +1369,8 @@ main:
 	push r24
 	ldi r24,lo8(.LC13)
 	ldi r25,hi8(.LC13)
-	rjmp .L218
-.L82:
+	rjmp .L212
+.L81:
 	ldd r24,Z+8
 	push r24
 	ldd r24,Z+7
@@ -1402,18 +1397,18 @@ main:
 	push r24
 	ldi r24,lo8(.LC0)
 	ldi r25,hi8(.LC0)
-.L213:
+.L207:
 	push r25
 	push r24
 	push __zero_reg__
 	push r7
 	push r13
 	push r12
-	rjmp .L211
+	rjmp .L205
 .L17:
 	cpi r25,lo8(0)
 	brne .+2
-	rjmp .L96
+	rjmp .L95
 	rjmp .L18
 	.size	main, .-main
 	.section	.data.s_prevState.0,"aw"

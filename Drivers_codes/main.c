@@ -224,14 +224,19 @@ static uint8 Lmp_BuildByte(const CarData_t *Copy_pCarData, uint8 Copy_u8BlinkOn)
             return (uint8)(Local_u8CauseBit | (1u << LMP_BIT_CHECK));
         }
 
-        case CS_IGNITION:
-            /* README S15: "Warnings only" - no turn signals / high beam yet,
-               the engine is not running and the car is not being driven. */
+       case CS_IGNITION:
+            /* 
+             * README S15: "Warnings only".
+             * Force OIL and BATT lamps ON since the engine is off 
+             * (no oil pressure, no alternator charging).
+             */
+            Local_u8Byte |= (uint8)((1u << LMP_BIT_OIL) | (1u << LMP_BIT_BATT));
+
+            /* Check other active warnings (Fuel, Coolant, Check Engine) */
             if (Copy_pCarData->warnMask & (1u << WARN_FUEL))    Local_u8Byte |= (uint8)(1u << LMP_BIT_FUEL);
-            if (Copy_pCarData->warnMask & (1u << WARN_OIL))     Local_u8Byte |= (uint8)(1u << LMP_BIT_OIL);
-            if (Copy_pCarData->warnMask & (1u << WARN_BATT))    Local_u8Byte |= (uint8)(1u << LMP_BIT_BATT);
             if (Copy_pCarData->warnMask & (1u << WARN_COOLANT)) Local_u8Byte |= (uint8)(1u << LMP_BIT_COOLANT);
             if (Copy_pCarData->warnMask & (1u << WARN_CHECK))   Local_u8Byte |= (uint8)(1u << LMP_BIT_CHECK);
+            
             return Local_u8Byte;
 
         case CS_RUNNING:

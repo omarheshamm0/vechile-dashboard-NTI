@@ -8,7 +8,10 @@
 #define GAU_CH_BATT     ADC_CHANNEL_2
 #define GAU_CH_OIL      ADC_CHANNEL_3
 
-static uint16 Fuel_Buffer[8] = {0};
+
+
+// for smoothing
+static uint16 Fuel_Buffer[8] = {0}; 
 static uint16 Coolant_Buffer[8] = {0};
 static uint8 Filter_Idx = 0;
 
@@ -83,7 +86,7 @@ void GAU_Update(CarData_t *CarData) {
     }
     
     if (batt_ok == E_OK) {
-       CarData->battmV = (uint16)(((uint32)raw_batt * 16) / 1023);
+       CarData->battmV = (uint16)(((uint32)raw_batt * 16000) / 1023);
     }
     
     if (oil_ok == E_OK) {

@@ -143,24 +143,32 @@ void WRN_Update(CarData_t *CarData) {
 
 
     static uint8 batt_low_warn = 0;
-    if (CarData->engineRun && (CarData->battmV < 12)) {
-        batt_low_counter++;
-        if (batt_low_counter >= (5000 / 50)) batt_low_warn = 1;
-    } else if (CarData->battmV > 13) {
+
+    if (CarData->engineRun == 0) {
+
         batt_low_counter = 0;
         batt_low_warn = 0;
     } else {
-        batt_low_counter = 0;
+
+        if (CarData->battmV < 12000) {
+            batt_low_counter++;
+            if (batt_low_counter >= (5000 / 50)) batt_low_warn = 1;
+        } else if (CarData->battmV > 12500) {
+            batt_low_counter = 0;
+            batt_low_warn = 0;
+        } else {
+            batt_low_counter = 0;
+        }
     }
 
 
 
 
     static uint8 batt_high_warn = 0;
-    if (CarData->battmV > 15) {
+    if (CarData->battmV > 15000) {
         batt_high_counter++;
         if (batt_high_counter >= (5000 / 50)) batt_high_warn = 1;
-    } else if (CarData->battmV < 14) {
+    } else if (CarData->battmV < 14500) {
         batt_high_counter = 0;
         batt_high_warn = 0;
     } else {

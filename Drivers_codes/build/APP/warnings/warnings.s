@@ -47,26 +47,22 @@ WRN_Update:
 .L5:
 	ldd r24,Z+7
 	ldd r25,Z+8
-	sbrs r18,6
+	sbrc r18,6
 	rjmp .L6
-	cpi r24,12
-	cpc r25,__zero_reg__
-	brsh .L6
-	lds r24,batt_low_counter.4
-	lds r25,batt_low_counter.4+1
-	adiw r24,1
-	sts batt_low_counter.4,r24
-	sts batt_low_counter.4+1,r25
-	cpi r24,100
-	sbci r25,0
-	brlo .L7
-	ldi r24,lo8(1)
-	sts batt_low_warn.3,r24
-.L7:
+.L11:
+	sts batt_low_counter.4,__zero_reg__
+	sts batt_low_counter.4+1,__zero_reg__
+	sts batt_low_warn.3,__zero_reg__
+	cpi r24,-103
+	ldi r18,58
+	cpc r25,r18
+	brsh .L7
+	cpi r24,-92
+	sbci r25,56
+	brlo .L10
 	sts batt_high_counter.2,__zero_reg__
 	sts batt_high_counter.2+1,__zero_reg__
-	sts batt_high_warn.1,__zero_reg__
-	rjmp .L11
+	rjmp .L12
 .L2:
 	sts oil_counter.6,__zero_reg__
 	sts oil_counter.6+1,__zero_reg__
@@ -76,18 +72,34 @@ WRN_Update:
 	sts coolant_counter.5+1,__zero_reg__
 	rjmp .L5
 .L6:
-	sts batt_low_counter.4,__zero_reg__
-	sts batt_low_counter.4+1,__zero_reg__
-	cpi r24,14
-	cpc r25,__zero_reg__
-	brlo .L7
-	sts batt_low_warn.3,__zero_reg__
-	sbiw r24,16
+	cpi r24,-32
+	ldi r18,46
+	cpc r25,r18
 	brsh .L9
+	lds r24,batt_low_counter.4
+	lds r25,batt_low_counter.4+1
+	adiw r24,1
+	sts batt_low_counter.4,r24
+	sts batt_low_counter.4+1,r25
+	cpi r24,100
+	sbci r25,0
+	brlo .L10
+	ldi r24,lo8(1)
+	sts batt_low_warn.3,r24
+.L10:
 	sts batt_high_counter.2,__zero_reg__
 	sts batt_high_counter.2+1,__zero_reg__
-	rjmp .L11
+	sts batt_high_warn.1,__zero_reg__
+	rjmp .L12
 .L9:
+	cpi r24,-43
+	ldi r18,48
+	cpc r25,r18
+	brsh .L11
+	sts batt_low_counter.4,__zero_reg__
+	sts batt_low_counter.4+1,__zero_reg__
+	rjmp .L10
+.L7:
 	lds r24,batt_high_counter.2
 	lds r25,batt_high_counter.2+1
 	adiw r24,1
@@ -95,60 +107,60 @@ WRN_Update:
 	sts batt_high_counter.2+1,r25
 	cpi r24,100
 	sbci r25,0
-	brlo .L11
+	brlo .L12
 	ldi r24,lo8(1)
 	sts batt_high_warn.1,r24
-.L11:
+.L12:
 	ldd r24,Z+4
 	cpi r24,lo8(10)
-	brsh .L12
+	brsh .L14
 	ldi r24,lo8(1)
 	sts fuel_warn_active.0,r24
-.L13:
+.L15:
 	ldd r18,Z+22
 	ldd r19,Z+23
 	lds r24,Latched_Oil
 	cpi r24,lo8(0)
-	breq .L14
+	breq .L16
 	ori r18,lo8(2)
-.L15:
+.L17:
 	lds r24,Latched_Coolant
 	cpi r24,lo8(0)
-	breq .L16
+	breq .L18
 	ori r18,lo8(8)
-.L17:
+.L19:
 	lds r24,batt_low_warn.3
 	lds r25,batt_high_warn.1
 	or r24,r25
-	breq .L18
+	breq .L20
 	ori r18,lo8(4)
-.L19:
+.L21:
 	lds r24,fuel_warn_active.0
 	cpi r24,lo8(0)
-	breq .L20
+	breq .L22
 	ori r18,lo8(32)
-.L21:
+.L23:
 	std Z+22,r18
 	std Z+23,r19
 /* epilogue start */
 	ret
-.L12:
-	cpi r24,lo8(14)
-	brlo .L13
-	sts fuel_warn_active.0,__zero_reg__
-	rjmp .L13
 .L14:
-	andi r18,lo8(-3)
+	cpi r24,lo8(14)
+	brlo .L15
+	sts fuel_warn_active.0,__zero_reg__
 	rjmp .L15
 .L16:
-	andi r18,lo8(-9)
+	andi r18,lo8(-3)
 	rjmp .L17
 .L18:
-	andi r18,lo8(-5)
+	andi r18,lo8(-9)
 	rjmp .L19
 .L20:
-	andi r18,lo8(-33)
+	andi r18,lo8(-5)
 	rjmp .L21
+.L22:
+	andi r18,lo8(-33)
+	rjmp .L23
 	.size	WRN_Update, .-WRN_Update
 	.section	.text.WRN_Highest,"ax",@progbits
 .global	WRN_Highest
@@ -162,60 +174,60 @@ WRN_Highest:
 	ldd r18,Z+22
 	ldd r19,Z+23
 	sbrc r18,1
-	rjmp .L36
+	rjmp .L35
 	sbrc r18,2
-	rjmp .L37
+	rjmp .L36
 	sbrc r18,3
-	rjmp .L38
+	rjmp .L37
 	sbrc r18,4
-	rjmp .L39
+	rjmp .L38
 	sbrc r18,5
-	rjmp .L40
+	rjmp .L39
 	sbrc r18,6
-	rjmp .L41
+	rjmp .L40
 	sbrc r18,7
-	rjmp .L42
+	rjmp .L41
 	sbrc r19,0
-	rjmp .L43
+	rjmp .L42
 	ldi r24,0
 	mov r25,r19
 	andi r25,1<<1
 	sbrs r19,1
-	rjmp .L34
+	rjmp .L33
 	ldi r24,lo8(9)
 	ldi r25,0
-.L34:
+.L33:
 /* epilogue start */
 	ret
-.L36:
+.L35:
 	ldi r24,lo8(1)
 	ldi r25,0
 	ret
-.L37:
+.L36:
 	ldi r24,lo8(2)
 	ldi r25,0
 	ret
-.L38:
+.L37:
 	ldi r24,lo8(3)
 	ldi r25,0
 	ret
-.L39:
+.L38:
 	ldi r24,lo8(4)
 	ldi r25,0
 	ret
-.L40:
+.L39:
 	ldi r24,lo8(5)
 	ldi r25,0
 	ret
-.L41:
+.L40:
 	ldi r24,lo8(6)
 	ldi r25,0
 	ret
-.L42:
+.L41:
 	ldi r24,lo8(7)
 	ldi r25,0
 	ret
-.L43:
+.L42:
 	ldi r24,lo8(8)
 	ldi r25,0
 	ret

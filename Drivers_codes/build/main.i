@@ -1008,14 +1008,19 @@ static uint8 Lmp_BuildByte(const CarData_t *Copy_pCarData, uint8 Copy_u8BlinkOn)
             return (uint8)(Local_u8CauseBit | (1u << 4u));
         }
 
-        case CS_IGNITION:
+       case CS_IGNITION:
+
+
+
+
+
+            Local_u8Byte |= (uint8)((1u << 1u) | (1u << 2u));
 
 
             if (Copy_pCarData->warnMask & (1u << WARN_FUEL)) Local_u8Byte |= (uint8)(1u << 0u);
-            if (Copy_pCarData->warnMask & (1u << WARN_OIL)) Local_u8Byte |= (uint8)(1u << 1u);
-            if (Copy_pCarData->warnMask & (1u << WARN_BATT)) Local_u8Byte |= (uint8)(1u << 2u);
             if (Copy_pCarData->warnMask & (1u << WARN_COOLANT)) Local_u8Byte |= (uint8)(1u << 3u);
             if (Copy_pCarData->warnMask & (1u << WARN_CHECK)) Local_u8Byte |= (uint8)(1u << 4u);
+
             return Local_u8Byte;
 
         case CS_RUNNING:
@@ -1144,7 +1149,7 @@ static void App_InitSystem(void)
     TAC_Init();
     INTERRUPT_EnableGlobal();
 }
-# 371 "main.c"
+# 376 "main.c"
 static uint8 s_overspeedActive = 0u;
 static uint8 s_blinkOn = 0u;
 static uint8 s_blinkCallCount = 0u;
@@ -1325,7 +1330,7 @@ static void Task_Lamps(CarData_t *Copy_pCarData, const DashCfg_t *Copy_pCfg)
     Copy_pCarData->lampByte = Local_u8Byte;
     Lmp_Shift(Local_u8Byte);
 }
-# 560 "main.c"
+# 565 "main.c"
 static void App_UpdateChime(const CarData_t *Copy_pCarData)
 {
     uint8 Local_u8TurnActive;
