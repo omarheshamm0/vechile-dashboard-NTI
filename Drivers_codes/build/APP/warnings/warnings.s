@@ -33,7 +33,7 @@ WRN_Update:
 	ldd r24,Z+5
 	ldd r25,Z+6
 	cpi r24,111
-	cpc r25,__zero_reg__
+	sbci r25,0
 	brlt .L4
 	lds r24,coolant_counter.5
 	lds r25,coolant_counter.5+1
@@ -58,7 +58,7 @@ WRN_Update:
 	sts batt_low_counter.4,r24
 	sts batt_low_counter.4+1,r25
 	cpi r24,100
-	cpc r25,__zero_reg__
+	sbci r25,0
 	brlo .L7
 	ldi r24,lo8(1)
 	sts batt_low_warn.3,r24
@@ -94,7 +94,7 @@ WRN_Update:
 	sts batt_high_counter.2,r24
 	sts batt_high_counter.2+1,r25
 	cpi r24,100
-	cpc r25,__zero_reg__
+	sbci r25,0
 	brlo .L11
 	ldi r24,lo8(1)
 	sts batt_high_warn.1,r24
@@ -108,12 +108,12 @@ WRN_Update:
 	ldd r18,Z+22
 	ldd r19,Z+23
 	lds r24,Latched_Oil
-	cp r24, __zero_reg__
+	cpi r24,lo8(0)
 	breq .L14
 	ori r18,lo8(2)
 .L15:
 	lds r24,Latched_Coolant
-	cp r24, __zero_reg__
+	cpi r24,lo8(0)
 	breq .L16
 	ori r18,lo8(8)
 .L17:
@@ -124,7 +124,7 @@ WRN_Update:
 	ori r18,lo8(4)
 .L19:
 	lds r24,fuel_warn_active.0
-	cp r24, __zero_reg__
+	cpi r24,lo8(0)
 	breq .L20
 	ori r18,lo8(32)
 .L21:
@@ -162,60 +162,60 @@ WRN_Highest:
 	ldd r18,Z+22
 	ldd r19,Z+23
 	sbrc r18,1
-	rjmp .L32
-	sbrc r18,2
-	rjmp .L33
-	sbrc r18,3
-	rjmp .L34
-	sbrc r18,4
-	rjmp .L35
-	sbrc r18,5
 	rjmp .L36
-	sbrc r18,6
+	sbrc r18,2
 	rjmp .L37
-	sbrc r18,7
+	sbrc r18,3
 	rjmp .L38
-	sbrc r19,0
+	sbrc r18,4
 	rjmp .L39
+	sbrc r18,5
+	rjmp .L40
+	sbrc r18,6
+	rjmp .L41
+	sbrc r18,7
+	rjmp .L42
+	sbrc r19,0
+	rjmp .L43
 	ldi r24,0
 	mov r25,r19
 	andi r25,1<<1
 	sbrs r19,1
-	rjmp .L30
+	rjmp .L34
 	ldi r24,lo8(9)
 	ldi r25,0
-.L30:
+.L34:
 /* epilogue start */
 	ret
-.L32:
+.L36:
 	ldi r24,lo8(1)
 	ldi r25,0
 	ret
-.L33:
+.L37:
 	ldi r24,lo8(2)
 	ldi r25,0
 	ret
-.L34:
+.L38:
 	ldi r24,lo8(3)
 	ldi r25,0
 	ret
-.L35:
+.L39:
 	ldi r24,lo8(4)
 	ldi r25,0
 	ret
-.L36:
+.L40:
 	ldi r24,lo8(5)
 	ldi r25,0
 	ret
-.L37:
+.L41:
 	ldi r24,lo8(6)
 	ldi r25,0
 	ret
-.L38:
+.L42:
 	ldi r24,lo8(7)
 	ldi r25,0
 	ret
-.L39:
+.L43:
 	ldi r24,lo8(8)
 	ldi r25,0
 	ret
@@ -265,5 +265,5 @@ Latched_Coolant:
 	.size	Latched_Oil, 1
 Latched_Oil:
 	.zero	1
-	.ident	"GCC: (GNU) 15.2.0"
+	.ident	"GCC: (GNU) 16.1.0"
 .global __do_clear_bss
