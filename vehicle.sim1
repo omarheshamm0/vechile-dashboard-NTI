@@ -40,7 +40,7 @@
 
 <item itemtype="SerialTerm" CircId="SerialTerm-57" mainComp="false" Show_id="false" Show_Val="false" Pos="-552,68" rotation="360" hflip="1" vflip="1" label="SerialTerm-57" idLabPos="-20,-32" labelrot="0" valLabPos="-16,20" valLabRot="0" Baudrate="9600 _Bd" DataBits="8 _bits" StopBits="1 _bits" SerialMon="false" />
 
-<item itemtype="Clock" CircId="Clock-58" mainComp="false" Show_id="false" Show_Val="false" Pos="-148,76" rotation="0" hflip="1" vflip="1" label="Clock-58" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Voltage="5 V" Freq="89 Hz" Always_On="false" />
+<item itemtype="Clock" CircId="Clock-58" mainComp="false" Show_id="false" Show_Val="false" Pos="-148,88" rotation="0" hflip="1" vflip="1" label="Clock-58" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Voltage="5 V" Freq="50 Hz" Always_On="false" />
 
 <item itemtype="Push" CircId="Push-59" mainComp="false" Show_id="true" Show_Val="false" Pos="-288,276" rotation="0" hflip="1" vflip="1" label="contag" idLabPos="-61.7704,-14.9097" labelrot="0" valLabPos="-16,20" valLabRot="0" Norm_Close="false" Poles="1" />
 
@@ -82,9 +82,9 @@
 
 <item itemtype="Fixed Voltage" CircId="Fixed Voltage-106" mainComp="false" Show_id="false" Show_Val="false" Pos="136,-288" rotation="450" hflip="1" vflip="1" label="Fixed Voltage-106" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Voltage="5 V" Out="true" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-107" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="36,-216" rotation="0" hflip="1" vflip="1" label="fuel" idLabPos="-9.42936,-49.2762" labelrot="0" valLabPos="-10.5096,-39.3254" valLabRot="0" Resistance="10 kΩ" Value_Ohm="9730 Ω" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-107" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="36,-216" rotation="0" hflip="1" vflip="1" label="fuel" idLabPos="-9.42936,-49.2762" labelrot="0" valLabPos="-10.5096,-39.3254" valLabRot="0" Resistance="10 kΩ" Value_Ohm="6880 Ω" Slider="false" Scale="1" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-108" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="212,-212" rotation="0" hflip="1" vflip="1" label="oil p" idLabPos="-19.63,-56.3848" labelrot="0" valLabPos="-10.123,-45.123" valLabRot="0" Resistance="10 kΩ" Value_Ohm="10000 Ω" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-108" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="212,-212" rotation="0" hflip="1" vflip="1" label="oil p" idLabPos="-19.63,-56.3848" labelrot="0" valLabPos="-10.123,-45.123" valLabRot="0" Resistance="10 kΩ" Value_Ohm="3390 Ω" Slider="false" Scale="1" />
 
 <item itemtype="Ground" CircId="Ground-109" mainComp="false" Show_id="false" Show_Val="false" Pos="240,-172" rotation="0" hflip="1" vflip="1" label="Ground-109" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
@@ -92,7 +92,7 @@
 
 <item itemtype="Fixed Voltage" CircId="Fixed Voltage-111" mainComp="false" Show_id="false" Show_Val="false" Pos="72,-280" rotation="450" hflip="1" vflip="1" label="Fixed Voltage-111" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Voltage="5 V" Out="true" />
 
-<item itemtype="Potentiometer" CircId="Potentiometer-112" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="92,-232" rotation="0" hflip="1" vflip="1" label="coolant" idLabPos="-17.546,-50.0492" labelrot="0" valLabPos="-10.123,-39.7119" valLabRot="0" Resistance="10 kΩ" Value_Ohm="9350 Ω" Slider="false" Scale="1" />
+<item itemtype="Potentiometer" CircId="Potentiometer-112" mainComp="false" ShowProp="Resistance" Show_id="true" Show_Val="true" Pos="92,-232" rotation="0" hflip="1" vflip="1" label="coolant" idLabPos="-17.546,-50.0492" labelrot="0" valLabPos="-10.123,-39.7119" valLabRot="0" Resistance="10 kΩ" Value_Ohm="4110 Ω" Slider="false" Scale="1" />
 
 <item itemtype="Ground" CircId="Ground-113" mainComp="false" Show_id="false" Show_Val="false" Pos="116,-172" rotation="0" hflip="1" vflip="1" label="Ground-113" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
 
@@ -246,7 +246,7 @@
 
 <item itemtype="Connector" uid="Connector-146" startpinid="Push-59-pinP0" endpinid="Node-64-0" pointList="-304,276,-368,276,-368,324" />
 
-<item itemtype="Connector" uid="Connector-132" startpinid="Clock-58-outnod" endpinid="mega32-1-PORTD2" pointList="-132,76,-32,76,-32,80" />
+<item itemtype="Connector" uid="Connector-132" startpinid="Clock-58-outnod" endpinid="mega32-1-PORTD2" pointList="-132,88,-32,88,-32,80" />
 
 <item itemtype="Connector" uid="Connector-158" startpinid="AudioOut-69-lPin" endpinid="mega32-1-PORTD7" pointList="112,108,32,108,32,112" />
 
@@ -352,8 +352,6 @@
 
 <item itemtype="Connector" uid="Connector-127" startpinid="Switch-51-switch0pinN" endpinid="Node-55-1" pointList="636,104,752,104,752,160" />
 
-<item itemtype="Connector" uid="Connector-281" startpinid="SerialTerm-57-pin1" endpinid="mega32-1-PORTD1" pointList="-576,76,-584,76,-584,96,-64,96,-64,72,-32,72" />
-
 <item itemtype="Connector" uid="Connector-309" startpinid="Ground-132-Gnd" endpinid="Switch-125-pinP0" pointList="-840,392,-840,376,-768,376" />
 
 <item itemtype="Connector" uid="Connector-310" startpinid="Ground-133-Gnd" endpinid="Switch-126-pinP0" pointList="-840,544,-840,504,-776,504" />
@@ -415,5 +413,7 @@
 <item itemtype="Connector" uid="Connector-350" startpinid="Ground-11-Gnd" endpinid="Push-7-pinP0" pointList="-464,92,-464,-36,-216,-36" />
 
 <item itemtype="Connector" uid="Connector-324" startpinid="Switch-126-switch0pinN" endpinid="Node-151-0" pointList="-744,504,-688,504,-688,512,-672,512" />
+
+<item itemtype="Connector" uid="Connector-281" startpinid="SerialTerm-57-pin1" endpinid="mega32-1-PORTD1" pointList="-576,76,-584,76,-584,96,-64,96,-64,72,-32,72" />
 
 </circuit>
