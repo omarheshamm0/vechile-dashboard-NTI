@@ -1106,7 +1106,8 @@ static void App_InitSystem(void)
     SchedulerTick_Init();
     SPI_InitMaster(1u);
     LCD_Init();
-    LCD_SetBacklight(1u);
+    LCD_SetBacklight(0u);
+    LCD_Clear();
     BSW_Init();
     Lmp_Shift(0x00u);
     GAU_Init();
@@ -1200,7 +1201,19 @@ static void App_UpdateBlinkPhase(void)
 
 static void App_UpdateChime(const CarData_t *Copy_pCarData)
 {
-    uint8 Local_u8TurnActive = (uint8)((Copy_pCarData->turnLeft || Copy_pCarData->turnRight) && s_blinkOn);
+    uint8 Local_u8TurnActive;
+
+
+
+
+    if (Copy_pCarData->state == (uint8)CS_OFF)
+    {
+        CHM_Play(CHM_PATTERN_OFF);
+        CHM_Update();
+        return;
+    }
+
+    Local_u8TurnActive = (uint8)((Copy_pCarData->turnLeft || Copy_pCarData->turnRight) && s_blinkOn);
 
     if (Copy_pCarData->state == CS_LIMP_HOME)
         CHM_Play(CHM_PATTERN_LIMP_HOME);
@@ -1218,6 +1231,27 @@ static void App_RenderDisplay(CarData_t *CarData)
 {
     char line1[17] = {0};
     char line2[17] = {0};
+    static uint8 s_lcdWasOff = 1u;
+
+
+
+
+
+    if (CarData->state == (uint8)CS_OFF)
+    {
+        if (!s_lcdWasOff)
+        {
+            LCD_SetBacklight(0u);
+            LCD_Clear();
+            s_lcdWasOff = 1u;
+        }
+        return;
+    }
+    if (s_lcdWasOff)
+    {
+        LCD_SetBacklight(1u);
+        s_lcdWasOff = 0u;
+    }
 
     if (CarData->state == (uint8)CS_BULBCHECK)
     {

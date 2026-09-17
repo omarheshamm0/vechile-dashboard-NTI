@@ -260,7 +260,7 @@ static void App_ConfigPins(void)
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN3, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN4, GPIO_INPUT_PULLUP);
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN5, GPIO_INPUT_PULLUP);
-    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_OUTPUT);       /* CPU-load test pin (was INPUT - fixed) */
+    GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN6, GPIO_INPUT);       /* CPU-load test pin (was INPUT - fixed) */
     GPIO_SetPinDirection(GPIO_PORTC, GPIO_PIN7, GPIO_OUTPUT);
 
     /* UART, INT0 / INT1, speed input and buzzer */
@@ -289,7 +289,8 @@ static void App_InitSystem(void)
     SchedulerTick_Init();
     SPI_InitMaster(SPI_PRESC_16);
     LCD_Init();
-    LCD_SetBacklight(LCD_BACKLIGHT_ON);
+    LCD_SetBacklight(LCD_BACKLIGHT_OFF); /* stays dark until the key leaves CS_OFF */
+    LCD_Clear();                         /* push the backlight-off byte out now */
     BSW_Init();
     Lmp_Shift(0x00u); /* all lamps off at boot */
     GAU_Init();
@@ -383,7 +384,19 @@ static void App_UpdateBlinkPhase(void)
  */
 static void App_UpdateChime(const CarData_t *Copy_pCarData)
 {
-    uint8 Local_u8TurnActive = (uint8)((Copy_pCarData->turnLeft || Copy_pCarData->turnRight) && s_blinkOn);
+    uint8 Local_u8TurnActive;
+
+    /* Never sound with the key off - a floating/default 74HC165 read at
+       boot (before any switch is actually driven) can otherwise look like
+       an active turn signal and beep the buzzer before the car is even on. */
+    if (Copy_pCarData->state == (uint8)CS_OFF)
+    {
+        CHM_Play(CHM_PATTERN_OFF);
+        CHM_Update();
+        return;
+    }
+
+    Local_u8TurnActive = (uint8)((Copy_pCarData->turnLeft || Copy_pCarData->turnRight) && s_blinkOn);
 
     if (Copy_pCarData->state == CS_LIMP_HOME)
         CHM_Play(CHM_PATTERN_LIMP_HOME);
@@ -401,6 +414,27 @@ static void App_RenderDisplay(CarData_t *CarData)
 {
     char line1[17] = {0};
     char line2[17] = {0};
+    static uint8 s_lcdWasOff = 1u; /* starts dark, matches App_InitSystem */
+
+    /* Stay dark the whole time the key is off - only light up once the FSM
+       leaves CS_OFF (key press -> CS_ACC), and go dark again on the way
+       back. Backlight is only re-touched on the transition edge so it
+       doesn't re-send an I2C byte on every 250 ms repaint. */
+    if (CarData->state == (uint8)CS_OFF)
+    {
+        if (!s_lcdWasOff)
+        {
+            LCD_SetBacklight(LCD_BACKLIGHT_OFF);
+            LCD_Clear();
+            s_lcdWasOff = 1u;
+        }
+        return;
+    }
+    if (s_lcdWasOff)
+    {
+        LCD_SetBacklight(LCD_BACKLIGHT_ON);
+        s_lcdWasOff = 0u;
+    }
 
     if (CarData->state == (uint8)CS_BULBCHECK)
     {
