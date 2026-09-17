@@ -1,4 +1,113 @@
-
+/*
+ * main.c - PRJ-04-DASHBOARD  (Vehicle Instrument Cluster, ATmega32A @ 8 MHz)
+ *
+ * This revises the previous draft to match README.md. Three things in that
+ * draft were breaking the design and are fixed here - read this block before
+ * changing anything below:
+ *
+ * 1. TIMER1 conflict (critical).
+ *    The draft used TIMER1_DelayMS(10) as the 10 ms scheduler tick. TIMER1
+ *    is the same hardware timer speedo.c dedicates to Input-Capture wheel
+ *    speed measurement (SPD_Init configures TCCR1A/TCCR1B for ICU). Calling
+ *    TIMER1_DelayMS every loop re-programs those same registers for a CTC
+ *    delay on every iteration, so road speed can never be captured
+ *    correctly. The tick is now a free-running TIMER0 CTC interrupt
+ *    (prescaler 1024, OCR0 = 77 -> ~10 ms @ 8 MHz), exactly as specified in
+ *    README S8, and it is fully non-blocking (NFR-02). TIMER1 is left
+ *    untouched for speedo.c.
+ *
+ * 2. Missing lamp driver.
+ *    The draft included "lamps595.h" and called LMP_Set/LMP_Refresh/LMP_Init
+ *    and lamp-name enums, but no lamps595.c/.h were ever provided among the
+ *    project sources, so that draft cannot compile. The 74HC595 driver is
+ *    implemented directly in this file (Lmp_* functions below) using the
+ *    same SPI_Acquire/SPI_Release contract bodysw.c already uses for the
+ *    74HC165. Functionally it is a drop-in replacement; move it into
+ *    HAL/lamps595.c later to match the layer diagram in README S9.1.
+ *
+ * 3. Scheduling bugs.
+ *    - GAU_Update() was called every 10 ms tick instead of every 500 ms.
+ *      gauges.c's plausibility counter assumes it is called every 500 ms
+ *      ("10 cycles * 500 ms = 5 s" in its own comment); calling it at 10 ms
+ *      would raise WARN_CHECK after ~100 ms instead of 5 s (FR-18).
+ *    - CHM_Update() was called every 10 ms tick instead of every 100 ms.
+ *      chime.c's own header comment says it assumes a 100 ms call period;
+ *      calling it 10x faster makes every chime pattern run 10x too fast.
+ *    - Console_SendTelemetry() was sent every 100 ms instead of every 5 s
+ *      (README S18.1 / task T-9).
+ *    - The LCD was refreshed every 500 ms instead of every 250 ms (FR-17 /
+ *      task T-6).
+ *    All periods below now follow README S19's task table, including the
+ *    listed offsets so tasks do not all land on the same tick.
+ *
+ * Gaps filled in that no provided module owns (warnings.c's own comment
+ * says these are "updated by their respective modules", but no such
+ * modules exist among the given sources):
+ *   - Over-speed warning + 5 km/h hysteresis + chime (FR-15).
+ *   - Seatbelt / door / handbrake warnings gated by speed (README S11.4).
+ *   - Turn-signal blinking at 450 ms on/off with a synchronised chime tick
+ *     (FR-11) - the switches were being shown as steady lamps, not blinked.
+ *   - Session max-speed reset at key-on and the all-time record (FR-16).
+ *   - Trip-reset button (2 s hold) - it was configured as an input but
+ *     never read anywhere in the draft (FR-07).
+ *   - Lamp cluster overrides per the Operating Modes table in README S15
+ *     (dark in OFF/ACC, all-on during bulb check, oil+battery only during
+ *     cranking/stalled).
+ *   - Basic debounce on the key / start / display / trip-reset buttons.
+ *
+ * Known limitations carried over from the provided modules (not fixed here
+ * since they live in files outside main.c - flag them in the report):
+ *   - gauges.c raises WARN_CHECK when ALL four channels are plausible and
+ *     clears it when any one is implausible - inverted from FR-18.
+ *   - gauges.c initialises the ADC with ADC_REF_AREF; README S8 calls for
+ *     AVCC as the reference.
+ *   - warnings.c latches oil/coolant instantly instead of after the 2 s / 3 s
+ *     persistence the spec (README S11.4) calls for.
+ *   - odometer.c's atomic ODO_* accessors operate on their own private
+ *     static counters, never connected to CarData_t; speedo.c integrates
+ *     distance straight into CarData_t instead, so the atomic-read module
+ *     is currently unused. Since only Task_Speed (single context) writes
+ *     odoMetres/tripMetres here, no ISR ever touches them, so a torn read
+ *     is not currently possible - but wire ODO_AddDistance/ODO_GetTotal
+ *     through speedo.c if that changes.
+ *   - No EEPROM persistence: SimulIDE has no non-volatile memory, so per
+ *     README's own note the odometer legitimately starts at zero every
+ *     boot. The 8-slot wear-levelling scheme (README S19.2) is not
+ *     implemented.
+ *
+ * 4. Pin map corrected against the actual Proteus schematic.
+ *    The switch wiring in the schematic does not match the pin map this
+ *    file was originally written against:
+ *      - Turn-left/turn-right/trip-reset and the four "info" switches
+ *        (high beam, door, seat belt, hand brake) each have their own
+ *        dedicated wire straight to a port pin - NOT through the 74HC165.
+ *      - The ignition key ("contag"), start button and display-cycle
+ *        button are the ones actually drawn going into the 74HC165, next
+ *        to it at the bottom-left of the sheet.
+ *    That is the opposite of bodysw.h's BSW_TURN_LEFT/RIGHT/HIGH_BEAM/
+ *    HANDBRAKE/SEATBELT/DOOR constants, which assume those six are the
+ *    ones read over the shift register. bodysw.c/BSW_Read() is still used
+ *    here - it is a correct, reusable "read one byte from the 165" driver
+ *    regardless of what is wired to it - but this file now reads its
+ *    result as three raw bits (key/start/display-cycle) instead of using
+ *    bodysw.h's six named bits, which do not apply to this circuit.
+ *    Best-effort pin map, please check this against your sheet and fix
+ *    whichever line is wrong - two things could not be read with
+ *    confidence from the image: (a) the exact 165 bit each of
+ *    key/start/display-cycle lands on (assumed bit0/bit1/bit2, D3..D7
+ *    assumed unused), and (b) one unlabeled component near "Trip reset"
+ *    that was left unconnected here:
+ *        PB0  turn-left switch      PC4  hand brake
+ *        PB1  turn-right switch     PC5  seat belt
+ *        PB3  trip-reset (2 s hold) PC6  door switch
+ *        PB4..PB7  shared SPI (165 + 595, fixed by hardware)
+ *                                   PC7  high beam
+ *        165 bit0  ignition key ("contag")
+ *        165 bit1  start button
+ *        165 bit2  display-cycle button
+ *    The dedicated CPU-load test pin (PC6) from the previous revision is
+ *    removed, since the schematic uses that pin for the door switch.
+ */
 
 #ifndef F_CPU
 #define F_CPU 8000000UL

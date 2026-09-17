@@ -2,7 +2,7 @@
 # 0 "<built-in>"
 # 0 "<command-line>"
 # 1 "main.c"
-# 83 "main.c"
+# 116 "main.c"
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 1 3
 # 93 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/sfr_defs.h" 1 3
@@ -196,9 +196,9 @@ typedef struct
 
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/lock.h" 1 3
 # 741 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/io.h" 2 3
-# 84 "main.c" 2
+# 117 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/avr/interrupt.h" 1 3
-# 85 "main.c" 2
+# 118 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 1 3
 # 46 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay_basic.h" 1 3
@@ -287,7 +287,7 @@ _delay_us(double __us)
     __builtin_avr_delay_cycles(__ticks_dc);
 # 296 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/util/delay.h" 3
 }
-# 86 "main.c" 2
+# 119 "main.c" 2
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/stdio.h" 1 3
 # 42 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/avr/include/stdio.h" 3
 # 1 "C:/Users/lenovo/AppData/Local/Microsoft/WinGet/Packages/ZakKemble.avr-gcc_Microsoft.Winget.Source_8wekyb3d8bbwe/avr-gcc-16.1.0-x64-windows/lib/gcc/avr/16.1.0/include/stdarg.h" 1 3
@@ -571,7 +571,7 @@ extern void setbuf(FILE *stream, char *buf);
 extern int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 extern FILE *tmpfile(void);
 extern char *tmpnam (char *s);
-# 87 "main.c" 2
+# 120 "main.c" 2
 
 # 1 "LIB/STD_TYPES.h" 1
 # 11 "LIB/STD_TYPES.h"
@@ -591,7 +591,7 @@ typedef enum
     E_OK = 0,
     E_NOK = 1
 } STD_ReturnType;
-# 89 "main.c" 2
+# 122 "main.c" 2
 # 1 "LIB/dashboard_types.h" 1
 
 
@@ -668,7 +668,7 @@ typedef struct {
     volatile uint8 fresh;
     uint16 stallTicks;
 } Capture_t;
-# 90 "main.c" 2
+# 123 "main.c" 2
 # 1 "MCAL/GPIO/GPIO_interface.h" 1
 # 43 "MCAL/GPIO/GPIO_interface.h"
 STD_ReturnType GPIO_SetPinDirection(uint8 Copy_u8Port, uint8 Copy_u8Pin, uint8 Copy_u8Direction);
@@ -702,7 +702,7 @@ STD_ReturnType GPIO_SetPortValue(uint8 Copy_u8Port, uint8 Copy_u8Value);
 
 
 STD_ReturnType GPIO_GetPortValue(uint8 Copy_u8Port, uint8 *Copy_pu8Value);
-# 91 "main.c" 2
+# 124 "main.c" 2
 # 1 "MCAL/SPI/SPI_interface.h" 1
 # 30 "MCAL/SPI/SPI_interface.h"
 STD_ReturnType SPI_InitMaster(uint8 Copy_u8Prescaler);
@@ -734,7 +734,7 @@ STD_ReturnType SPI_Acquire(uint8 Copy_u8Owner);
 
 
 void SPI_Release(void);
-# 92 "main.c" 2
+# 125 "main.c" 2
 # 1 "MCAL/INTERRUPT/INTERRUPT_interface.h" 1
 # 14 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 # 1 "MCAL/INTERRUPT/../../LIB/STD_TYPES.h" 1
@@ -772,7 +772,7 @@ STD_ReturnType EXTI_Disable(uint8 Copy_u8Int);
 STD_ReturnType EXTI_ClearFlag(uint8 Copy_u8Int);
 # 69 "MCAL/INTERRUPT/INTERRUPT_interface.h"
 STD_ReturnType EXTI_SetCallback(uint8 Copy_u8Int, EXTI_CallbackType Copy_pfCallback);
-# 93 "main.c" 2
+# 126 "main.c" 2
 
 # 1 "HAL/bodysw/bodysw.h" 1
 # 26 "HAL/bodysw/bodysw.h"
@@ -780,7 +780,7 @@ STD_ReturnType BSW_Init(void);
 
 
 STD_ReturnType BSW_Read(uint8 *Copy_pu8SwitchMask);
-# 95 "main.c" 2
+# 128 "main.c" 2
 # 1 "HAL/lcd_i2c/lcd_i2c.h" 1
 # 32 "HAL/lcd_i2c/lcd_i2c.h"
 STD_ReturnType LCD_Init(void);
@@ -794,7 +794,7 @@ STD_ReturnType LCD_WriteNumber(uint32 Copy_u32Value);
 
 STD_ReturnType DSP_Next(void);
 STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const uint8 *Copy_pu8Line2);
-# 96 "main.c" 2
+# 129 "main.c" 2
 # 1 "HAL/GAUGES/gauges.h" 1
 
 
@@ -805,7 +805,7 @@ STD_ReturnType DSP_Render(uint8 Copy_u8Page, const uint8 *Copy_pu8Line1, const u
 
 void GAU_Init(void);
 void GAU_Update(CarData_t *CarData);
-# 97 "main.c" 2
+# 130 "main.c" 2
 # 1 "HAL/CHIME/chime.h" 1
 
 
@@ -836,7 +836,7 @@ void CHM_Play(ChimePattern_t pattern);
 
 
 void CHM_Update(void);
-# 98 "main.c" 2
+# 131 "main.c" 2
 # 1 "HAL/SPEEDO/speedo.h" 1
 
 
@@ -849,7 +849,7 @@ void CHM_Update(void);
 void SPD_Init(void);
 void SPD_Task100ms(CarData_t *pCarData, const DashCfg_t *pCfg);
 void SPD_OnOverflowISR(void);
-# 99 "main.c" 2
+# 132 "main.c" 2
 # 1 "HAL/TACHO/tacho.h" 1
 
 
@@ -869,7 +869,7 @@ void TAC_Task250ms(CarData_t *pCarData, const DashCfg_t *pCfg);
 
 
 void TAC_OnPulse(void);
-# 100 "main.c" 2
+# 133 "main.c" 2
 # 1 "APP/warnings/warnings.h" 1
 
 
@@ -879,7 +879,7 @@ void TAC_OnPulse(void);
 
 void WRN_Update(CarData_t *CarData);
 Warn_t WRN_Highest(const CarData_t *CarData);
-# 101 "main.c" 2
+# 134 "main.c" 2
 # 1 "APP/cluster/cluster.h" 1
 # 10 "APP/cluster/cluster.h"
 void FSM_Init(CarData_t *CarData);
@@ -888,7 +888,7 @@ CarData_t *Cluster_GetCarData(void);
 void Cluster_SetPage(DisplayPage_t page);
 # 23 "APP/cluster/cluster.h"
 void FSM_Run(CarData_t *CarData, uint8 keyPress, uint8 keyHeld, uint8 startBtn);
-# 102 "main.c" 2
+# 135 "main.c" 2
 # 1 "APP/console.h" 1
 # 9 "APP/console.h"
 void Console_Init(void);
@@ -898,7 +898,7 @@ void Console_SendTelemetry(void);
 
 
 void Console_ProcessCommand(void);
-# 103 "main.c" 2
+# 136 "main.c" 2
 
 
 
@@ -907,10 +907,10 @@ void Console_ProcessCommand(void);
 static volatile uint8 g_tick10ms = 0u;
 
 
-# 110 "main.c" 3
+# 143 "main.c" 3
 void __vector_10 (void) __attribute__ ((__signal__,__used__, __externally_visible__)) ; void __vector_10 (void)
 
-# 111 "main.c"
+# 144 "main.c"
 {
     g_tick10ms = 1u;
 }
@@ -918,48 +918,48 @@ void __vector_10 (void) __attribute__ ((__signal__,__used__, __externally_visibl
 static void SchedulerTick_Init(void)
 {
     
-# 117 "main.c" 3
+# 150 "main.c" 3
    (*(volatile uint8_t *)((0x33) + 0x20)) 
-# 117 "main.c"
+# 150 "main.c"
           = (uint8)(1u << 
-# 117 "main.c" 3
+# 150 "main.c" 3
                           3
-# 117 "main.c"
+# 150 "main.c"
                                );
     
-# 118 "main.c" 3
+# 151 "main.c" 3
    (*(volatile uint8_t *)((0x3C) + 0x20)) 
-# 118 "main.c"
+# 151 "main.c"
           = 77u;
     
-# 119 "main.c" 3
+# 152 "main.c" 3
    (*(volatile uint8_t *)((0x32) + 0x20)) 
-# 119 "main.c"
+# 152 "main.c"
           = 0u;
     
-# 120 "main.c" 3
+# 153 "main.c" 3
    (*(volatile uint8_t *)((0x39) + 0x20)) 
-# 120 "main.c"
+# 153 "main.c"
          |= (uint8)(1u << 
-# 120 "main.c" 3
+# 153 "main.c" 3
                           1
-# 120 "main.c"
+# 153 "main.c"
                                );
     
-# 121 "main.c" 3
+# 154 "main.c" 3
    (*(volatile uint8_t *)((0x33) + 0x20)) 
-# 121 "main.c"
+# 154 "main.c"
          |= (uint8)((1u << 
-# 121 "main.c" 3
+# 154 "main.c" 3
                            2
-# 121 "main.c"
+# 154 "main.c"
                                ) | (1u << 
-# 121 "main.c" 3
+# 154 "main.c" 3
                                           0
-# 121 "main.c"
+# 154 "main.c"
                                               ));
 }
-# 146 "main.c"
+# 179 "main.c"
 static void Lmp_Shift(uint8 Copy_u8Byte)
 {
     if (SPI_Acquire(SPI_SLAVE_LAMPS) == E_OK)
@@ -1144,7 +1144,7 @@ static void App_InitSystem(void)
     TAC_Init();
     INTERRUPT_EnableGlobal();
 }
-# 338 "main.c"
+# 371 "main.c"
 static uint8 s_overspeedActive = 0u;
 static uint8 s_blinkOn = 0u;
 static uint8 s_blinkCallCount = 0u;
@@ -1325,7 +1325,7 @@ static void Task_Lamps(CarData_t *Copy_pCarData, const DashCfg_t *Copy_pCfg)
     Copy_pCarData->lampByte = Local_u8Byte;
     Lmp_Shift(Local_u8Byte);
 }
-# 527 "main.c"
+# 560 "main.c"
 static void App_UpdateChime(const CarData_t *Copy_pCarData)
 {
     uint8 Local_u8TurnActive;
